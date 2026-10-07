@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^7.10.0",
-    "prisma": "^8.0.0-rc.20"
+    "dotenv": "^18.0.6",
+    "prisma": "^7.10.0"
   }
 }
