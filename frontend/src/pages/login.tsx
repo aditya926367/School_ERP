@@ -71,12 +71,7 @@ function Illustration() {
 /* ---------- School emblem (approximation) ---------- */
 function Emblem() {
   return (
-    // <svg viewBox="0 0 40 46" className="w-9 h-10" xmlns="http://www.w3.org/2000/svg">
-    //   <path d="M20 2c10 0 17 3 17 3v16c0 12-8 21-17 24C11 42 3 33 3 21V5s7-3 17-3z" fill="#fff" stroke="#4a6b2f" strokeWidth="2" />
-    //   <circle cx="20" cy="20" r="9" fill="none" stroke="#4a6b2f" strokeWidth="1.5" />
-    //   <path d="M20 11v18M12 20h16M14 14l12 12M26 14L14 26" stroke="#4a6b2f" strokeWidth="1.2" />
-    //   <path d="M8 34c4 3 8 5 12 5s8-2 12-5" fill="none" stroke="#4a6b2f" strokeWidth="1.5" />
-    // </svg>
+   
       <div className="w-9 h-10 border border-gray-300 rounded flex items-center justify-center">
       <span className="text-[8px] text-gray-500 text-center">
         SCHOOL LOGO
