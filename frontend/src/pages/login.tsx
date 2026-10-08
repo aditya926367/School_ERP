@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { Link } from "react-router-dom";
 
 
 const NAVY = "#27348b";
@@ -214,9 +215,10 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
           </form>
 
           <div className="mt-5 text-center">
-            <a href="#" className="text-[11.5px] text-[#27348b] hover:underline">
-              Forgot password?
-            </a>
+            <Link to="/forgotPassword" className="text-[11.5px] text-[#27348b] hover:underline" >
+             Forgot password?
+            </Link>
+         
           </div>
 
           <div className="mt-5 text-center text-[10.5px] text-slate-600">
