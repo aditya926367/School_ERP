@@ -224,15 +224,16 @@ export default function Register() {
 
           {/* SCHOOL LOGO */}
           <div className="flex items-center justify-center gap-2">
-            <Emblem />
+            Logo
+            <div/>
 
             <div className="leading-tight">
               <div className="text-[17px] font-semibold tracking-wide text-[#3d5a26]">
-                DELHI PUBLIC SCHOOL
+                School Name
               </div>
 
               <div className="text-[10.5px] tracking-[0.12em] text-[#3d5a26] text-center">
-                R. K. PURAM, NEW DELHI
+                School Adddress
               </div>
             </div>
           </div>
