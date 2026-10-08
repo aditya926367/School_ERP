@@ -18,17 +18,20 @@ import GradingExamSettings from "./pages/admin/GradingExamSettings";
 import Users from "./pages/admin/Users";
 import MainHeader from "./layouts/mainHeader";
 import SimpleHeader from "./layouts/simpleHeader";
+import Library from "./pages/library";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public Authentication & Header Layout Routes */}
-        <Route path="/" element={<Login />} />
+        <Route path="login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/mainHeader" element={<MainHeader />} />
         <Route path="/simpleHeader" element={<SimpleHeader />} />
+          <Route path="/" element={<Library />} />
+      
 
         {/* Dashboard Layout & Role-Based Views */}
         <Route element={<DashboardLayout />}>
