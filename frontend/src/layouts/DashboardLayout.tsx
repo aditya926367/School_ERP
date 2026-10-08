@@ -1,6 +1,9 @@
 import { useState } from "react";
 import type { ElementType } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import MainHeader from "./mainHeader";
+
+
 
 import {
   LayoutDashboard,
@@ -563,7 +566,7 @@ const roleInfo = {
 };
 
 const dashboardPaths: Record<UserRole, string> = {
-  admin: "/dashboard",
+  admin: "/admindashboard",
   teacher: "/teacherdashboard",
   student: "/studentdashboard",
   parent: "/parentdashboard",
@@ -614,6 +617,8 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
+     {/* Header - full width */}
+    <MainHeader />
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
@@ -625,7 +630,7 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed left-0 top--[72] bottom-0 z-40 flex  flex-col
+          fixed left-0 top-[72px] bottom-0 z-40 flex  flex-col
           bg-[#27348b] text-white shadow-xl
           transition-all duration-300
           ${collapsed ? "w-[82px]" : "w-[270px]"}
@@ -777,80 +782,14 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Main */}
-      <div
-        className={`transition-all duration-300 ${
-          collapsed ? "lg:ml-[82px]" : "lg:ml-[270px]"
-        }`}
-      >
-        {/* Header */}
-<header className="fixed left-0 right-0 top-0 z-50 h-[72px] border-b border-slate-200 bg-white">
-            <div className="flex items-center gap-3">
-            {/* Mobile Menu */}
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden"
-            >
-              <Menu size={22} />
-            </button>
-
-            {/* Desktop Collapse */}
-            <button
-              onClick={() => setCollapsed((prev) => !prev)}
-              className="hidden rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:block"
-            >
-              <Menu size={21} />
-            </button>
-
-            <div className="hidden md:block">
-              <p className="text-xs text-slate-400">
-                School Name
-              </p>
-
-              <h2 className="text-sm font-semibold text-slate-800">
-                School Address
-                
-              </h2>
-            </div>
+    {/* MAIN CONTENT */}
+      <main className="min-h-screen pt-[72px] lg:ml-[270px]">
+        <div className="min-h-[calc(100vh-72px)] bg-gray-100 p-5 lg:p-8">
+          <div className="mx-auto max-w-[1500px]">
+            <Outlet />
           </div>
-
-          <div className="flex items-center gap-2 md:gap-4">
-            {/* Search */}
-            <button className="rounded-lg p-2 text-slate-500 hover:bg-slate-100">
-              <Search size={20} />
-            </button>
-
-            {/* Notification */}
-            <button className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-100">
-              <Bell size={20} />
-
-              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-            </button>
-
-            {/* Profile */}
-            <div className="flex items-center gap-3 border-l border-slate-200 pl-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#27348b] text-xs font-bold text-white">
-                {user.initials}
-              </div>
-
-              <div className="hidden md:block">
-                <p className="text-sm font-semibold text-slate-800">
-                  {user.name}
-                </p>
-
-                <p className="text-xs text-slate-400">
-                  {user.title}
-                </p>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Page */}
-        <main className="min-h-[calc(100vh-72px)] p-4 md:p-6 lg:p-7">
-          <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
