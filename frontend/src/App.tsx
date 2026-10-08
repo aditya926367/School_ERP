@@ -24,12 +24,12 @@ function App() {
         {/* Dashboard */}
         <Route element={<DashboardLayout />}>
           <Route
-            path="/dashboard"
+            path="/admindashboard"
             element={<AdminDashboard />}
           />
         </Route>
 
-        <Route path="ram" element={<Dashboard />} />
+        
          <Route path="/" element={<Login />} />
   <Route path="/auth/register" element={<Register />} />
   <Route path="forgotPassword" element={<ForgotPassword />} />
