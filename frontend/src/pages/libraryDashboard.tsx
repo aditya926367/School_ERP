@@ -18,14 +18,20 @@ import {
 } from "react-icons/fa";
 
 // ---------- Sidebar menu for the Library page ----------
+// const libraryMenu: MenuItem[] = [
+//   { label: "Home", icon: <FiHome />, path: "/dashboard" },
+//   { label: "Library Setup", icon: <FaPencilAlt />, path: "/library" },
+//   { label: "Stock Verifications", icon: <FaRegCheckSquare />, path: "/library" },
+//   { label: "Issue and Return", icon: <FaSignOutAlt />, path: "/library" },
+//   { label: "Reports", icon: <FaBook />, path: "/library" },
+// ];
 const libraryMenu: MenuItem[] = [
   { label: "Home", icon: <FiHome />, path: "/dashboard" },
-  { label: "Library Setup", icon: <FaPencilAlt />, path: "/library" },
-  { label: "Stock Verifications", icon: <FaRegCheckSquare />, path: "/library" },
-  { label: "Issue and Return", icon: <FaSignOutAlt />, path: "/library" },
-  { label: "Reports", icon: <FaBook />, path: "/library" },
+  { label: "Library Setup", icon: <FaPencilAlt />, path: "/library", hasArrow: true },
+  { label: "Stock Verifications", icon: <FaRegCheckSquare />, path: "/library", hasArrow: true },
+  { label: "Issue and Return", icon: <FaSignOutAlt />, path: "/library", hasArrow: true },
+  { label: "Reports", icon: <FaBook />, path: "/library", hasArrow: true },
 ];
-
 // ---------- Data for the 8 cards (icon, title, description) ----------
 type CardItem = {
   icon: ReactNode;
@@ -106,7 +112,7 @@ function LibraryCard({ item }: { item: CardItem }) {
 }
 
 // ---------- Page ----------
-export default function Library() {
+export default function libraryDashboard() {
   return (
     <PortalLayout menu={libraryMenu}>
       {/* Big white box with the title and the cards */}

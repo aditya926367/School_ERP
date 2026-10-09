@@ -18,11 +18,14 @@ import GradingExamSettings from "./pages/admin/GradingExamSettings";
 import Users from "./pages/admin/Users";
 import MainHeader from "./layouts/mainHeader";
 import SimpleHeader from "./layouts/simpleHeader";
-import Library from "./pages/library";
+import LibraryDashboard from "./pages/libraryDashboard";
 import Students from "./pages/admin/Students";
 import Admissions from "./pages/admin/Admissions";
 import StudentProfile from "./pages/admin/StudentProfile";
 import StudentDocuments from "./pages/admin/StudentDocuments";
+import Fees from "./pages/feesDashboard";
+import FeesDashboard from "./pages/feesDashboard";
+Fees
 
 function App() {
   return (
@@ -34,8 +37,9 @@ function App() {
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/mainHeader" element={<MainHeader />} />
         <Route path="/simpleHeader" element={<SimpleHeader />} />
-          <Route path="/library" element={<Library />} />
-      
+        <Route path="/libraryDashboard" element={<LibraryDashboard />} />
+         <Route path="/feesDashboard" element={<FeesDashboard/>} />
+
 
         {/* Dashboard Layout & Role-Based Views */}
         <Route element={<DashboardLayout />}>
@@ -43,20 +47,20 @@ function App() {
           <Route path="/teacherdashboard" element={<TeacherDashboard />} />
           <Route path="/studentdashboard" element={<StudentDashboard />} />
           <Route path="/parentdashboard" element={<ParentDashboard />} />
-          
-           {/* Student Management */}
-  <Route path="/admin/students" element={<Students />} />
-<Route path="/admin/admissions" element={<Admissions />} />
-    <Route path="/admin/student-profile" element={<StudentProfile />} />
-    <Route
-  path="/admin/student-documents"
-  element={<StudentDocuments />}
-/>
-<Route
-  path="/admin/student-profile/:studentId"
-  element={<StudentProfile />}
-/>
-  
+
+          {/* Student Management */}
+          <Route path="/admin/students" element={<Students />} />
+          <Route path="/admin/admissions" element={<Admissions />} />
+          <Route path="/admin/student-profile" element={<StudentProfile />} />
+          <Route
+            path="/admin/student-documents"
+            element={<StudentDocuments />}
+          />
+          <Route
+            path="/admin/student-profile/:studentId"
+            element={<StudentProfile />}
+          />
+
 
 
         </Route>
@@ -70,7 +74,7 @@ function App() {
         <Route path="/admin/holidays-calendar" element={<HolidaysCalendar />} />
         <Route path="/admin/grading-exam-settings" element={<GradingExamSettings />} />
         <Route path="/admin/users" element={<Users />} />
-        
+
       </Routes>
     </BrowserRouter>
   );
