@@ -136,11 +136,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
           path: "/admin/students",
           icon: Users,
         },
-        {
-          label: "Student Profile",
-          path: "/admin/student-profile",
-          icon: UserCog,
-        },
+       
         {
           label: "Documents",
           path: "/admin/student-documents",
@@ -468,11 +464,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
           path: "/parent/children",
           icon: Users,
         },
-        {
-          label: "Student Profile",
-          path: "/parent/student-profile",
-          icon: UserRound,
-        },
+        
       ],
     },
 
@@ -581,9 +573,27 @@ export default function DashboardLayout() {
 
   const storedRole = localStorage.getItem("role") as UserRole | null;
 
-  const currentRole: UserRole =
-    storedRole && roleMenus[storedRole] ? storedRole : "admin";
+  const currentRole: UserRole = (() => {
+  const path = location.pathname;
 
+  if (path === "/studentdashboard" || path.startsWith("/student/")) {
+    return "student";
+  }
+
+  if (path === "/teacherdashboard" || path.startsWith("/teacher/")) {
+    return "teacher";
+  }
+
+  if (path === "/parentdashboard" || path.startsWith("/parent/")) {
+    return "parent";
+  }
+
+  if (path === "/admindashboard" || path.startsWith("/admin/")) {
+    return "admin";
+  }
+
+  return storedRole && roleMenus[storedRole] ? storedRole : "admin";
+})();
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
     () => {
       const initial: Record<string, boolean> = {};

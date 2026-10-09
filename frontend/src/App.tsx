@@ -21,8 +21,8 @@ import SimpleHeader from "./layouts/simpleHeader";
 import Library from "./pages/library";
 import Students from "./pages/admin/Students";
 import Admissions from "./pages/admin/Admissions";
-import StudentProfile from "./pages/admin/StudentProfile";
 import StudentDocuments from "./pages/admin/StudentDocuments";
+import MyClasses from "./pages/student/MyClasses";
 
 function App() {
   return (
@@ -34,8 +34,8 @@ function App() {
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/mainHeader" element={<MainHeader />} />
         <Route path="/simpleHeader" element={<SimpleHeader />} />
-          <Route path="/library" element={<Library />} />
-      
+        <Route path="/library" element={<Library />} />
+     
 
         {/* Dashboard Layout & Role-Based Views */}
         <Route element={<DashboardLayout />}>
@@ -43,23 +43,22 @@ function App() {
           <Route path="/teacherdashboard" element={<TeacherDashboard />} />
           <Route path="/studentdashboard" element={<StudentDashboard />} />
           <Route path="/parentdashboard" element={<ParentDashboard />} />
-          
-           {/* Student Management */}
-  <Route path="/admin/students" element={<Students />} />
-<Route path="/admin/admissions" element={<Admissions />} />
-    <Route path="/admin/student-profile" element={<StudentProfile />} />
-    <Route
-  path="/admin/student-documents"
-  element={<StudentDocuments />}
-/>
-<Route
-  path="/admin/student-profile/:studentId"
-  element={<StudentProfile />}
-/>
-  
-
-
+        
+          {/* Student  */}
+          <Route path="/admin/students" element={<Students />} />
+          <Route path="/admin/admissions" element={<Admissions />} />
+          <Route
+            path="/admin/student-documents"
+            element={<StudentDocuments />}
+          />
         </Route>
+           {/* Student Dashboard */}
+<Route element={<DashboardLayout />}>
+  <Route path="/student/classes" element={<MyClasses />} />
+</Route>       
+
+
+
 
         {/* Admin Management Sub-Routes */}
         <Route path="/admin/school-profile" element={<SchoolProfile />} />
@@ -70,7 +69,7 @@ function App() {
         <Route path="/admin/holidays-calendar" element={<HolidaysCalendar />} />
         <Route path="/admin/grading-exam-settings" element={<GradingExamSettings />} />
         <Route path="/admin/users" element={<Users />} />
-        
+
       </Routes>
     </BrowserRouter>
   );
