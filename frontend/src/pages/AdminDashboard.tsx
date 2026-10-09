@@ -1,798 +1,272 @@
 import {
-  Award,
-  Bell,
+  Users,
+  GraduationCap,
+  ClipboardCheck,
+  IndianRupee,
+  UserPlus,
   BookOpen,
   CalendarDays,
-  ClipboardCheck,
   FileText,
-  GraduationCap,
-  LayoutDashboard,
-  Library,
-  Menu,
-  MessageSquare,
-  School,
-  Settings,
-  ShieldCheck,
-  UserCog,
-  Users,
-  Wallet,
-  X,
 } from "lucide-react";
-import type { ElementType } from "react";
-import { useState } from "react";
-import { NavLink, Outlet } from "react-router-dom";
 
-type UserRole = "admin" | "teacher" | "student" | "parent";
-
-interface MenuItem {
-  label: string;
-  path: string;
-  icon: ElementType;
-}
-
-interface MenuGroup {
-  label: string;
-  icon: ElementType;
-  items: MenuItem[];
-}
-
-const roleMenus: Record<UserRole, MenuGroup[]> = {
-  admin: [
-    {
-      label: "School Management",
-      icon: School,
-      items: [
-        {
-          label: "School Profile",
-          path: "/admin/school-profile",
-          icon: School,
-        },
-        {
-          label: "Campuses",
-          path: "/admin/campuses",
-          icon: School,
-        },
-        {
-          label: "Academic Years",
-          path: "/admin/academic-years",
-          icon: CalendarDays,
-        },
-        {
-          label: "Classes & Sections",
-          path: "/admin/classes-sections",
-          icon: GraduationCap,
-        },
-        {
-          label: "Subjects",
-          path: "/admin/subjects",
-          icon: BookOpen,
-        },
-        {
-          label: "Calendar",
-          path: "/admin/holidays-calendar",
-          icon: CalendarDays,
-        },
-      ],
-    },
-
-    {
-      label: "Academics",
-      icon: GraduationCap,
-      items: [
-        {
-          label: "Class-Subject-Teacher",
-          path: "/admin/class-subject-teacher",
-          icon: Users,
-        },
-        {
-          label: "Timetable",
-          path: "/admin/timetable",
-          icon: CalendarDays,
-        },
-        {
-          label: "Exams",
-          path: "/admin/exams",
-          icon: FileText,
-        },
-        {
-          label: "Marks & Grades",
-          path: "/admin/marks",
-          icon: ClipboardCheck,
-        },
-        {
-          label: "Results",
-          path: "/admin/results",
-          icon: FileText,
-        },
-      ],
-    },
-
-    {
-      label: "Students",
-      icon: Users,
-      items: [
-        {
-          label: "Admissions",
-          path: "/admin/admissions",
-          icon: UserCog,
-        },
-        {
-          label: "Students",
-          path: "/admin/students",
-          icon: Users,
-        },
-        {
-          label: "Student Profile",
-          path: "/admin/students/profile",
-          icon: UserCog,
-        },
-        {
-          label: "Documents",
-          path: "/admin/students/documents",
-          icon: FileText,
-        },
-      ],
-    },
-
-    {
-      label: "Attendance",
-      icon: ClipboardCheck,
-      items: [
-        {
-          label: "Student Attendance",
-          path: "/admin/attendance/students",
-          icon: ClipboardCheck,
-        },
-        {
-          label: "Staff Attendance",
-          path: "/admin/attendance/staff",
-          icon: UserCog,
-        },
-        {
-          label: "Attendance Reports",
-          path: "/admin/attendance/reports",
-          icon: FileText,
-        },
-      ],
-    },
-
-    {
-      label: "Fees & Finance",
-      icon: Wallet,
-      items: [
-        {
-          label: "Fee Structure",
-          path: "/admin/fees/structure",
-          icon: Wallet,
-        },
-        {
-          label: "Fee Collection",
-          path: "/admin/fees/collection",
-          icon: Wallet,
-        },
-        {
-          label: "Receipts",
-          path: "/admin/fees/receipts",
-          icon: FileText,
-        },
-        {
-          label: "Pending Dues",
-          path: "/admin/fees/dues",
-          icon: FileText,
-        },
-        {
-          label: "Finance Reports",
-          path: "/admin/fees/reports",
-          icon: FileText,
-        },
-      ],
-    },
-
-    {
-      label: "Library",
-      icon: Library,
-      items: [
-        {
-          label: "Books",
-          path: "/admin/library/books",
-          icon: BookOpen,
-        },
-        {
-          label: "Members",
-          path: "/admin/library/members",
-          icon: Users,
-        },
-        {
-          label: "Issue / Return",
-          path: "/admin/library/transactions",
-          icon: Library,
-        },
-        {
-          label: "Fines",
-          path: "/admin/library/fines",
-          icon: Wallet,
-        },
-      ],
-    },
-
-    {
-      label: "Certificates & Awards",
-      icon: Award,
-      items: [
-        {
-          label: "Certificates",
-          path: "/admin/certificates",
-          icon: FileText,
-        },
-        {
-          label: "Awards",
-          path: "/admin/awards",
-          icon: Award,
-        },
-      ],
-    },
-
-    {
-      label: "Communication",
-      icon: MessageSquare,
-      items: [
-        {
-          label: "Announcements",
-          path: "/admin/communication/announcements",
-          icon: Bell,
-        },
-        {
-          label: "Notices",
-          path: "/admin/communication/notices",
-          icon: FileText,
-        },
-        {
-          label: "Notifications",
-          path: "/admin/communication/notifications",
-          icon: Bell,
-        },
-        {
-          label: "Messages",
-          path: "/admin/communication/messages",
-          icon: MessageSquare,
-        },
-      ],
-    },
-
-    {
-      label: "Reports",
-      icon: FileText,
-      items: [
-        {
-          label: "Academic Reports",
-          path: "/admin/reports/academic",
-          icon: GraduationCap,
-        },
-        {
-          label: "Attendance Reports",
-          path: "/admin/reports/attendance",
-          icon: ClipboardCheck,
-        },
-        {
-          label: "Fee Reports",
-          path: "/admin/reports/fees",
-          icon: Wallet,
-        },
-      ],
-    },
-
-    {
-      label: "Administration",
-      icon: ShieldCheck,
-      items: [
-        {
-          label: "Users",
-          path: "/admin/users",
-          icon: Users,
-        },
-        {
-          label: "Create / Edit User",
-          path: "/admin/users/create",
-          icon: UserCog,
-        },
-        {
-          label: "Roles & Permissions",
-          path: "/admin/roles-permissions",
-          icon: ShieldCheck,
-        },
-        {
-          label: "Notification Templates",
-          path: "/admin/notification-templates",
-          icon: Bell,
-        },
-        {
-          label: "System Settings",
-          path: "/admin/system-settings",
-          icon: Settings,
-        },
-        {
-          label: "Audit Log",
-          path: "/admin/audit-log",
-          icon: FileText,
-        },
-      ],
-    },
-  ],
-
-  teacher: [
-    {
-      label: "My Teaching",
-      icon: GraduationCap,
-      items: [
-        {
-          label: "My Classes",
-          path: "/teacher/classes",
-          icon: Users,
-        },
-        {
-          label: "My Students",
-          path: "/teacher/students",
-          icon: Users,
-        },
-        {
-          label: "Timetable",
-          path: "/teacher/timetable",
-          icon: CalendarDays,
-        },
-      ],
-    },
-
-    {
-      label: "Attendance",
-      icon: ClipboardCheck,
-      items: [
-        {
-          label: "Mark Attendance",
-          path: "/teacher/attendance",
-          icon: ClipboardCheck,
-        },
-        {
-          label: "Attendance History",
-          path: "/teacher/attendance/history",
-          icon: FileText,
-        },
-      ],
-    },
-
-    {
-      label: "Academics",
-      icon: BookOpen,
-      items: [
-        {
-          label: "Homework",
-          path: "/teacher/homework",
-          icon: FileText,
-        },
-        {
-          label: "Enter Marks",
-          path: "/teacher/marks",
-          icon: ClipboardCheck,
-        },
-        {
-          label: "Results",
-          path: "/teacher/results",
-          icon: GraduationCap,
-        },
-      ],
-    },
-
-    {
-      label: "Communication",
-      icon: MessageSquare,
-      items: [
-        {
-          label: "Announcements",
-          path: "/teacher/announcements",
-          icon: Bell,
-        },
-        {
-          label: "Messages",
-          path: "/teacher/messages",
-          icon: MessageSquare,
-        },
-      ],
-    },
-  ],
-
-  student: [
-    {
-      label: "My Academics",
-      icon: GraduationCap,
-      items: [
-        {
-          label: "My Classes",
-          path: "/student/classes",
-          icon: BookOpen,
-        },
-        {
-          label: "My Timetable",
-          path: "/student/timetable",
-          icon: CalendarDays,
-        },
-        {
-          label: "My Homework",
-          path: "/student/homework",
-          icon: FileText,
-        },
-      ],
-    },
-
-    {
-      label: "Attendance",
-      icon: ClipboardCheck,
-      items: [
-        {
-          label: "My Attendance",
-          path: "/student/attendance",
-          icon: ClipboardCheck,
-        },
-      ],
-    },
-
-    {
-      label: "Exams & Results",
-      icon: GraduationCap,
-      items: [
-        {
-          label: "Exams",
-          path: "/student/exams",
-          icon: FileText,
-        },
-        {
-          label: "My Results",
-          path: "/student/results",
-          icon: GraduationCap,
-        },
-      ],
-    },
-
-    {
-      label: "Communication",
-      icon: MessageSquare,
-      items: [
-        {
-          label: "Announcements",
-          path: "/student/announcements",
-          icon: Bell,
-        },
-        {
-          label: "Messages",
-          path: "/student/messages",
-          icon: MessageSquare,
-        },
-      ],
-    },
-  ],
-
-  parent: [
-    {
-      label: "My Children",
-      icon: Users,
-      items: [
-        {
-          label: "Children",
-          path: "/parent/children",
-          icon: Users,
-        },
-        {
-          label: "Student Profile",
-          path: "/parent/student-profile",
-          icon: UserCog,
-        },
-      ],
-    },
-
-    {
-      label: "Academics",
-      icon: GraduationCap,
-      items: [
-        {
-          label: "Timetable",
-          path: "/parent/timetable",
-          icon: CalendarDays,
-        },
-        {
-          label: "Homework",
-          path: "/parent/homework",
-          icon: FileText,
-        },
-        {
-          label: "Results",
-          path: "/parent/results",
-          icon: GraduationCap,
-        },
-      ],
-    },
-
-    {
-      label: "Attendance",
-      icon: ClipboardCheck,
-      items: [
-        {
-          label: "Attendance",
-          path: "/parent/attendance",
-          icon: ClipboardCheck,
-        },
-      ],
-    },
-
-    {
-      label: "Fees & Payments",
-      icon: Wallet,
-      items: [
-        {
-          label: "Fee Details",
-          path: "/parent/fees",
-          icon: Wallet,
-        },
-        {
-          label: "Payment History",
-          path: "/parent/payments",
-          icon: FileText,
-        },
-      ],
-    },
-
-    {
-      label: "Communication",
-      icon: MessageSquare,
-      items: [
-        {
-          label: "Announcements",
-          path: "/parent/announcements",
-          icon: Bell,
-        },
-        {
-          label: "Messages",
-          path: "/parent/messages",
-          icon: MessageSquare,
-        },
-      ],
-    },
-  ],
-};
-
-const roleInfo = {
-  admin: {
-    name: "Admin",
-    title: "Administrator",
-    initials: "A",
+const stats = [
+  {
+    title: "Total Students",
+    value: "1,248",
+    icon: Users,
+    description: "Active students",
   },
-  teacher: {
-    name: "Rahul Sharma",
-    title: "Teacher",
-    initials: "RS",
+  {
+    title: "Total Teachers",
+    value: "86",
+    icon: GraduationCap,
+    description: "Teaching staff",
   },
-  student: {
+  {
+    title: "Today's Attendance",
+    value: "94%",
+    icon: ClipboardCheck,
+    description: "Student attendance",
+  },
+  {
+    title: "Fee Collection",
+    value: "₹8.4L",
+    icon: IndianRupee,
+    description: "This academic year",
+  },
+];
+
+const recentAdmissions = [
+  {
     name: "Aarav Sharma",
-    title: "Student",
-    initials: "AS",
+    className: "Class 8",
+    section: "A",
+    date: "05 Oct 2026",
   },
-  parent: {
-    name: "Rajesh Sharma",
-    title: "Parent",
-    initials: "RS",
+  {
+    name: "Ananya Singh",
+    className: "Class 6",
+    section: "B",
+    date: "04 Oct 2026",
   },
-};
+  {
+    name: "Rohan Kumar",
+    className: "Class 9",
+    section: "A",
+    date: "03 Oct 2026",
+  },
+  {
+    name: "Priya Verma",
+    className: "Class 5",
+    section: "C",
+    date: "02 Oct 2026",
+  },
+];
 
-function DashboardLayout() {
-  /*
-   * TEMPORARY ROLE
-   *
-   * Change this value to test different sidebars:
-   *
-   * "admin"
-   * "teacher"
-   * "student"
-   * "parent"
-   *
-   * Later this will come from login/backend.
-   */
-  const currentRole: UserRole = "admin";
-
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const [openGroups, setOpenGroups] = useState<string[]>([]);
-
-  const menu = roleMenus[currentRole];
-  const user = roleInfo[currentRole];
-
-  const toggleGroup = (label: string) => {
-    setOpenGroups((current) =>
-      current.includes(label)
-        ? current.filter((item) => item !== label)
-        : [...current, label]
-    );
-  };
-
+export default function AdminDashboard() {
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="flex min-h-[calc(100vh-48px)] overflow-hidden rounded-2xl bg-white shadow-sm">
-        {/* Mobile Overlay */}
-        {sidebarOpen && (
-          <div
-            className="fixed inset-0 z-40 bg-black/30 lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
-        )}
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Admin Dashboard
+        </h1>
 
-        {/* Sidebar */}
-        <aside
-          className={`fixed inset-y-0 left-0 z-50 w-72 transform bg-[#27348b] text-white transition-transform duration-200 lg:static lg:translate-x-0 ${
-            sidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          {/* Logo */}
-          <div className="flex h-16 items-center justify-between border-b border-white/15 px-5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-                <School size={20} />
-              </div>
+        <p className="mt-1 text-sm text-gray-500">
+          Overview of your school's activities and performance.
+        </p>
+      </div>
 
-              <div>
-                <h1 className="text-base font-bold">School ERP</h1>
+      {/* Statistics */}
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
 
-                <p className="text-[10px] text-white/60">
-                  School Management System
-                </p>
+          return (
+            <div
+              key={stat.title}
+              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-500">
+                    {stat.title}
+                  </p>
+
+                  <p className="mt-2 text-2xl font-bold text-gray-900">
+                    {stat.value}
+                  </p>
+
+                  <p className="mt-1 text-xs text-gray-500">
+                    {stat.description}
+                  </p>
+                </div>
+
+                <div className="rounded-lg bg-blue-50 p-3">
+                  <Icon className="h-6 w-6 text-blue-600" />
+                </div>
               </div>
             </div>
+          );
+        })}
+      </div>
 
-            <button
-              onClick={() => setSidebarOpen(false)}
-              className="rounded-lg p-1 hover:bg-white/10 lg:hidden"
-            >
-              <X size={20} />
-            </button>
+      {/* Main Content */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        {/* Attendance Overview */}
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm xl:col-span-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                Attendance Overview
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Today's student attendance
+              </p>
+            </div>
+
+            <ClipboardCheck className="h-6 w-6 text-blue-600" />
           </div>
 
-          {/* Navigation */}
-          <nav className="h-[calc(100vh-64px)] overflow-y-auto px-3 py-4">
-            {/* Dashboard */}
-            <NavLink
-              to={
-                currentRole === "admin"
-                  ? "/dashboard"
-                  : currentRole === "teacher"
-                    ? "/teacherdashboard"
-                    : currentRole === "student"
-                      ? "/studentdashboard"
-                      : "/parentdashboard"
-              }
-              onClick={() => setSidebarOpen(false)}
-              className={({ isActive }) =>
-                `mb-3 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                  isActive
-                    ? "bg-white text-[#27348b]"
-                    : "text-white/80 hover:bg-white/10 hover:text-white"
-                }`
-              }
-            >
-              <LayoutDashboard size={18} />
-              Dashboard
-            </NavLink>
-
-            {/* Role-based Menu */}
-            <div className="space-y-1">
-              {menu.map((group) => {
-                const GroupIcon = group.icon;
-                const isOpen = openGroups.includes(group.label);
-
-                return (
-                  <div key={group.label}>
-                    <button
-                      onClick={() => toggleGroup(group.label)}
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-left text-sm font-medium text-white/80 hover:bg-white/10 hover:text-white"
-                    >
-                      <span className="flex items-center gap-3">
-                        <GroupIcon size={18} />
-                        {group.label}
-                      </span>
-
-                      <span
-                        className={`text-xs transition-transform ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      >
-                        ▼
-                      </span>
-                    </button>
-
-                    {isOpen && (
-                      <div className="ml-4 border-l border-white/15 pl-3">
-                        {group.items.map((item) => {
-                          const ItemIcon = item.icon;
-
-                          return (
-                            <NavLink
-                              key={item.path}
-                              to={item.path}
-                              onClick={() => setSidebarOpen(false)}
-                              className={({ isActive }) =>
-                                `my-1 flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs transition ${
-                                  isActive
-                                    ? "bg-white/15 font-semibold text-white"
-                                    : "text-white/65 hover:bg-white/10 hover:text-white"
-                                }`
-                              }
-                            >
-                              <ItemIcon size={15} />
-                              {item.label}
-                            </NavLink>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+          <div className="mt-6">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">Present</span>
+              <span className="font-semibold text-gray-900">94%</span>
             </div>
-          </nav>
-        </aside>
 
-        {/* Main Content */}
-        <div className="flex min-w-0 flex-1 flex-col">
-          {/* Header */}
-          <header className="flex h-16 shrink-0 items-center justify-between border-b bg-white px-5 lg:px-6">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 lg:hidden"
-              >
-                <Menu size={21} />
-              </button>
+            <div className="mt-2 h-3 overflow-hidden rounded-full bg-gray-100">
+              <div
+                className="h-full rounded-full bg-blue-600"
+                style={{ width: "94%" }}
+              />
+            </div>
 
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800">
-                  School ERP
-                </h2>
+            <div className="mt-4 grid grid-cols-3 gap-4">
+              <div className="rounded-lg bg-gray-50 p-4">
+                <p className="text-xs text-gray-500">Present</p>
+                <p className="mt-1 text-lg font-semibold text-gray-900">
+                  1,173
+                </p>
+              </div>
 
-                <p className="hidden text-xs text-gray-500 sm:block">
-                  Delhi Public School
+              <div className="rounded-lg bg-gray-50 p-4">
+                <p className="text-xs text-gray-500">Absent</p>
+                <p className="mt-1 text-lg font-semibold text-gray-900">
+                  55
+                </p>
+              </div>
+
+              <div className="rounded-lg bg-gray-50 p-4">
+                <p className="text-xs text-gray-500">Leave</p>
+                <p className="mt-1 text-lg font-semibold text-gray-900">
+                  20
                 </p>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div className="flex items-center gap-4">
-              <button className="relative rounded-lg p-2 text-gray-500 hover:bg-gray-100">
-                <Bell size={19} />
+        {/* Quick Actions */}
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Quick Actions
+          </h2>
 
-                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-red-500" />
-              </button>
+          <div className="mt-5 space-y-3">
+            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+              <UserPlus className="h-5 w-5 text-blue-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Add Student
+              </span>
+            </button>
 
-              <div className="flex items-center gap-3 border-l pl-4">
-                <div className="hidden text-right sm:block">
-                  <p className="text-sm font-semibold text-gray-800">
-                    {user.name}
-                  </p>
+            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+              <GraduationCap className="h-5 w-5 text-blue-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Add Teacher
+              </span>
+            </button>
 
-                  <p className="text-xs text-gray-500">
-                    {user.title}
-                  </p>
-                </div>
+            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+              <BookOpen className="h-5 w-5 text-blue-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Manage Classes
+              </span>
+            </button>
 
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#27348b] text-xs font-bold text-white">
-                  {user.initials}
-                </div>
-              </div>
-            </div>
-          </header>
+            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+              <CalendarDays className="h-5 w-5 text-blue-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Academic Calendar
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
 
-          {/* Page */}
-          <main className="flex-1 overflow-auto bg-gray-100 p-5 lg:p-8">
-            <div className="mx-auto max-w-[1500px]">
-              <Outlet />
-            </div>
-          </main>
+      {/* Recent Admissions */}
+      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              Recent Admissions
+            </h2>
+
+            <p className="mt-1 text-sm text-gray-500">
+              Recently admitted students
+            </p>
+          </div>
+
+          <FileText className="h-6 w-6 text-blue-600" />
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Student
+                </th>
+
+                <th className="px-6 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Class
+                </th>
+
+                <th className="px-6 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Section
+                </th>
+
+                <th className="px-6 py-3 text-xs font-semibold uppercase text-gray-500">
+                  Admission Date
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-gray-200">
+              {recentAdmissions.map((student) => (
+                <tr key={student.name} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                    {student.name}
+                  </td>
+
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {student.className}
+                  </td>
+
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {student.section}
+                  </td>
+
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {student.date}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   );
 }
-
-export default DashboardLayout;

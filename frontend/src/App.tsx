@@ -19,18 +19,22 @@ import Users from "./pages/admin/Users";
 import MainHeader from "./layouts/mainHeader";
 import SimpleHeader from "./layouts/simpleHeader";
 import Library from "./pages/library";
+import Students from "./pages/admin/Students";
+import Admissions from "./pages/admin/Admissions";
+import StudentProfile from "./pages/admin/StudentProfile";
+import StudentDocuments from "./pages/admin/StudentDocuments";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Public Authentication & Header Layout Routes */}
-        <Route path="login" element={<Login />} />
+        <Route path="/" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/mainHeader" element={<MainHeader />} />
         <Route path="/simpleHeader" element={<SimpleHeader />} />
-          <Route path="/" element={<Library />} />
+          <Route path="/library" element={<Library />} />
       
 
         {/* Dashboard Layout & Role-Based Views */}
@@ -39,6 +43,22 @@ function App() {
           <Route path="/teacherdashboard" element={<TeacherDashboard />} />
           <Route path="/studentdashboard" element={<StudentDashboard />} />
           <Route path="/parentdashboard" element={<ParentDashboard />} />
+          
+           {/* Student Management */}
+  <Route path="/admin/students" element={<Students />} />
+<Route path="/admin/admissions" element={<Admissions />} />
+    <Route path="/admin/student-profile" element={<StudentProfile />} />
+    <Route
+  path="/admin/student-documents"
+  element={<StudentDocuments />}
+/>
+<Route
+  path="/admin/student-profile/:studentId"
+  element={<StudentProfile />}
+/>
+  
+
+
         </Route>
 
         {/* Admin Management Sub-Routes */}
@@ -50,6 +70,7 @@ function App() {
         <Route path="/admin/holidays-calendar" element={<HolidaysCalendar />} />
         <Route path="/admin/grading-exam-settings" element={<GradingExamSettings />} />
         <Route path="/admin/users" element={<Users />} />
+        
       </Routes>
     </BrowserRouter>
   );
