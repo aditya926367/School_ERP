@@ -202,22 +202,22 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       items: [
         {
           label: "Books",
-          path: "/admin/books",
+          path: "/books",
           icon: Library,
         },
         {
           label: "Members",
-          path: "/admin/library-members",
+          path: "/members",
           icon: Users,
         },
         {
-          label: "Issue / Return",
-          path: "/admin/issue-return",
+          label: "issue / Return",
+          path: "/issueReturns",
           icon: BookMarked,
         },
         {
           label: "Fines",
-          path: "/admin/library-fines",
+          path: "/fines",
           icon: WalletCards,
         },
       ],
