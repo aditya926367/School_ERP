@@ -28,8 +28,8 @@ import MyHomework from "./pages/student/MyHomework";
 import MyAttendance from "./pages/student/MyAttendance";
 import MyExams from "./pages/student/MyExams";
 import MyResults from "./pages/Student/MyResults.tsx";
-
-
+import Announcements from "./pages/student/Announcements";
+import Messages from "./pages/student/Messages";
 // Keep this import only if this file exists in your project.
 // import StudentProfile from "./pages/admin/StudentProfile";
 
@@ -67,7 +67,8 @@ function App() {
           <Route path="/student/attendance" element={<MyAttendance />} />
           <Route path="/student/exams" element={<MyExams />} />
           <Route path="/student/results" element={<MyResults />} />
-
+          <Route path="/student/announcements" element={<Announcements />} />
+          <Route path="/student/messages" element={<Messages />} />
           <Route
             path="/parentdashboard"
             element={<ParentDashboard />}
