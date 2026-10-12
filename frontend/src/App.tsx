@@ -26,16 +26,26 @@ import HolidaysCalendar from "./pages/admin/HolidaysCalendar";
 import GradingExamSettings from "./pages/admin/GradingExamSettings";
 import Users from "./pages/admin/Users";
 
-// Student Management Pages
+// Student Management Pages (admin side)
 import Students from "./pages/admin/Students";
 import Admissions from "./pages/admin/Admissions";
 import StudentDocuments from "./pages/admin/StudentDocuments";
 
-// Library Pages
+// Library Pages (aapka)
 import Books from "./pages/admin/library/books";
 import Members from "./pages/admin/library/Members";
 import IssueReturn from "./pages/admin/library/IssueReturn";
 import Fines from "./pages/admin/library/Fines";
+
+// Student Pages (colleague ka)
+import MyClasses from "./pages/Student/MyClasses";
+import MyTimetable from "./pages/Student/MyTimetable";
+import MyHomework from "./pages/Student/MyHomework";
+import MyAttendance from "./pages/Student/MyAttendance";
+import MyExams from "./pages/Student/MyExams";
+import MyResults from "./pages/Student/MyResults";
+import Announcements from "./pages/Student/Announcements";
+import Messages from "./pages/Student/Messages";
 
 function App() {
   return (
@@ -50,10 +60,21 @@ function App() {
 
         {/* Protected Dashboard Layout Routes */}
         <Route element={<DashboardLayout />}>
+          {/* Dashboards */}
           <Route path="/admindashboard" element={<AdminDashboard />} />
           <Route path="/teacherdashboard" element={<TeacherDashboard />} />
           <Route path="/studentdashboard" element={<StudentDashboard />} />
           <Route path="/parentdashboard" element={<ParentDashboard />} />
+
+          {/* Student pages (colleague) */}
+          <Route path="/student/classes" element={<MyClasses />} />
+          <Route path="/student/timetable" element={<MyTimetable />} />
+          <Route path="/student/homework" element={<MyHomework />} />
+          <Route path="/student/attendance" element={<MyAttendance />} />
+          <Route path="/student/exams" element={<MyExams />} />
+          <Route path="/student/results" element={<MyResults />} />
+          <Route path="/student/announcements" element={<Announcements />} />
+          <Route path="/student/messages" element={<Messages />} />
 
           {/* Admin Management */}
           <Route path="/admin/school-profile" element={<SchoolProfile />} />
@@ -64,16 +85,17 @@ function App() {
           <Route path="/admin/holidays-calendar" element={<HolidaysCalendar />} />
           <Route path="/admin/grading-exam-settings" element={<GradingExamSettings />} />
           <Route path="/admin/users" element={<Users />} />
-            <Route path="/library" element={<LibraryDashboard />} />
+
+          {/* Library / Fees dashboards */}
+          <Route path="/library" element={<LibraryDashboard />} />
           <Route path="/fees" element={<FeesDashboard />} />
 
-          {/* Student Management */}
+          {/* Student Management (admin side) */}
           <Route path="/admin/students" element={<Students />} />
           <Route path="/admin/admissions" element={<Admissions />} />
           <Route path="/admin/student-documents" element={<StudentDocuments />} />
 
-          {/* Library */}
-        
+          {/* Library pages (aapka) */}
           <Route path="/books" element={<Books />} />
           <Route path="/members" element={<Members />} />
           <Route path="/issueReturns" element={<IssueReturn />} />
