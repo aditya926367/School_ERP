@@ -113,8 +113,8 @@ export default function MainHeader() {
 
       {/* ================= HEADER ================= */}
       {/* NOTE: "fixed" hata diya. Layout khud header ko upar rakhta hai. */}
-      <header className="relative z-[50] h-[52px] shrink-0 border-b border-gray-200 bg-white">
-        <div className="flex h-full items-center justify-between pl-5 pr-8">
+<header className="fixed left-0 right-0 top-0 z-[50] h-[72px] shrink-0 border-b border-gray-200 bg-white">        
+  <div className="flex h-full items-center justify-between pl-5 pr-8">
           {/* LEFT SIDE */}
           <div className="flex items-center gap-2">
             {/* Logo (baad mein <img src="/logo.png" /> laga dena) */}
