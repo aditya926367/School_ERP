@@ -33,6 +33,18 @@ import Messages from "./pages/student/Messages";
 // Keep this import only if this file exists in your project.
 // import StudentProfile from "./pages/admin/StudentProfile";
 
+//Teacher pages
+import TeacherMyClasses from "./pages/teacher/MyClasses";
+import TeacherMyStudents from "./pages/teacher/MyStudents";
+import TeacherMyTimetable from "./pages/teacher/MyTimetable";
+import TeacherMarkAttendance from "./pages/teacher/MarkAttendance";
+import TeacherAttendanceHistory from "./pages/teacher/AttendanceHistory";
+import TeacherHomework from "./pages/teacher/Homework";
+import TeacherEnterMarks from "./pages/teacher/EnterMarks";
+import TeacherResults from "./pages/teacher/Results";
+import TeacherAnnouncements from "./pages/teacher/Announcements";
+import TeacherMessages from "./pages/teacher/Messages";
+
 import MainHeader from "./layouts/mainHeader";
 import SimpleHeader from "./layouts/simpleHeader";
 import LibraryDashboard from "./pages/libraryDashboard";
@@ -60,6 +72,8 @@ function App() {
             path="/teacherdashboard"
             element={<TeacherDashboard />}
           />
+          //student pages
+
           <Route path="/studentdashboard" element={<StudentDashboard />}/>
           <Route path="/student/classes" element={<MyClasses />} />
           <Route path="/student/timetable" element={<MyTimetable />} />
@@ -69,6 +83,20 @@ function App() {
           <Route path="/student/results" element={<MyResults />} />
           <Route path="/student/announcements" element={<Announcements />} />
           <Route path="/student/messages" element={<Messages />} />
+          
+          //teacher pages
+          <Route path="/teacher/classes" element={<TeacherMyClasses />} />
+          <Route path="/teacher/students" element={<TeacherMyStudents />} />
+          <Route path="/teacher/timetable" element={<TeacherMyTimetable />} />
+          <Route path="/teacher/mark-attendance" element={<TeacherMarkAttendance />} />
+          <Route path="/teacher/attendance-history" element={<TeacherAttendanceHistory />} />
+          <Route path="/teacher/homework" element={<TeacherHomework />} />
+          <Route path="/teacher/enter-marks" element={<TeacherEnterMarks />} />
+          <Route path="/teacher/results" element={<TeacherResults />} />
+          <Route path="/teacher/announcements" element={<TeacherAnnouncements />} />
+          <Route path="/teacher/messages" element={<TeacherMessages />} />  
+
+
           <Route
             path="/parentdashboard"
             element={<ParentDashboard />}

@@ -313,81 +313,93 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
     },
   ],
 
-  teacher: [
-    {
-      title: "My Teaching",
-      items: [
-        {
-          label: "My Classes",
-          path: "/teacher/classes",
-          icon: GraduationCap,
-        },
-        {
-          label: "My Students",
-          path: "/teacher/students",
-          icon: Users,
-        },
-        {
-          label: "Timetable",
-          path: "/teacher/timetable",
-          icon: Clock3,
-        },
-      ],
-    },
+teacher: [
+  {
+    title: "Overview",
+    items: [
+      {
+        label: "Dashboard",
+        path: "/teacherdashboard",
+        icon: LayoutDashboard,
+      },
+    ],
+  },
 
-    {
-      title: "Attendance",
-      items: [
-        {
-          label: "Mark Attendance",
-          path: "/teacher/attendance",
-          icon: ClipboardCheck,
-        },
-        {
-          label: "Attendance History",
-          path: "/teacher/attendance-history",
-          icon: CalendarCheck,
-        },
-      ],
-    },
+  {
+    title: "My Teaching",
+    items: [
+      {
+        label: "My Classes",
+        path: "/teacher/classes",
+        icon: GraduationCap,
+      },
+      {
+        label: "My Students",
+        path: "/teacher/students",
+        icon: Users,
+      },
+      {
+        label: "Timetable",
+        path: "/teacher/timetable",
+        icon: Clock3,
+      },
+    ],
+  },
 
-    {
-      title: "Academics",
-      items: [
-        {
-          label: "Homework",
-          path: "/teacher/homework",
-          icon: BookOpen,
-        },
-        {
-          label: "Enter Marks",
-          path: "/teacher/marks",
-          icon: NotebookTabs,
-        },
-        {
-          label: "Results",
-          path: "/teacher/results",
-          icon: FileText,
-        },
-      ],
-    },
+  {
+    title: "Attendance",
+    items: [
+      {
+        label: "Mark Attendance",
+        path: "/teacher/mark-attendance",
+        icon: ClipboardCheck,
+      },
+      {
+        label: "Attendance History",
+        path: "/teacher/attendance-history",
+        icon: CalendarCheck,
+      },
+    ],
+  },
 
-    {
-      title: "Communication",
-      items: [
-        {
-          label: "Announcements",
-          path: "/teacher/announcements",
-          icon: Megaphone,
-        },
-        {
-          label: "Messages",
-          path: "/teacher/messages",
-          icon: MessageSquare,
-        },
-      ],
-    },
-  ],
+  {
+    title: "Academics",
+    items: [
+      {
+        label: "Homework",
+        path: "/teacher/homework",
+        icon: BookOpen,
+      },
+      {
+        label: "Enter Marks",
+        path: "/teacher/enter-marks",
+        icon: NotebookTabs,
+      },
+      {
+        label: "Results",
+        path: "/teacher/results",
+        icon: FileText,
+      },
+    ],
+  },
+
+  {
+    title: "Communication",
+    items: [
+      {
+        label: "Announcements",
+        path: "/teacher/announcements",
+        icon: Megaphone,
+      },
+      {
+        label: "Messages",
+        path: "/teacher/messages",
+        icon: MessageSquare,
+      },
+    ],
+  },
+],
+
 
   student: [
     {
