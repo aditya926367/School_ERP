@@ -2,44 +2,54 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaChevronRight } from "react-icons/fa";
 
-// One menu item = a text, an icon and a page to open
 export type MenuItem = {
   label: string;
   icon: ReactNode;
   path: string;
+  hasArrow?: boolean; // true = right side par ">" dikhega
 };
 
 export default function Sidebar({ items }: { items: MenuItem[] }) {
-  const navigate = useNavigate(); // used to go to another page
-
-  // true = small sidebar (only icons), false = full sidebar
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
 
   return (
     <aside
-      className={`shrink-0 bg-white border-r border-gray-200 ${
-        collapsed ? "w-[60px]" : "w-[220px]"
+      className={`shrink-0 h-full bg-white flex flex-col transition-all duration-200 ${
+        collapsed ? "w-[60px]" : "w-[235px]"
       }`}
     >
       {/* Hamburger button */}
-      <div className="flex justify-end px-4 py-3">
-        <button onClick={() => setCollapsed(!collapsed)} className="text-[#2a2a63]">
+      <div className="flex justify-end px-5 py-3">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="text-[18px] text-[#2a2a63]"
+          aria-label="Toggle sidebar"
+        >
           <FaBars />
         </button>
       </div>
 
-      {/* Menu items: one button for each item in the array */}
-      <ul>
+      {/* Menu items */}
+      <ul className="flex-1 overflow-y-auto">
         {items.map((item) => (
-          <li key={item.label} className="border-b border-gray-200">
+          <li key={item.label} className="mx-1 border-b border-gray-200">
             <button
               onClick={() => navigate(item.path)}
-              className="flex w-full items-center gap-3 px-4 py-3 text-left text-[14px] text-[#2a2a63] hover:bg-[#f4f7fe]"
+              className="flex w-full items-center gap-3 px-4 py-[11px] text-left text-[15px] text-[#2a2a63] hover:bg-[#f4f7fe]"
             >
-              <span className="text-[16px]">{item.icon}</span>
-              {!collapsed && <span>{item.label}</span>}
+              <span className="text-[16px] shrink-0">{item.icon}</span>
+
+              {!collapsed && (
+                <>
+                  <span className="flex-1">{item.label}</span>
+                  {item.hasArrow && (
+                    <FaChevronRight className="text-[11px] text-[#2a2a63]" />
+                  )}
+                </>
+              )}
             </button>
           </li>
         ))}
