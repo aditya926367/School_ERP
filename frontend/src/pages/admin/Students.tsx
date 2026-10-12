@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+
 import type { FormEvent, ReactNode } from "react";
 import {
   Search,
@@ -144,7 +145,6 @@ const initialStudents: Student[] = [
     documents: ["Birth Certificate", "Previous Marksheet"],
   },
 ];
-
 const inputClass =
   "mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 const buttonClass =
@@ -481,8 +481,20 @@ export default function Students() {
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-1">
-                      <button title="View full profile" onClick={() => { setSelectedStudentId(student.id); setActiveTab("Overview"); }} className="rounded-md p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600"><Eye size={17} /></button>
-                      <button title="Edit student" onClick={() => openEditForm(student)} className="rounded-md p-2 text-gray-500 hover:bg-amber-50 hover:text-amber-600"><Pencil size={17} /></button>
+
+<button
+  type="button"
+  onClick={() => {
+    setSelectedStudentId(student.id);
+    setActiveTab("Overview");
+    setShowForm(false);
+  }}
+  title="View Student Profile"
+  className="rounded-md p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600"
+>
+  <Eye size={18} />
+</button>
+                     <button title="Edit student" onClick={() => openEditForm(student)} className="rounded-md p-2 text-gray-500 hover:bg-amber-50 hover:text-amber-600"><Pencil size={17} /></button>
                       <button title="Print profile" onClick={() => printStudent(student)} className="rounded-md p-2 text-gray-500 hover:bg-gray-100"><Printer size={17} /></button>
                     </div>
                   </td>

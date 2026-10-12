@@ -1,543 +1,276 @@
-
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   BookOpen,
-  CalendarDays,
-  Clock3,
+  Clock,
   GraduationCap,
-  Users,
-  ChevronRight,
-  ChevronLeft,
+  MapPin,
   UserRound,
-  CheckCircle2,
+  X,
+  Search,
 } from "lucide-react";
 
-type ClassSubject = {
+type Subject = {
   id: number;
   name: string;
   code: string;
   teacher: string;
   room: string;
-  schedule: string;
+  periodsPerWeek: number;
+  description: string;
   color: string;
-  initials: string;
 };
 
-const subjects: ClassSubject[] = [
+const subjects: Subject[] = [
   {
     id: 1,
     name: "Mathematics",
     code: "MAT101",
-    teacher: "Mr. Rajesh Verma",
+    teacher: "Mrs. Priya Sharma",
     room: "Room 101",
-    schedule: "Mon, Wed, Fri",
-    color: "bg-blue-50 text-blue-600",
-    initials: "MA",
+    periodsPerWeek: 5,
+    description: "Algebra, geometry, statistics, and problem-solving.",
+    color: "bg-blue-100 text-blue-700",
   },
   {
     id: 2,
     name: "Science",
-    code: "SCI102",
-    teacher: "Mrs. Priya Singh",
+    code: "SCI101",
+    teacher: "Mr. Rahul Verma",
     room: "Science Lab",
-    schedule: "Mon, Tue, Thu",
-    color: "bg-emerald-50 text-emerald-600",
-    initials: "SC",
+    periodsPerWeek: 4,
+    description: "Physics, chemistry, biology, and practical learning.",
+    color: "bg-emerald-100 text-emerald-700",
   },
   {
     id: 3,
     name: "English",
-    code: "ENG103",
-    teacher: "Ms. Neha Sharma",
-    room: "Room 104",
-    schedule: "Tue, Wed, Fri",
-    color: "bg-violet-50 text-violet-600",
-    initials: "EN",
+    code: "ENG101",
+    teacher: "Mrs. Neha Singh",
+    room: "Room 103",
+    periodsPerWeek: 4,
+    description: "Grammar, reading, writing, and communication skills.",
+    color: "bg-purple-100 text-purple-700",
   },
   {
     id: 4,
     name: "Social Science",
-    code: "SST104",
+    code: "SOC101",
     teacher: "Mr. Amit Kumar",
-    room: "Room 105",
-    schedule: "Mon, Thu, Fri",
-    color: "bg-amber-50 text-amber-600",
-    initials: "SS",
+    room: "Room 104",
+    periodsPerWeek: 3,
+    description: "History, geography, civics, and social studies.",
+    color: "bg-amber-100 text-amber-700",
   },
   {
     id: 5,
     name: "Computer Science",
-    code: "CS105",
-    teacher: "Mr. Vikash Singh",
+    code: "COM101",
+    teacher: "Mr. Vikash Gupta",
     room: "Computer Lab",
-    schedule: "Tue, Thu",
-    color: "bg-pink-50 text-pink-600",
-    initials: "CS",
+    periodsPerWeek: 3,
+    description: "Computer fundamentals, programming, and digital skills.",
+    color: "bg-cyan-100 text-cyan-700",
   },
   {
     id: 6,
     name: "Hindi",
-    code: "HIN106",
-    teacher: "Mrs. Sunita Kumari",
+    code: "HIN101",
+    teacher: "Mrs. Sunita Devi",
     room: "Room 102",
-    schedule: "Wed, Thu, Sat",
-    color: "bg-cyan-50 text-cyan-600",
-    initials: "HI",
+    periodsPerWeek: 3,
+    description: "Hindi grammar, literature, reading, and writing.",
+    color: "bg-rose-100 text-rose-700",
   },
 ];
 
-const pad = (value: number) => String(value).padStart(2, "0");
-
-function toDateKey(date: Date) {
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate(),
-  )}`;
-}
-
-function formatLongDate(date: Date) {
-  return date.toLocaleDateString("en-IN", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-function formatShortDate(date: Date) {
-  return date.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function getSubjectsForDay(date: Date) {
-  const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const dayName = dayNames[date.getDay()];
-
-  return subjects.filter((subject) =>
-    subject.schedule.split(", ").includes(dayName),
-  );
-}
-
 export default function MyClasses() {
+  const [search, setSearch] = useState("");
   const [selectedSubject, setSelectedSubject] =
-    useState<ClassSubject | null>(null);
+    useState<Subject | null>(null);
 
-  const [selectedDate, setSelectedDate] = useState(() => new Date());
-
-  const [month, setMonth] = useState(
-    () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  const filteredSubjects = subjects.filter((subject) =>
+    `${subject.name} ${subject.code} ${subject.teacher}`
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
-
-  const todayKey = toDateKey(new Date());
-  const selectedDateKey = toDateKey(selectedDate);
-
-  const year = month.getFullYear();
-  const monthIndex = month.getMonth();
-
-  const monthName = month.toLocaleDateString("en-IN", {
-    month: "long",
-    year: "numeric",
-  });
-
-  const calendarDays = useMemo(() => {
-    const firstWeekday = new Date(year, monthIndex, 1).getDay();
-    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-
-    return [
-      ...Array.from({ length: firstWeekday }, () => null),
-      ...Array.from({ length: daysInMonth }, (_, index) => index + 1),
-    ];
-  }, [year, monthIndex]);
-
-  const selectedDaySubjects = useMemo(
-    () => getSubjectsForDay(selectedDate),
-    [selectedDate],
-  );
-
-  function goToToday() {
-    const currentDate = new Date();
-    setSelectedDate(currentDate);
-    setMonth(
-      new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
-    );
-  }
-
-  function selectCalendarDate(day: number) {
-    const date = new Date(year, monthIndex, day);
-    setSelectedDate(date);
-  }
 
   return (
-    <div className="space-y-6">
-      {/* Page heading */}
-      <div>
-        <p className="mb-2 text-sm text-slate-500">
-          Student Portal / My Academics / My Classes
-        </p>
-
-        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-          My Classes
-        </h1>
-
-        <p className="mt-2 text-sm text-slate-500 sm:text-base">
-          View your subjects, teachers, classrooms, and weekly class schedule.
-        </p>
-      </div>
-
-      {/* Student class information */}
-      <section className="rounded-2xl bg-gradient-to-r from-indigo-700 to-violet-600 p-5 text-white shadow-sm sm:p-6">
-        <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-          <div>
-            <div className="flex items-center gap-2 text-indigo-100">
-              <GraduationCap size={20} />
-              <span className="text-sm font-medium">
-                Current Academic Year
-              </span>
-            </div>
-
-            <h2 className="mt-3 text-2xl font-bold">
-              Class 10 - Section A
-            </h2>
-
-            <p className="mt-2 text-sm text-indigo-100">
-              Academic Year 2026–2027
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-white/20 bg-white/10 p-4">
-              <BookOpen size={20} />
-              <p className="mt-2 text-2xl font-bold">{subjects.length}</p>
-              <p className="text-xs text-indigo-100">Subjects</p>
-            </div>
-
-            <div className="rounded-xl border border-white/20 bg-white/10 p-4">
-              <Users size={20} />
-              <p className="mt-2 text-2xl font-bold">35</p>
-              <p className="text-xs text-indigo-100">Classmates</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Calendar */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-          <div>
-            <div className="flex items-center gap-2">
-              <CalendarDays size={20} className="text-indigo-600" />
-              <h2 className="font-semibold text-slate-900">
-                Class Calendar
-              </h2>
-            </div>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Select a date to view the subjects scheduled for that weekday.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={goToToday}
-            className="w-fit rounded-lg border border-indigo-200 px-3 py-2 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-50"
-          >
-            Go to Today
-          </button>
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      <div className="mx-auto max-w-7xl space-y-6">
+        {/* Page heading */}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            My Classes
+          </h1>
+          <p className="mt-1 text-sm text-gray-500">
+            View your enrolled subjects, teachers, and classroom details.
+          </p>
         </div>
 
-        {/* Month navigation */}
-        <div className="mx-auto mt-5 flex max-w-md items-center justify-between">
-          <button
-            type="button"
-            aria-label="Previous month"
-            onClick={() =>
-              setMonth(new Date(year, monthIndex - 1, 1))
-            }
-            className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50"
-          >
-            <ChevronLeft size={18} />
-          </button>
-
-          <h3 className="text-sm font-bold text-slate-800 sm:text-base">
-            {monthName}
-          </h3>
-
-          <button
-            type="button"
-            aria-label="Next month"
-            onClick={() =>
-              setMonth(new Date(year, monthIndex + 1, 1))
-            }
-            className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-50"
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
-
-        {/* Calendar grid */}
-        <div className="mx-auto mt-3 max-w-md">
-          <div className="grid grid-cols-7 gap-1 text-center">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(
-              (day) => (
-                <div
-                  key={day}
-                  className="py-2 text-[10px] font-semibold text-slate-400 sm:text-xs"
-                >
-                  {day}
-                </div>
-              ),
+        {/* Summary cards */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <SummaryCard
+            icon={<BookOpen size={22} />}
+            label="Enrolled Subjects"
+            value={String(subjects.length)}
+          />
+          <SummaryCard
+            icon={<UserRound size={22} />}
+            label="Teachers"
+            value={String(new Set(subjects.map((s) => s.teacher)).size)}
+          />
+          <SummaryCard
+            icon={<Clock size={22} />}
+            label="Weekly Periods"
+            value={String(
+              subjects.reduce((total, subject) => total + subject.periodsPerWeek, 0)
             )}
-
-            {calendarDays.map((day, index) => {
-              if (day === null) {
-                return (
-                  <div
-                    key={`empty-${index}`}
-                    className="h-9 sm:h-10"
-                  />
-                );
-              }
-
-              const date = new Date(year, monthIndex, day);
-              const dateKey = toDateKey(date);
-              const isSelected = selectedDateKey === dateKey;
-              const isToday = todayKey === dateKey;
-              const hasClasses = getSubjectsForDay(date).length > 0;
-
-              return (
-                <button
-                  key={dateKey}
-                  type="button"
-                  onClick={() => selectCalendarDate(day)}
-                  aria-pressed={isSelected}
-                  aria-label={formatLongDate(date)}
-                  className={`relative flex h-9 flex-col items-center justify-center rounded-lg text-xs transition sm:h-10 sm:text-sm ${
-                    isSelected
-                      ? "bg-indigo-600 font-bold text-white shadow-sm"
-                      : "text-slate-700 hover:bg-indigo-50"
-                  } ${
-                    isToday && !isSelected
-                      ? "font-bold ring-1 ring-inset ring-indigo-400"
-                      : ""
-                  }`}
-                >
-                  {day}
-
-                  {hasClasses && (
-                    <span
-                      className={`absolute bottom-1 h-1 w-1 rounded-full ${
-                        isSelected ? "bg-white" : "bg-emerald-500"
-                      }`}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          />
         </div>
 
-        <div className="mx-auto mt-4 flex max-w-md flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-100 pt-3 text-xs text-slate-500">
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-indigo-500" />
-            Selected date
-          </span>
-
-          <span className="inline-flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            Scheduled subjects
-          </span>
+        {/* Search */}
+        <div className="relative max-w-md">
+          <Search
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search subjects or teachers..."
+            className="w-full rounded-lg border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
         </div>
 
-        {/* Selected date information */}
-        <div className="mt-4 rounded-xl bg-indigo-50 p-4">
-          <p className="text-xs font-medium text-indigo-600">
-            Selected Date
-          </p>
-
-          <p className="mt-1 text-sm font-bold text-slate-900">
-            {formatLongDate(selectedDate)}
-          </p>
-
-          <p className="mt-1 text-xs text-slate-500">
-            {selectedDateKey === todayKey
-              ? "Today"
-              : selectedDateKey < todayKey
-                ? "Past date"
-                : "Future date"}
-            {" · "}
-            {selectedDaySubjects.length} scheduled subjects
-          </p>
-        </div>
-      </section>
-
-      {/* Enrolled subjects */}
-      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-        <h2 className="font-semibold text-slate-900">
-          Enrolled Subjects
-        </h2>
-
-        <p className="mt-1 text-sm text-slate-500">
-          {subjects.length} subjects enrolled
-        </p>
-      </section>
-
-      {/* Subject cards */}
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-        {subjects.map((subject) => (
-          <article
-            key={subject.id}
-            className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-indigo-200 hover:shadow-md"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div
-                className={`flex h-14 w-14 items-center justify-center rounded-2xl text-lg font-bold ${subject.color}`}
-              >
-                {subject.initials}
-              </div>
-
-              <span className="rounded-lg bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                Enrolled
-              </span>
-            </div>
-
-            <h3 className="mt-5 text-lg font-bold text-slate-900">
-              {subject.name}
-            </h3>
-
-            <p className="mt-1 text-xs font-medium uppercase tracking-wide text-slate-400">
-              {subject.code}
-            </p>
-
-            <div className="mt-5 space-y-3 border-t border-slate-100 pt-4">
-              <div className="flex items-center gap-3 text-sm text-slate-600">
-                <UserRound
-                  size={17}
-                  className="shrink-0 text-slate-400"
-                />
-                <span>{subject.teacher}</span>
-              </div>
-
-              <div className="flex items-center gap-3 text-sm text-slate-600">
-                <BookOpen
-                  size={17}
-                  className="shrink-0 text-slate-400"
-                />
-                <span>{subject.room}</span>
-              </div>
-
-              <div className="flex items-center gap-3 text-sm text-slate-600">
-                <CalendarDays
-                  size={17}
-                  className="shrink-0 text-slate-400"
-                />
-                <span>{subject.schedule}</span>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setSelectedSubject(subject)}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+        {/* Subject cards */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {filteredSubjects.map((subject) => (
+            <div
+              key={subject.id}
+              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
-              View Subject Details
-              <ChevronRight size={17} />
-            </button>
-          </article>
-        ))}
-      </section>
+              <div className="flex items-start justify-between gap-3">
+                <div className={`rounded-lg p-3 ${subject.color}`}>
+                  <BookOpen size={24} />
+                </div>
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
+                  {subject.code}
+                </span>
+              </div>
 
-      {/* Subject details dialog */}
-      {selectedSubject && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) {
-              setSelectedSubject(null);
-            }
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="subject-dialog-title"
-            className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div
-                className={`flex h-14 w-14 items-center justify-center rounded-xl text-lg font-bold ${selectedSubject.color}`}
-              >
-                {selectedSubject.initials}
+              <h2 className="mt-4 text-lg font-semibold text-gray-900">
+                {subject.name}
+              </h2>
+
+              <div className="mt-4 space-y-3 text-sm text-gray-600">
+                <InfoRow
+                  icon={<UserRound size={16} />}
+                  text={subject.teacher}
+                />
+                <InfoRow
+                  icon={<MapPin size={16} />}
+                  text={subject.room}
+                />
+                <InfoRow
+                  icon={<Clock size={16} />}
+                  text={`${subject.periodsPerWeek} periods per week`}
+                />
               </div>
 
               <button
                 type="button"
+                onClick={() => setSelectedSubject(subject)}
+                className="mt-5 w-full rounded-lg border border-blue-200 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:bg-blue-50"
+              >
+                View Subject Details
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {filteredSubjects.length === 0 && (
+          <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center">
+            <BookOpen className="mx-auto text-gray-400" size={32} />
+            <p className="mt-3 font-medium text-gray-800">
+              No subjects found
+            </p>
+            <p className="mt-1 text-sm text-gray-500">
+              Try searching with a different subject or teacher name.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Subject details modal */}
+      {selectedSubject && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={() => setSelectedSubject(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="subject-modal-title"
+            className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm font-medium text-blue-600">
+                  {selectedSubject.code}
+                </p>
+                <h2
+                  id="subject-modal-title"
+                  className="mt-1 text-xl font-bold text-gray-900"
+                >
+                  {selectedSubject.name}
+                </h2>
+              </div>
+              <button
+                type="button"
                 onClick={() => setSelectedSubject(null)}
                 aria-label="Close subject details"
-                className="rounded-lg px-3 py-2 text-slate-500 hover:bg-slate-100"
+                className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
               >
-                ✕
+                <X size={20} />
               </button>
             </div>
 
-            <h2
-              id="subject-dialog-title"
-              className="mt-4 text-xl font-bold text-slate-900"
-            >
-              {selectedSubject.name}
-            </h2>
-
-            <p className="mt-1 text-sm text-slate-500">
-              Subject Code: {selectedSubject.code}
+            <p className="mt-4 text-sm leading-6 text-gray-600">
+              {selectedSubject.description}
             </p>
 
-            <div className="mt-5 space-y-4">
-              <DetailRow
+            <div className="mt-5 space-y-4 rounded-xl bg-gray-50 p-4">
+              <InfoRow
                 icon={<UserRound size={18} />}
-                label="Subject Teacher"
-                value={selectedSubject.teacher}
+                text={`Teacher: ${selectedSubject.teacher}`}
               />
-
-              <DetailRow
-                icon={<BookOpen size={18} />}
-                label="Classroom"
-                value={selectedSubject.room}
+              <InfoRow
+                icon={<MapPin size={18} />}
+                text={`Classroom: ${selectedSubject.room}`}
               />
-
-              <DetailRow
-                icon={<CalendarDays size={18} />}
-                label="Weekly Schedule"
-                value={selectedSubject.schedule}
-              />
-
-              <DetailRow
-                icon={<Clock3 size={18} />}
-                label="Class"
-                value="See My Timetable for period timings"
+              <InfoRow
+                icon={<Clock size={18} />}
+                text={`${selectedSubject.periodsPerWeek} periods per week`}
               />
             </div>
 
             <button
               type="button"
               onClick={() => setSelectedSubject(null)}
-              className="mt-6 w-full rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
+              className="mt-5 w-full rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700"
             >
-              Close Details
+              Close
             </button>
           </div>
         </div>
       )}
-
-      <p className="text-center text-xs text-slate-400">
-        Demo data only · Connect to the school database for actual subjects
-        and enrollment.
-      </p>
     </div>
   );
 }
 
-function DetailRow({
+function SummaryCard({
   icon,
   label,
   value,
@@ -547,17 +280,29 @@ function DetailRow({
   value: string;
 }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="rounded-lg bg-slate-100 p-2 text-slate-600">
+    <div className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      <div className="rounded-lg bg-blue-50 p-3 text-blue-600">
         {icon}
       </div>
-
       <div>
-        <p className="text-xs text-slate-500">{label}</p>
-        <p className="mt-1 text-sm font-medium text-slate-800">
-          {value}
-        </p>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className="mt-1 text-2xl font-bold text-gray-900">{value}</p>
       </div>
+    </div>
+  );
+}
+
+function InfoRow({
+  icon,
+  text,
+}: {
+  icon: React.ReactNode;
+  text: string;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <span className="shrink-0 text-gray-400">{icon}</span>
+      <span>{text}</span>
     </div>
   );
 }
