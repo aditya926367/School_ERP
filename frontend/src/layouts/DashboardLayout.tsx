@@ -39,9 +39,11 @@ import {
   Building2,
   CalendarCheck,
   NotebookTabs,
+  Home,
+  Pencil
 } from "lucide-react";
 
-type UserRole = "admin" | "teacher" | "student" | "parent";
+type UserRole = "admin" | "teacher" | "student" | "parent" |"library";
 
 type MenuItem = {
   label: string;
@@ -87,6 +89,8 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
         },
       ],
     },
+
+
 
     {
       title: "Academics",
@@ -199,29 +203,40 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       ],
     },
 
-    {
+    // {
+    //   title: "Library",
+    //   items: [
+    //     {
+    //       label: "Books",
+    //       path: "/books",
+    //       icon: Library,
+    //     },
+    //     {
+    //       label: "Members",
+    //       path: "/members",
+    //       icon: Users,
+    //     },
+    //     {
+    //       label: "issue / Return",
+    //       path: "/issueReturns",
+    //       icon: BookMarked,
+    //     },
+    //     {
+    //       label: "Fines",
+    //       path: "/fines",
+    //       icon: WalletCards,
+    //     },
+    //   ],
+    // },
+
+        {
       title: "Library",
       items: [
-        {
-          label: "Books",
-          path: "/books",
-          icon: Library,
-        },
-        {
-          label: "Members",
-          path: "/members",
-          icon: Users,
-        },
-        {
-          label: "issue / Return",
-          path: "/issueReturns",
-          icon: BookMarked,
-        },
-        {
-          label: "Fines",
-          path: "/fines",
-          icon: WalletCards,
-        },
+        { label: "Home", path: "/library", icon: Home },
+        { label: "Library Setup", path: "/librarySetup", icon: Pencil },
+        { label: "Stock Verifications", path: "stockVerification", icon: ClipboardCheck },
+        { label: "Issue and Return", path: "issueReturns", icon: BookMarked },
+        { label: "Reports", path: "/libraryReports", icon: BarChart3 },
       ],
     },
 
@@ -527,6 +542,33 @@ teacher: [
       ],
     },
   ],
+
+
+  
+  library: [
+    {
+      title: "Library Management",
+      items: [
+        { label: "Home", path: "/librarydashboard", icon: Home },
+        { label: "Library Setup", path: "/books", icon: Pencil },
+        {
+          label: "Stock Verifications",
+          path: "stockVerification",
+          icon: ClipboardCheck,
+        },
+        {
+          label: "Issue and Return",
+          path: "/issueReturns",
+          icon: BookMarked,
+        },
+        {
+          label: "Reports",
+          path: "libraryReports",
+          icon: BarChart3,
+        },
+      ],
+    },
+  ],
 };
 
 const roleInfo = {
@@ -550,6 +592,11 @@ const roleInfo = {
     title: "Parent",
     initials: "RS",
   },
+    library: {
+    name: "Librarian",
+    title: "Library Management",
+    initials: "L",
+  },
 };
 
 const dashboardPaths: Record<UserRole, string> = {
@@ -557,6 +604,7 @@ const dashboardPaths: Record<UserRole, string> = {
   teacher: "/teacherdashboard",
   student: "/studentdashboard",
   parent: "/parentdashboard",
+  library: "/librarydashboard"
 };
 
 export default function DashboardLayout() {
@@ -574,6 +622,7 @@ export default function DashboardLayout() {
   if (path === "/studentdashboard" || path.startsWith("/student/")) {
     return "student";
   }
+  
 
   if (path === "/teacherdashboard" || path.startsWith("/teacher/")) {
     return "teacher";
@@ -586,6 +635,16 @@ export default function DashboardLayout() {
   if (path === "/admindashboard" || path.startsWith("/admin/")) {
     return "admin";
   }
+  // if(path ==="/librarydashboard" || path.startsWith("/library/")){
+  //   return "library";
+  // }
+  if (
+  path === "/libraryDashboard" ||
+  path === "/librarydashboard" ||
+  path.startsWith("/library/")
+) {
+  return "library";
+}
 
   return storedRole && roleMenus[storedRole] ? storedRole : "admin";
 })();
