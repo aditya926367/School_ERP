@@ -75,8 +75,7 @@ import TeacherMessages from "./pages/teacher/Messages";
 
 import MainHeader from "./layouts/mainHeader";
 import SimpleHeader from "./layouts/simpleHeader";
-import LibraryDashboard from "./pages/libraryDashboard";
-import FeesDashboard from "./pages/feesDashboard";
+
 
 import Children from "./pages/parent/Children";
 import Timetable from "./pages/parent/Timetable";
@@ -97,6 +96,20 @@ import Awards from "./pages/admin/certificates-awards/awards.tsx";
 import AdminAnnouncement from "./pages/admin/communication/announcements.tsx";
 import AdminNotices from "./pages/admin/communication/notices.tsx";
 import AdminMessages from "./pages/admin/communication/messages.tsx";
+
+
+
+//library
+import LibraryDashboard from "./pages/libraryDashboard";
+import FeesDashboard from "./pages/feesDashboard";
+import AuthorList from "./pages/admin/library/author.tsx";
+import ImportBookMaster from "./pages/admin/library/importBookMaster.tsx";
+import ChangeBookStatus from "./pages/admin/library/changeBookStatus.tsx";
+import BarcodeGenerator from "./pages/admin/library/barcodeGenerator.tsx";
+import StockVerification from "./pages/admin/library/stockVerification.tsx";
+import AcquireBook from "./pages/admin/library/aquireBook.tsx";
+import LibraryReports from "./pages/admin/library/libraryReports.tsx";
+import LibrarySetup from "./pages/admin/library/librarySetup.tsx";
 
 
 
@@ -195,9 +208,26 @@ function App() {
           <Route path="/admin/grading-exam-settings" element={<GradingExamSettings />} />
           <Route path="/admin/users" element={<Users />} />
 
-          {/* Library / Fees dashboards */}
-          <Route path="/library" element={<LibraryDashboard />} />
+          {/* Library dashboards */}
+          <Route path="/librarydashboard" element={<LibraryDashboard />} />
+
+          {/* Library pages () */}
+          <Route path="/books" element={<Books />} />
+          <Route path="/members" element={<Members />} />
+          <Route path="/issueReturns" element={<IssueReturn />} />
+          <Route path="/fines" element={<Fines />} />
           <Route path="/fees" element={<FeesDashboard />} />
+          <Route path="/authorList" element={<AuthorList />} />
+          <Route path="/importBookMaster" element={<ImportBookMaster />} />
+          <Route path="/changeBookStatus" element={<ChangeBookStatus />} />
+          <Route path="/barcodeGenerator" element={<BarcodeGenerator />} />
+          <Route path="/stockVerification" element={<StockVerification />} />
+          <Route path="/acquireBook" element={<AcquireBook />} />
+          <Route path="/libraryReports" element={<LibraryReports/>} />
+          <Route path="/librarySetup" element={<LibrarySetup/>} />
+
+
+
 
           {/* Student Management (admin side) */}
           <Route path="/admin/students" element={<Students />} />
@@ -235,28 +265,24 @@ function App() {
           {/* Add StudentProfile route here if its component exists */}
           <Route path="/admin/student-documents" element={<StudentDocuments />} />
 
-          {/* Library pages (aapka) */}
-          <Route path="/books" element={<Books />} />
-          <Route path="/members" element={<Members />} />
-          <Route path="/issueReturns" element={<IssueReturn />} />
-          <Route path="/fines" element={<Fines />} />
+
 
           //Parent dashboard route
           <Route path="/parent/children" element={<Children />} />
-          
-<Route path="/parent/timetable" element={<Timetable />} />
-<Route path="/parent/homework" element={<ParentHomework />} />
-<Route path="/parent/results" element={<ParentResults />} />
-<Route path="/parent/attendance" element={<ParentAttendance />} />
-<Route path="/parent/fee-details" element={<ParentFeeDetails />} />
-<Route path="/parent/payment-history" element={<ParentPaymentHistory />} />
-<Route path="/parent/announcements" element={<ParentAnnouncements />} />
-<Route path="/parent/messages" element={<ParentMessages />} />
-            {/* Certificates & Awards  */}  
+
+          <Route path="/parent/timetable" element={<Timetable />} />
+          <Route path="/parent/homework" element={<ParentHomework />} />
+          <Route path="/parent/results" element={<ParentResults />} />
+          <Route path="/parent/attendance" element={<ParentAttendance />} />
+          <Route path="/parent/fee-details" element={<ParentFeeDetails />} />
+          <Route path="/parent/payment-history" element={<ParentPaymentHistory />} />
+          <Route path="/parent/announcements" element={<ParentAnnouncements />} />
+          <Route path="/parent/messages" element={<ParentMessages />} />
+          {/* Certificates & Awards  */}
           <Route path="/certificates" element={<Certificates />} />
           <Route path="/awards" element={<Awards />} />
 
-            {/* Communicaton routes) */}  
+          {/* Communicaton routes) */}
           <Route path="/announcements" element={<AdminAnnouncement />} />
           <Route path="/notices" element={<AdminNotices />} />
           <Route path="/messages" element={<AdminMessages />} />
