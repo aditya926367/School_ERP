@@ -64,11 +64,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
           path: "/admin/school-profile",
           icon: School,
         },
-        {
-          label: "Campuses",
-          path: "/admin/campuses",
-          icon: Building2,
-        },
+      
         {
           label: "Academic Years",
           path: "/admin/academic-years",

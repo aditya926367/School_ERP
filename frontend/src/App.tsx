@@ -21,6 +21,20 @@ import Users from "./pages/admin/Users";
 import Students from "./pages/admin/Students";
 import Admissions from "./pages/admin/Admissions";
 import StudentDocuments from "./pages/admin/StudentDocuments";
+import AdminTimetable from "./pages/admin/AdminTimetable";
+import AdminExams from "./pages/admin/AdminExams";
+import AdminMarksGrades from "./pages/admin/AdminMarksGrades";
+import AdminResults from "./pages/admin/AdminResults";
+import StudentAttendance from "./pages/admin/StudentAttendance";
+import StaffAttendance from "./pages/admin/StaffAttendance";
+import AttendanceReports from "./pages/admin/AttendanceReports";
+import FeeStructure from "./pages/admin/FeeStructure";
+import FeeCollection from "./pages/admin/FeeCollection";
+import Receipts from "./pages/admin/Receipts";
+import PendingDues from "./pages/admin/PendingDues";
+import FinanceReports from "./pages/admin/FinanceReports";
+
+
 //student pages
 import MyClasses from "./pages/student/MyClasses";
 import MyTimetable from "./pages/student/MyTimetable";
@@ -123,6 +137,11 @@ function App() {
             path="/admin/class-subject-teacher"
             element={<ClassSubjectTeacherMapping />}
           />
+          <Route path="/admin/timetable" element={<AdminTimetable />} />
+          <Route path="/admin/exams" element={<AdminExams />} />
+          <Route path="/admin/marks-grades" element={<AdminMarksGrades />} />
+          <Route path="/admin/results" element={<AdminResults />} />
+          
           <Route
             path="/admin/holidays-calendar"
             element={<HolidaysCalendar />}
@@ -140,6 +159,31 @@ function App() {
             path="/admin/student-documents"
             element={<StudentDocuments />}
           />
+          <Route path="/admin/student-attendance" element={<StudentAttendance />} />
+          <Route path="/admin/staff-attendance" element={<StaffAttendance />} />
+          <Route path="/admin/attendance-reports" element={<AttendanceReports />} /> 
+          
+<Route
+  path="/admin/fee-structure"
+  element={<FeeStructure />}
+/>
+<Route
+  path="/admin/fee-collection"
+  element={<FeeCollection />}
+/>
+<Route
+  path="/admin/receipts"
+  element={<Receipts />}
+/>
+<Route
+  path="/admin/pending-dues"
+  element={<PendingDues />}
+/>
+<Route
+  path="/admin/finance-reports"
+  element={<FinanceReports />}
+/>
+ 
 
           {/* Add StudentProfile route here if its component exists */}
 
