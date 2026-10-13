@@ -46,6 +46,22 @@ import MyExams from "./pages/Student/MyExams";
 import MyResults from "./pages/Student/MyResults";
 import Announcements from "./pages/Student/Announcements";
 import Messages from "./pages/Student/Messages";
+//Teacher pages
+import TeacherMyClasses from "./pages/teacher/MyClasses";
+import TeacherMyStudents from "./pages/teacher/MyStudents";
+import TeacherMyTimetable from "./pages/teacher/MyTimetable";
+import TeacherMarkAttendance from "./pages/teacher/MarkAttendance";
+import TeacherAttendanceHistory from "./pages/teacher/AttendanceHistory";
+import TeacherHomework from "./pages/teacher/Homework";
+import TeacherEnterMarks from "./pages/teacher/EnterMarks";
+import TeacherResults from "./pages/teacher/Results";
+import TeacherAnnouncements from "./pages/teacher/Announcements";
+import TeacherMessages from "./pages/teacher/Messages";
+
+import MainHeader from "./layouts/mainHeader";
+import SimpleHeader from "./layouts/simpleHeader";
+import LibraryDashboard from "./pages/libraryDashboard";
+import FeesDashboard from "./pages/feesDashboard";
 
 function App() {
   return (
@@ -75,6 +91,24 @@ function App() {
           <Route path="/student/results" element={<MyResults />} />
           <Route path="/student/announcements" element={<Announcements />} />
           <Route path="/student/messages" element={<Messages />} />
+          
+          //teacher pages
+          <Route path="/teacher/classes" element={<TeacherMyClasses />} />
+          <Route path="/teacher/students" element={<TeacherMyStudents />} />
+          <Route path="/teacher/timetable" element={<TeacherMyTimetable />} />
+          <Route path="/teacher/mark-attendance" element={<TeacherMarkAttendance />} />
+          <Route path="/teacher/attendance-history" element={<TeacherAttendanceHistory />} />
+          <Route path="/teacher/homework" element={<TeacherHomework />} />
+          <Route path="/teacher/enter-marks" element={<TeacherEnterMarks />} />
+          <Route path="/teacher/results" element={<TeacherResults />} />
+          <Route path="/teacher/announcements" element={<TeacherAnnouncements />} />
+          <Route path="/teacher/messages" element={<TeacherMessages />} />  
+
+
+          <Route
+            path="/parentdashboard"
+            element={<ParentDashboard />}
+          />
 
           {/* Admin Management */}
           <Route path="/admin/school-profile" element={<SchoolProfile />} />
