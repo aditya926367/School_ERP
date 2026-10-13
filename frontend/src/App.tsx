@@ -62,16 +62,7 @@ import Members from "./pages/admin/library/Members";
 import IssueReturn from "./pages/admin/library/IssueReturn";
 import Fines from "./pages/admin/library/Fines";
 
-// Student Pages (colleague ka)
-import MyClasses from "./pages/Student/MyClasses";
-import MyTimetable from "./pages/Student/MyTimetable";
-import MyHomework from "./pages/Student/MyHomework";
-import MyAttendance from "./pages/Student/MyAttendance";
-import MyExams from "./pages/Student/MyExams";
-import MyResults from "./pages/Student/MyResults";
-import Announcements from "./pages/Student/Announcements";
-import Messages from "./pages/Student/Messages";
-//Teacher pages
+
 import TeacherMyClasses from "./pages/teacher/MyClasses";
 import TeacherMyStudents from "./pages/teacher/MyStudents";
 import TeacherMyTimetable from "./pages/teacher/MyTimetable";
