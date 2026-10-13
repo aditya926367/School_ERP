@@ -116,6 +116,11 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
           path: "/admin/results",
           icon: FileText,
         },
+        {
+          label: "Academic Reports",
+          path: "/admin/academic-reports",
+          icon: BarChart3,
+        },
       ],
     },
 
@@ -138,6 +143,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
           path: "/admin/student-documents",
           icon: FileText,
         },
+        
       ],
     },
 
@@ -256,26 +262,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       ],
     },
 
-    {
-      title: "Reports",
-      items: [
-        {
-          label: "Academic Reports",
-          path: "/admin/academic-reports",
-          icon: BarChart3,
-        },
-        {
-          label: "Attendance Reports",
-          path: "/admin/attendance-reports",
-          icon: BarChart3,
-        },
-        {
-          label: "Fee Reports",
-          path: "/admin/fee-reports",
-          icon: BarChart3,
-        },
-      ],
-    },
+    
 
     {
       title: "Administration",
@@ -513,7 +500,7 @@ teacher: [
       items: [
         {
           label: "Fee Details",
-          path: "/parent/fees",
+          path: "/parent/fee-details",
           icon: WalletCards,
         },
         {

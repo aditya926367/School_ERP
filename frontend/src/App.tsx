@@ -34,6 +34,7 @@ import AdminTimetable from "./pages/admin/AdminTimetable";
 import AdminExams from "./pages/admin/AdminExams";
 import AdminMarksGrades from "./pages/admin/AdminMarksGrades";
 import AdminResults from "./pages/admin/AdminResults";
+import AcademicReports from "./pages/admin/AcademicReports";
 import StudentAttendance from "./pages/admin/StudentAttendance";
 import StaffAttendance from "./pages/admin/StaffAttendance";
 import AttendanceReports from "./pages/admin/AttendanceReports";
@@ -79,6 +80,16 @@ import SimpleHeader from "./layouts/simpleHeader";
 import LibraryDashboard from "./pages/libraryDashboard";
 import FeesDashboard from "./pages/feesDashboard";
 
+import Children from "./pages/parent/Children";
+import Timetable from "./pages/parent/Timetable";
+import ParentHomework from "./pages/parent/Homework";
+import ParentResults from "./pages/parent/Results";
+import ParentAttendance from "./pages/parent/Attendance";
+import ParentFeeDetails from "./pages/parent/FeeDetails";
+import ParentPaymentHistory from "./pages/parent/PaymentHistory";
+import ParentAnnouncements from "./pages/parent/Announcements";
+import ParentMessages from "./pages/parent/Messages";
+
 function App() {
   return (
     <BrowserRouter>
@@ -107,7 +118,7 @@ function App() {
           <Route path="/student/results" element={<MyResults />} />
           <Route path="/student/announcements" element={<Announcements />} />
           <Route path="/student/messages" element={<Messages />} />
-          
+
           //teacher pages
           <Route path="/teacher/classes" element={<TeacherMyClasses />} />
           <Route path="/teacher/students" element={<TeacherMyStudents />} />
@@ -118,7 +129,7 @@ function App() {
           <Route path="/teacher/enter-marks" element={<TeacherEnterMarks />} />
           <Route path="/teacher/results" element={<TeacherResults />} />
           <Route path="/teacher/announcements" element={<TeacherAnnouncements />} />
-          <Route path="/teacher/messages" element={<TeacherMessages />} />  
+          <Route path="/teacher/messages" element={<TeacherMessages />} />
 
 
           <Route
@@ -151,7 +162,11 @@ function App() {
           <Route path="/admin/exams" element={<AdminExams />} />
           <Route path="/admin/marks-grades" element={<AdminMarksGrades />} />
           <Route path="/admin/results" element={<AdminResults />} />
-          
+          <Route
+            path="/admin/academic-reports"
+            element={<AcademicReports />}
+          />
+
           <Route
             path="/admin/holidays-calendar"
             element={<HolidaysCalendar />}
@@ -183,29 +198,29 @@ function App() {
           />
           <Route path="/admin/student-attendance" element={<StudentAttendance />} />
           <Route path="/admin/staff-attendance" element={<StaffAttendance />} />
-          <Route path="/admin/attendance-reports" element={<AttendanceReports />} /> 
-          
-<Route
-  path="/admin/fee-structure"
-  element={<FeeStructure />}
-/>
-<Route
-  path="/admin/fee-collection"
-  element={<FeeCollection />}
-/>
-<Route
-  path="/admin/receipts"
-  element={<Receipts />}
-/>
-<Route
-  path="/admin/pending-dues"
-  element={<PendingDues />}
-/>
-<Route
-  path="/admin/finance-reports"
-  element={<FinanceReports />}
-/>
- 
+          <Route path="/admin/attendance-reports" element={<AttendanceReports />} />
+
+          <Route
+            path="/admin/fee-structure"
+            element={<FeeStructure />}
+          />
+          <Route
+            path="/admin/fee-collection"
+            element={<FeeCollection />}
+          />
+          <Route
+            path="/admin/receipts"
+            element={<Receipts />}
+          />
+          <Route
+            path="/admin/pending-dues"
+            element={<PendingDues />}
+          />
+          <Route
+            path="/admin/finance-reports"
+            element={<FinanceReports />}
+          />
+
 
           {/* Add StudentProfile route here if its component exists */}
           <Route path="/admin/student-documents" element={<StudentDocuments />} />
@@ -215,6 +230,18 @@ function App() {
           <Route path="/members" element={<Members />} />
           <Route path="/issueReturns" element={<IssueReturn />} />
           <Route path="/fines" element={<Fines />} />
+
+          //Parent dashboard route
+          <Route path="/parent/children" element={<Children />} />
+          
+<Route path="/parent/timetable" element={<Timetable />} />
+<Route path="/parent/homework" element={<ParentHomework />} />
+<Route path="/parent/results" element={<ParentResults />} />
+<Route path="/parent/attendance" element={<ParentAttendance />} />
+<Route path="/parent/fee-details" element={<ParentFeeDetails />} />
+<Route path="/parent/payment-history" element={<ParentPaymentHistory />} />
+<Route path="/parent/announcements" element={<ParentAnnouncements />} />
+<Route path="/parent/messages" element={<ParentMessages />} />
         </Route>
       </Routes>
     </BrowserRouter>
