@@ -30,6 +30,31 @@ import Users from "./pages/admin/Users";
 import Students from "./pages/admin/Students";
 import Admissions from "./pages/admin/Admissions";
 import StudentDocuments from "./pages/admin/StudentDocuments";
+import AdminTimetable from "./pages/admin/AdminTimetable";
+import AdminExams from "./pages/admin/AdminExams";
+import AdminMarksGrades from "./pages/admin/AdminMarksGrades";
+import AdminResults from "./pages/admin/AdminResults";
+import StudentAttendance from "./pages/admin/StudentAttendance";
+import StaffAttendance from "./pages/admin/StaffAttendance";
+import AttendanceReports from "./pages/admin/AttendanceReports";
+import FeeStructure from "./pages/admin/FeeStructure";
+import FeeCollection from "./pages/admin/FeeCollection";
+import Receipts from "./pages/admin/Receipts";
+import PendingDues from "./pages/admin/PendingDues";
+import FinanceReports from "./pages/admin/FinanceReports";
+
+
+//student pages
+import MyClasses from "./pages/student/MyClasses";
+import MyTimetable from "./pages/student/MyTimetable";
+import MyHomework from "./pages/student/MyHomework";
+import MyAttendance from "./pages/student/MyAttendance";
+import MyExams from "./pages/student/MyExams";
+import MyResults from "./pages/Student/MyResults.tsx";
+import Announcements from "./pages/student/Announcements";
+import Messages from "./pages/student/Messages";
+// Keep this import only if this file exists in your project.
+// import StudentProfile from "./pages/admin/StudentProfile";
 
 // Library Pages (aapka)
 import Books from "./pages/admin/library/books";
@@ -110,6 +135,40 @@ function App() {
             element={<ParentDashboard />}
           />
 
+          {/* Admin management */}
+          <Route
+            path="/admin/school-profile"
+            element={<SchoolProfile />}
+          />
+          <Route
+            path="/admin/academic-years"
+            element={<AcademicYears />}
+          />
+          <Route
+            path="/admin/classes-sections"
+            element={<ClassesSections />}
+          />
+          <Route
+            path="/admin/subjects"
+            element={<Subjects />}
+          />
+          <Route
+            path="/admin/class-subject-teacher"
+            element={<ClassSubjectTeacherMapping />}
+          />
+          <Route path="/admin/timetable" element={<AdminTimetable />} />
+          <Route path="/admin/exams" element={<AdminExams />} />
+          <Route path="/admin/marks-grades" element={<AdminMarksGrades />} />
+          <Route path="/admin/results" element={<AdminResults />} />
+          
+          <Route
+            path="/admin/holidays-calendar"
+            element={<HolidaysCalendar />}
+          />
+          <Route
+            path="/admin/grading-exam-settings"
+            element={<GradingExamSettings />}
+          />
           {/* Admin Management */}
           <Route path="/admin/school-profile" element={<SchoolProfile />} />
           <Route path="/admin/academic-years" element={<AcademicYears />} />
@@ -127,6 +186,37 @@ function App() {
           {/* Student Management (admin side) */}
           <Route path="/admin/students" element={<Students />} />
           <Route path="/admin/admissions" element={<Admissions />} />
+          <Route
+            path="/admin/student-documents"
+            element={<StudentDocuments />}
+          />
+          <Route path="/admin/student-attendance" element={<StudentAttendance />} />
+          <Route path="/admin/staff-attendance" element={<StaffAttendance />} />
+          <Route path="/admin/attendance-reports" element={<AttendanceReports />} /> 
+          
+<Route
+  path="/admin/fee-structure"
+  element={<FeeStructure />}
+/>
+<Route
+  path="/admin/fee-collection"
+  element={<FeeCollection />}
+/>
+<Route
+  path="/admin/receipts"
+  element={<Receipts />}
+/>
+<Route
+  path="/admin/pending-dues"
+  element={<PendingDues />}
+/>
+<Route
+  path="/admin/finance-reports"
+  element={<FinanceReports />}
+/>
+ 
+
+          {/* Add StudentProfile route here if its component exists */}
           <Route path="/admin/student-documents" element={<StudentDocuments />} />
 
           {/* Library pages (aapka) */}
