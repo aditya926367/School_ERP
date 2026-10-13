@@ -5,16 +5,14 @@ import Login from "./pages/login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/forgot-password";
 import DashboardLayout from "./layouts/DashboardLayout";
-// import MainHeader from "./layouts/mainHeader";
-// import SimpleHeader from "./layouts/simpleHeader";
+
 
 // Dashboards
 import AdminDashboard from "./pages/AdminDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import ParentDashboard from "./pages/ParentDashboard";
-// import LibraryDashboard from "./pages/libraryDashboard";
-// import FeesDashboard from "./pages/feesDashboard";
+
 
 // Admin Management Pages
 import SchoolProfile from "./pages/admin/SchoolProfile";
@@ -89,6 +87,18 @@ import ParentFeeDetails from "./pages/parent/FeeDetails";
 import ParentPaymentHistory from "./pages/parent/PaymentHistory";
 import ParentAnnouncements from "./pages/parent/Announcements";
 import ParentMessages from "./pages/parent/Messages";
+//certificates
+import Certificates from "./pages/admin/certificates-awards/certificates.tsx";
+import Awards from "./pages/admin/certificates-awards/awards.tsx";
+
+
+//communication routes
+
+import AdminAnnouncement from "./pages/admin/communication/announcements.tsx";
+import AdminNotices from "./pages/admin/communication/notices.tsx";
+import AdminMessages from "./pages/admin/communication/messages.tsx";
+
+
 
 function App() {
   return (
@@ -242,6 +252,14 @@ function App() {
 <Route path="/parent/payment-history" element={<ParentPaymentHistory />} />
 <Route path="/parent/announcements" element={<ParentAnnouncements />} />
 <Route path="/parent/messages" element={<ParentMessages />} />
+            {/* Certificates & Awards  */}  
+          <Route path="/certificates" element={<Certificates />} />
+          <Route path="/awards" element={<Awards />} />
+
+            {/* Communicaton routes) */}  
+          <Route path="/announcements" element={<AdminAnnouncement />} />
+          <Route path="/notices" element={<AdminNotices />} />
+          <Route path="/messages" element={<AdminMessages />} />
         </Route>
       </Routes>
     </BrowserRouter>

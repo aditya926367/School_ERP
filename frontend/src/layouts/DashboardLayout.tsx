@@ -230,12 +230,12 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       items: [
         {
           label: "Certificates",
-          path: "/admin/certificates",
+          path: "/certificates",
           icon: Award,
         },
         {
           label: "Awards",
-          path: "/admin/awards",
+          path: "/awards",
           icon: Award,
         },
       ],
@@ -246,17 +246,17 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       items: [
         {
           label: "Announcements",
-          path: "/admin/announcements",
+          path: "/announcements",
           icon: Megaphone,
         },
         {
           label: "Notices",
-          path: "/admin/notices",
+          path: "/notices",
           icon: FileText,
         },
         {
           label: "Messages",
-          path: "/admin/messages",
+          path: "/messages",
           icon: MessageSquare,
         },
       ],
