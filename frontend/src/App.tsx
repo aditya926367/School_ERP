@@ -5,16 +5,16 @@ import Login from "./pages/login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/forgot-password";
 import DashboardLayout from "./layouts/DashboardLayout";
-import MainHeader from "./layouts/mainHeader";
-import SimpleHeader from "./layouts/simpleHeader";
+// import MainHeader from "./layouts/mainHeader";
+// import SimpleHeader from "./layouts/simpleHeader";
 
 // Dashboards
 import AdminDashboard from "./pages/AdminDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import ParentDashboard from "./pages/ParentDashboard";
-import LibraryDashboard from "./pages/libraryDashboard";
-import FeesDashboard from "./pages/feesDashboard";
+// import LibraryDashboard from "./pages/libraryDashboard";
+// import FeesDashboard from "./pages/feesDashboard";
 
 // Admin Management Pages
 import SchoolProfile from "./pages/admin/SchoolProfile";
