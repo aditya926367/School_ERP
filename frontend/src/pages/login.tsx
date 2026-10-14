@@ -255,7 +255,7 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
           </div>
 
           <div className="mt-5 text-center text-[10.5px] text-slate-600">
-            © 2024 All rights reserved . Powered by
+            © 2026 All rights reserved . Powered by
             <div className="mt-1 text-[17px] font-bold tracking-tight text-[#27348b] lowercase">
               Aditech
             </div>
