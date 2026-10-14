@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { loginDemoUser } from "../utils/demoAuth";
 
 
 const NAVY = "#27348b";
@@ -99,15 +101,41 @@ export default function AdminLogin() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
   const [year, setYear] = useState("2024");
+  const [error, setError] = useState("");
+const navigate = useNavigate();
 
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-//     console.log({ userId, password, year });
-//   };
+
+// const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+//   e.preventDefault();
+//   console.log({ userId, password, year });
+// };
+
 const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
   e.preventDefault();
-  console.log({ userId, password, year });
+  setError("");
+
+  const user = loginDemoUser(userId, password);
+
+  if (!user) {
+    setError("Invalid User ID or Password.");
+    return;
+  }
+
+  localStorage.setItem("role", user.role);
+  localStorage.setItem("username", user.userId);
+  localStorage.setItem("demoLoggedIn", "true");
+
+  const dashboardRoutes = {
+    admin: "/admindashboard",
+    teacher: "/teacherdashboard",
+    student: "/studentdashboard",
+    parent: "/parentdashboard",
+    library: "/librarydashboard",
+  };
+
+  navigate(dashboardRoutes[user.role]);
 };
+
 
   const inputCls =
     "w-full h-[26px] box-content py-[5px] px-3 text-[13px] text-slate-700 placeholder-slate-400 " +
@@ -205,6 +233,11 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                 <path d="M2 4l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
+            {error && (
+  <p className="mt-3 text-sm text-red-600">
+    {error}
+  </p>
+)}
 
             <button
               type="submit"
