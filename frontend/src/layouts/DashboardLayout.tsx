@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ElementType } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import MainHeader from "./mainHeader";
@@ -43,7 +43,7 @@ import {
   Pencil
 } from "lucide-react";
 
-type UserRole = "admin" | "teacher" | "student" | "parent" |"library";
+type UserRole = "admin" | "teacher" | "student" | "parent" |"library" |"certificate";
 
 type MenuItem = {
   label: string;
@@ -203,56 +203,22 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       ],
     },
 
-    // {
-    //   title: "Library",
-    //   items: [
-    //     {
-    //       label: "Books",
-    //       path: "/books",
-    //       icon: Library,
-    //     },
-    //     {
-    //       label: "Members",
-    //       path: "/members",
-    //       icon: Users,
-    //     },
-    //     {
-    //       label: "issue / Return",
-    //       path: "/issueReturns",
-    //       icon: BookMarked,
-    //     },
-    //     {
-    //       label: "Fines",
-    //       path: "/fines",
-    //       icon: WalletCards,
-    //     },
-    //   ],
-    // },
 
-        {
-      title: "Library",
-      items: [
-        // { label: "Home", path: "/library", icon: Home },
-        { label: "Library Setup", path: "/librarySetup", icon: Pencil },
-        { label: "Stock Verifications", path: "stockVerification", icon: ClipboardCheck },
-        { label: "Issue and Return", path: "issueReturns", icon: BookMarked },
-        { label: "Reports", path: "/libraryReports", icon: BarChart3 },
-      ],
-    },
+    
 
     {
       title: "Certificates & Awards",
       items: [
         {
           label: "Certificates",
-          path: "/certificates",
+          path: "/certificateDashboard",
           icon: Award,
         },
-        {
-          label: "Awards",
-          path: "/awards",
-          icon: Award,
-        },
+        // {
+        //   label: "Awards",
+        //   path: "/awards",
+        //   icon: Award,
+        // },
       ],
     },
 
@@ -310,6 +276,55 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       ],
     },
   ],
+  
+  certificate: [
+    {
+      title: "Certificate Management",
+      items: [
+        {
+          label: "Create Certificate",
+          path: "/createCertificate",
+          icon: Award,
+        },
+        {
+          label: "Manage Certificates",
+          path: "/manageCertificates",
+          icon: FileText,
+        },
+        {
+          label: "Bulk Certificate",
+          path: "/bulkCertificate",
+          icon: ClipboardList,
+        },
+        {
+          label: "Individual Certificate",
+          path: "/individualCertificate",
+          icon: UserRound,
+        },
+        {
+          label: "Awards",
+          path: "/awards",
+          icon: Award,
+        },
+        {
+          label: "Transfer Certificate",
+          path: "/transferCertificate",
+          icon: FileText,
+        },
+        {
+          label: "Character Certificate",
+          path: "/characterCertificate",
+          icon: ShieldCheck,
+        },
+        {
+          label: "Lock/Unlock Certificate",
+          path: "/lockUnlockCertificate",
+          icon: Settings,
+        },
+      ],
+    },
+  ],
+
 
 teacher: [
   {
@@ -550,10 +565,10 @@ teacher: [
       title: "Library Management",
       items: [
         // { label: "Home", path: "/librarydashboard", icon: Home },
-        { label: "Library Setup", path: "/books", icon: Pencil },
+        { label: "Library Setup", path: "/librarySetup", icon: Pencil },
         {
           label: "Stock Verifications",
-          path: "stockVerification",
+          path: "/stockVerification",
           icon: ClipboardCheck,
         },
         {
@@ -563,7 +578,7 @@ teacher: [
         },
         {
           label: "Reports",
-          path: "libraryReports",
+          path: "/libraryReports",
           icon: BarChart3,
         },
       ],
@@ -597,6 +612,12 @@ const roleInfo = {
     title: "Library Management",
     initials: "L",
   },
+
+  certificate: {
+  name: "Certificate Manager",
+  title: "Certificate Management",
+  initials: "C",
+},
 };
 
 const dashboardPaths: Record<UserRole, string> = {
@@ -604,7 +625,8 @@ const dashboardPaths: Record<UserRole, string> = {
   teacher: "/teacherdashboard",
   student: "/studentdashboard",
   parent: "/parentdashboard",
-  library: "/librarydashboard"
+  library: "/librarydashboard",
+  certificate: "/certificateDashboard",
 };
 
 export default function DashboardLayout() {
@@ -635,16 +657,74 @@ export default function DashboardLayout() {
   if (path === "/admindashboard" || path.startsWith("/admin/")) {
     return "admin";
   }
+  
+if (
+  [
+    "/certificateDashboard",
+    "/createCertificate",
+    "/manageCertificates",
+    "/bulkCertificate",
+    "/individualCertificate",
+    "/awards",
+    "/transferCertificate",
+    "/characterCertificate",
+    "/lockUnlockCertificate",
+  ].includes(path)
+) {
+  return "certificate";
+}
+
+  // if (path === "/certificatedashbaord" || path.startsWith("/certificate/")) {
+  //   return "certificate";
+  // }
   // if(path ==="/librarydashboard" || path.startsWith("/library/")){
   //   return "library";
   // }
-  if (
-  path === "/libraryDashboard" ||
-  path === "/librarydashboard" ||
+//   if (
+//   path === "/libraryDashboard" ||
+//   path === "/librarydashboard" ||
+//   path.startsWith("/library/")
+// ) {
+//   return "library";
+// }
+
+// if (
+//   [
+//     "/libraryDashboard",
+//     "/librarydashboard",
+//     "/books",
+//     "/librarySetup",
+//     "/stockVerification",
+//     "/issueReturns",
+//     "/libraryReports",
+//   ].includes(path) ||
+//   path.startsWith("/library/")
+// ) {
+//   return "library";
+// }
+
+
+if (
+  [
+    "/libraryDashboard",
+    "/librarydashboard",
+    "/books",
+    "/librarySetup",
+    "/stockVerification",
+    "/issueReturns",
+    "/libraryReports",
+    "/authorList",
+    "/importBookMaster",
+    "/changeBookStatus",
+    "/barcodeGenerator",
+    "/acquireBook",
+  ].includes(path) ||
   path.startsWith("/library/")
 ) {
   return "library";
 }
+
+
 
   return storedRole && roleMenus[storedRole] ? storedRole : "admin";
 })();
@@ -659,6 +739,21 @@ export default function DashboardLayout() {
       return initial;
     }
   );
+
+  
+useEffect(() => {
+  setOpenGroups((prev) => {
+    const updated = { ...prev };
+
+    roleMenus[currentRole].forEach((group) => {
+      if (updated[group.title] === undefined) {
+        updated[group.title] = true;
+      }
+    });
+
+    return updated;
+  });
+}, [currentRole]);
 
   const user = roleInfo[currentRole];
 
