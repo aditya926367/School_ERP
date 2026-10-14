@@ -87,8 +87,15 @@ import ParentPaymentHistory from "./pages/parent/PaymentHistory";
 import ParentAnnouncements from "./pages/parent/Announcements";
 import ParentMessages from "./pages/parent/Messages";
 //certificates
-import Certificates from "./pages/admin/certificates-awards/certificates.tsx";
-import Awards from "./pages/admin/certificates-awards/awards.tsx";
+import CertificateDashboard from "./pages/admin/certificates/certificateDashboard";
+import CreateCertificate from "./pages/admin/certificates/createCertificate";
+import ManageCertificates from "./pages/admin/certificates/manageCertificates";
+import BulkCertificate from "./pages/admin/certificates/bulkCertificate";
+import IndividualCertificate from "./pages/admin/certificates/individualCertificate";
+import Awards from "./pages/admin/certificates/awards";
+import TransferCertificate from "./pages/admin/certificates/transferCertificate";
+import CharacterCertificate from "./pages/admin/certificates/characterCertificate";
+import LockUnlockCertificate from "./pages/admin/certificates/lockUnlockCertificate";
 
 
 //communication routes
@@ -278,9 +285,17 @@ function App() {
           <Route path="/parent/payment-history" element={<ParentPaymentHistory />} />
           <Route path="/parent/announcements" element={<ParentAnnouncements />} />
           <Route path="/parent/messages" element={<ParentMessages />} />
+
           {/* Certificates & Awards  */}
-          <Route path="/certificates" element={<Certificates />} />
-          <Route path="/awards" element={<Awards />} />
+       <Route path="/certificateDashboard" element={<CertificateDashboard />} />
+      <Route path="/createCertificate" element={<CreateCertificate />} />
+      <Route path="/manageCertificates" element={<ManageCertificates />} />
+      <Route path="/bulkCertificate" element={<BulkCertificate />} />
+      <Route path="/individualCertificate" element={<IndividualCertificate />} />
+      <Route path="/awards" element={<Awards />} />
+      <Route path="/transferCertificate" element={<TransferCertificate />} />
+      <Route path="/characterCertificate" element={<CharacterCertificate />} />
+      <Route path="/lockUnlockCertificate" element={<LockUnlockCertificate />} />
 
           {/* Communicaton routes) */}
           <Route path="/announcements" element={<AdminAnnouncement />} />
