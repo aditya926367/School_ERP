@@ -115,7 +115,8 @@ export default function LibraryDashboard() {
         {/* Grid: 1 column on mobile, 2 on tablet, 4 on desktop */}
         <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {cards.map((item) => (
-            <LibraryCard key={item.key ?? item.title} item={item} />
+            // <LibraryCard key={item.key ?? item.title} item={item} />
+            <LibraryCard key={item.title} item={item} />
           ))}
         </div>
       </div>

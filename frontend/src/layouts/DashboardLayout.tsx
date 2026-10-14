@@ -232,7 +232,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
         {
       title: "Library",
       items: [
-        { label: "Home", path: "/library", icon: Home },
+        // { label: "Home", path: "/library", icon: Home },
         { label: "Library Setup", path: "/librarySetup", icon: Pencil },
         { label: "Stock Verifications", path: "stockVerification", icon: ClipboardCheck },
         { label: "Issue and Return", path: "issueReturns", icon: BookMarked },
@@ -549,7 +549,7 @@ teacher: [
     {
       title: "Library Management",
       items: [
-        { label: "Home", path: "/librarydashboard", icon: Home },
+        // { label: "Home", path: "/librarydashboard", icon: Home },
         { label: "Library Setup", path: "/books", icon: Pencil },
         {
           label: "Stock Verifications",
