@@ -1,7 +1,23 @@
 // src/pages/admin/library/IssueReturn.tsx
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
+import {
+  ArrowLeftRight,
+  BookOpenCheck,
+  CheckCircle2,
+  Clock,
+  Plus,
+} from "lucide-react";
 
-type Txn = {
+import DataTable from "../../../components/common/DataTable";
+import FilterSelect from "../../../components/common/FilterSelect";
+import PageHeader from "../../../components/common/PageHeader";
+import Pagination from "../../../components/common/Pagination";
+import SearchBar from "../../../components/common/SearchBar";
+import StatusBadge from "../../../components/common/StatusBadge";
+import SummaryCard from "../../../components/common/SummaryCard";
+
+type Transaction = {
   id: number;
   memberId: string;
   bookId: string;
@@ -10,65 +26,124 @@ type Txn = {
   returned: boolean;
 };
 
-const inputStyle =
-  "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b]";
+type TransactionStatus = "Issued" | "Returned" | "Overdue";
 
-// ---------- Pagination helpers ----------
+type TransactionColumn = {
+  key: string;
+  header: string;
+  className?: string;
+  render: (transaction: Transaction) => ReactNode;
+};
+
+const initialTransactions: Transaction[] = [
+  {
+    id: 1,
+    memberId: "M101",
+    bookId: "B001",
+    issueDate: "2026-10-01",
+    dueDate: "2026-10-15",
+    returned: false,
+  },
+  {
+    id: 2,
+    memberId: "M102",
+    bookId: "B004",
+    issueDate: "2026-09-20",
+    dueDate: "2026-10-04",
+    returned: true,
+  },
+];
+
 const PAGE_SIZES = [5, 10, 25, 50];
 
-// Page numbers ki list: 1 ... 4 5 6 ... 20
-function getPageNumbers(page: number, totalPages: number): (number | "...")[] {
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
-  }
+const inputStyle =
+  "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-blue-100";
 
-  const pages: (number | "...")[] = [1];
-  const start = Math.max(2, page - 1);
-  const end = Math.min(totalPages - 1, page + 1);
+function getStatus(transaction: Transaction): TransactionStatus {
+  if (transaction.returned) return "Returned";
 
-  if (start > 2) pages.push("...");
-  for (let i = start; i <= end; i++) pages.push(i);
-  if (end < totalPages - 1) pages.push("...");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  pages.push(totalPages);
-  return pages;
+  const dueDate = new Date(`${transaction.dueDate}T00:00:00`);
+
+  return dueDate < today ? "Overdue" : "Issued";
 }
 
-const pageBtn = "h-8 min-w-8 rounded-lg border px-2 text-sm font-semibold";
-const pageBtnNormal = `${pageBtn} border-gray-300 text-gray-700 hover:bg-gray-50`;
-const pageBtnActive = `${pageBtn} border-[#27348b] bg-[#27348b] text-white`;
-const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-200 text-gray-300`;
-
 export default function IssueReturn() {
-  const [txns, setTxns] = useState<Txn[]>([
-    { id: 1, memberId: "M101", bookId: "B001", issueDate: "2026-10-01", dueDate: "2026-10-15", returned: false },
-    { id: 2, memberId: "M102", bookId: "B004", issueDate: "2026-09-20", dueDate: "2026-10-04", returned: true },
-  ]);
+  const [transactions, setTransactions] =
+    useState<Transaction[]>(initialTransactions);
 
-  // Issue form state
   const [memberId, setMemberId] = useState("");
   const [bookId, setBookId] = useState("");
   const [dueDate, setDueDate] = useState("");
 
-  // Pagination state
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
-  // Pagination ka hisaab
-  const totalPages = Math.max(1, Math.ceil(txns.length / pageSize));
-  const safePage = Math.min(page, totalPages); // page kabhi total se bada na ho
-  const paged = txns.slice((safePage - 1) * pageSize, safePage * pageSize);
-  const from = txns.length === 0 ? 0 : (safePage - 1) * pageSize + 1;
-  const to = Math.min(safePage * pageSize, txns.length);
+  const [formError, setFormError] = useState("");
+  const [notice, setNotice] = useState("");
 
-  // Naya issue add karna
+  const filteredTransactions = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    return transactions.filter((transaction) => {
+      const matchesSearch = [
+        transaction.memberId,
+        transaction.bookId,
+      ].some((value) => value.toLowerCase().includes(query));
+
+      const matchesStatus =
+        statusFilter === "All" || getStatus(transaction) === statusFilter;
+
+      return matchesSearch && matchesStatus;
+    });
+  }, [transactions, search, statusFilter]);
+
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredTransactions.length / pageSize),
+  );
+
+  const safePage = Math.min(page, totalPages);
+
+  const pagedTransactions = filteredTransactions.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize,
+  );
+
+  const activeCount = transactions.filter(
+    (transaction) => !transaction.returned,
+  ).length;
+
+  const returnedCount = transactions.filter(
+    (transaction) => transaction.returned,
+  ).length;
+
+  const overdueCount = transactions.filter(
+    (transaction) => getStatus(transaction) === "Overdue",
+  ).length;
+
   function handleIssue() {
+    setFormError("");
+    setNotice("");
+
     if (!memberId.trim() || !bookId.trim() || !dueDate) {
-      alert("Please fill all fields");
+      setFormError("Please fill in the member ID, book ID, and due date.");
       return;
     }
 
-    const newTxn: Txn = {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (new Date(`${dueDate}T00:00:00`) < today) {
+      setFormError("Due date cannot be in the past.");
+      return;
+    }
+
+    const newTransaction: Transaction = {
       id: Date.now(),
       memberId: memberId.trim(),
       bookId: bookId.trim(),
@@ -77,185 +152,295 @@ export default function IssueReturn() {
       returned: false,
     };
 
-    setTxns([newTxn, ...txns]);
-    setPage(1); // nayi entry sabse upar hai, isliye page 1 par jao
+    setTransactions((current) => [newTransaction, ...current]);
+    setPage(1);
     setMemberId("");
     setBookId("");
     setDueDate("");
+    setNotice("Book issue recorded for this page session.");
   }
 
-  // Book return mark karna
   function handleReturn(id: number) {
-    setTxns(txns.map((t) => (t.id === id ? { ...t, returned: true } : t)));
+    setTransactions((current) =>
+      current.map((transaction) =>
+        transaction.id === id
+          ? { ...transaction, returned: true }
+          : transaction,
+      ),
+    );
+
+    setNotice("Book return recorded for this page session.");
   }
+
+  const columns: TransactionColumn[] = [
+    {
+      key: "memberId",
+      header: "Member ID",
+      render: (transaction) => (
+        <span className="font-semibold text-gray-900">
+          {transaction.memberId}
+        </span>
+      ),
+    },
+    {
+      key: "bookId",
+      header: "Book ID",
+      render: (transaction) => (
+        <span className="font-medium text-indigo-700">
+          {transaction.bookId}
+        </span>
+      ),
+    },
+    {
+      key: "issueDate",
+      header: "Issue Date",
+      render: (transaction) => transaction.issueDate,
+    },
+    {
+      key: "dueDate",
+      header: "Due Date",
+      render: (transaction) => transaction.dueDate,
+    },
+    {
+  key: "status",
+  header: "Status",
+  className: "w-[140px] whitespace-nowrap px-3",
+  render: (transaction) => (
+    <StatusBadge status={getStatus(transaction)} />
+  ),
+},
+{
+  key: "action",
+  header: "Action",
+  className: "w-[140px] whitespace-nowrap text-right px-3",
+  render: (transaction) =>
+    transaction.returned ? (
+      <span className="text-xs text-gray-400">
+        Completed
+      </span>
+    ) : (
+      <button
+        type="button"
+        onClick={() => handleReturn(transaction.id)}
+        className="inline-flex min-h-9 items-center justify-center whitespace-nowrap rounded-lg border border-[#27348b] bg-white px-3 py-2 text-xs font-semibold text-[#27348b] transition-colors hover:bg-[#27348b] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#27348b] focus:ring-offset-1"
+      >
+        Mark Returned
+      </button>
+    ),
+},
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Issue / Return</h1>
-        <p className="text-sm text-gray-500">Issue books to members and record returns</p>
+      <PageHeader
+        title="Issue / Return"
+        description="Record book issues, monitor due dates, and mark books as returned."
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <SummaryCard
+          label="Active Issues"
+          value={activeCount}
+          icon={<ArrowLeftRight size={21} />}
+          iconClassName="text-indigo-700"
+          iconBackgroundClassName="bg-indigo-50"
+        />
+
+        <SummaryCard
+          label="Books Returned"
+          value={returnedCount}
+          icon={<CheckCircle2 size={21} />}
+          iconClassName="text-green-700"
+          iconBackgroundClassName="bg-green-50"
+        />
+
+        <SummaryCard
+          label="Overdue Issues"
+          value={overdueCount}
+          icon={<Clock size={21} />}
+          iconClassName="text-red-700"
+          iconBackgroundClassName="bg-red-50"
+        />
       </div>
 
-      {/* Issue form card */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-3 text-base font-semibold text-gray-900">Issue a Book</h2>
+      <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="rounded-lg bg-indigo-50 p-2 text-indigo-700">
+            <BookOpenCheck size={20} />
+          </span>
+
+          <div>
+            <h2 className="font-semibold text-gray-900">Issue a Book</h2>
+            <p className="mt-0.5 text-sm text-gray-500">
+              Enter the member, book, and expected return date.
+            </p>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 items-end gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Member ID</label>
+          <div className="min-w-0">
+            <label
+              htmlFor="memberId"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
+              Member ID
+            </label>
             <input
+              id="memberId"
               value={memberId}
-              onChange={(e) => setMemberId(e.target.value)}
-              placeholder="M101"
+              onChange={(event) => setMemberId(event.target.value)}
+              placeholder="e.g. M101"
               className={inputStyle}
             />
           </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Book ID</label>
+          <div className="min-w-0">
+            <label
+              htmlFor="bookId"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
+              Book ID
+            </label>
             <input
+              id="bookId"
               value={bookId}
-              onChange={(e) => setBookId(e.target.value)}
-              placeholder="B001"
+              onChange={(event) => setBookId(event.target.value)}
+              placeholder="e.g. B001"
               className={inputStyle}
             />
           </div>
 
-          <div>
-            <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Due Date</label>
+          <div className="min-w-0">
+            <label
+              htmlFor="dueDate"
+              className="mb-1 block text-sm font-medium text-gray-700"
+            >
+              Due Date
+            </label>
             <input
+              id="dueDate"
               type="date"
               value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
+              min={new Date().toISOString().slice(0, 10)}
+              onChange={(event) => setDueDate(event.target.value)}
               className={inputStyle}
             />
           </div>
 
           <button
+            type="button"
             onClick={handleIssue}
-            className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
+            className="mt-2 inline-flex h-10 w-full items-center justify-center gap-2 whitespace-nowrap rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#1f2a73] focus:outline-none focus:ring-2 focus:ring-[#27348b] focus:ring-offset-2 sm:mt-0 sm:w-auto"
           >
+            <Plus size={17} />
             Issue Book
           </button>
         </div>
-      </div>
 
-      {/* Transactions table card */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-800">
-            <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
-              <tr>
-                <th className="px-4 py-3">Member</th>
-                <th className="px-4 py-3">Book</th>
-                <th className="px-4 py-3">Issue Date</th>
-                <th className="px-4 py-3">Due Date</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paged.map((t) => (
-                <tr key={t.id} className="border-t border-gray-200 hover:bg-gray-50">
-                  <td className="px-4 py-3 font-semibold">{t.memberId}</td>
-                  <td className="px-4 py-3">{t.bookId}</td>
-                  <td className="px-4 py-3">{t.issueDate}</td>
-                  <td className="px-4 py-3">{t.dueDate}</td>
-                  <td className="px-4 py-3">
-                    {t.returned ? (
-                      <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                        Returned
-                      </span>
-                    ) : (
-                      <span className="rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-700">
-                        Issued
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    {!t.returned && (
-                      <button
-                        onClick={() => handleReturn(t.id)}
-                        className="rounded-lg border border-[#27348b] px-3 py-1 text-xs font-semibold text-[#27348b] hover:bg-[#27348b] hover:text-white"
-                      >
-                        Return
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
+        {formError && (
+          <p role="alert" className="mt-3 text-sm text-red-600">
+            {formError}
+          </p>
+        )}
+      </section>
 
-              {txns.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                    No transactions yet
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {notice && (
+        <div
+          role="status"
+          className="rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800"
+        >
+          {notice}
+        </div>
+      )}
+
+      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-gray-200 p-4 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="font-semibold text-gray-900">Issue History</h2>
+            <p className="mt-1 text-sm text-gray-500">
+              {filteredTransactions.length} matching records
+            </p>
+          </div>
+
+          <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:w-auto lg:min-w-[520px]">
+            <div className="min-w-0">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Search transactions
+              </label>
+              <SearchBar
+                value={search}
+                onChange={(value) => {
+                  setSearch(value);
+                  setPage(1);
+                }}
+                placeholder="Search member ID or book ID..."
+              />
+            </div>
+
+            <div className="min-w-0">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+                Filter by status
+              </label>
+              <FilterSelect
+                value={statusFilter}
+                onChange={(value) => {
+                  setStatusFilter(value);
+                  setPage(1);
+                }}
+                options={[
+                  { label: "All statuses", value: "All" },
+                  "Issued",
+                  "Returned",
+                  "Overdue",
+                ]}
+                placeholder="All statuses"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* ================= PAGINATION ================= */}
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-4 py-3 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
-          {/* Left: Showing 1-5 of 12 + rows per page */}
-          <div className="flex items-center gap-3">
-            <span>
-              Showing <b>{from}</b>-<b>{to}</b> of <b>{txns.length}</b>
-            </span>
+        <DataTable<Transaction>
+          data={pagedTransactions}
+          columns={columns}
+          rowKey={(transaction) => transaction.id}
+          tableClassName="min-w-[800px] text-sm text-gray-800"
+          emptyState="No records match your search or filter."
+        />
 
+        <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <label className="flex items-center gap-2 text-sm text-gray-500">
+            Rows per page
             <select
               value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
+              onChange={(event) => {
+                setPageSize(Number(event.target.value));
                 setPage(1);
               }}
-              className="h-8 rounded-lg border border-gray-300 px-2 text-sm outline-none focus:border-[#27348b]"
+              className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-blue-500"
             >
-              {PAGE_SIZES.map((s) => (
-                <option key={s} value={s}>
-                  {s} / page
+              {PAGE_SIZES.map((size) => (
+                <option key={size} value={size}>
+                  {size}
                 </option>
               ))}
             </select>
-          </div>
+          </label>
 
-          {/* Right: Prev, 1 2 3, Next */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage(safePage - 1)}
-              disabled={safePage === 1}
-              className={safePage === 1 ? pageBtnDisabled : pageBtnNormal}
-            >
-              Prev
-            </button>
-
-            {getPageNumbers(safePage, totalPages).map((p, i) =>
-              p === "..." ? (
-                <span key={`dots-${i}`} className="px-1 text-gray-400">
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className={p === safePage ? pageBtnActive : pageBtnNormal}
-                >
-                  {p}
-                </button>
-              )
-            )}
-
-            <button
-              onClick={() => setPage(safePage + 1)}
-              disabled={safePage === totalPages}
-              className={safePage === totalPages ? pageBtnDisabled : pageBtnNormal}
-            >
-              Next
-            </button>
-          </div>
+          <Pagination
+            currentPage={safePage}
+            totalPages={totalPages}
+            totalItems={filteredTransactions.length}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            itemLabel="records"
+          />
         </div>
-      </div>
+
+        <p className="border-t border-gray-100 px-5 py-3 text-xs text-gray-500">
+          Sample data only. Changes are kept in React state for this page
+          session and are not saved to the database.
+        </p>
+      </section>
     </div>
   );
 }

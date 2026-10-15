@@ -1,16 +1,19 @@
 import { useMemo, useState } from "react";
-
 import type { FormEvent, ReactNode } from "react";
+import DataTable from "../../components/common/DataTable";
+import FilterSelect from "../../components/common/FilterSelect";
+import PageHeader from "../../components/common/PageHeader";
+import Pagination from "../../components/common/Pagination";
+import SearchBar from "../../components/common/SearchBar";
+import StatusBadge from "../../components/common/StatusBadge";
+import SummaryCard from "../../components/common/SummaryCard";
 import {
-  Search,
   Plus,
   Users,
   UserCheck,
   UserPlus,
   Eye,
   Pencil,
-  ChevronLeft,
-  ChevronRight,
   X,
   UserRound,
   GraduationCap,
@@ -145,6 +148,7 @@ const initialStudents: Student[] = [
     documents: ["Birth Certificate", "Previous Marksheet"],
   },
 ];
+
 const inputClass =
   "mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 const buttonClass =
@@ -362,50 +366,33 @@ export default function Students() {
 
   return (
     <div className="min-h-screen space-y-6 bg-gray-50 p-4 sm:p-6 print:bg-white print:p-0">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <p className="text-sm text-gray-500">School Management / Students</p>
-          <h1 className="mt-1 text-2xl font-bold text-gray-900">Student Management</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage student records, profiles, academics, attendance and fees in one place.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2 print:hidden">
-          <button onClick={exportStudents} className={buttonClass}>
-            <Download size={16} /> Export CSV
-          </button>
-          <button onClick={() => window.print()} className={buttonClass}>
-            <Printer size={16} /> Print
-          </button>
-          <button
-            onClick={openAddForm}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            <Plus size={18} /> Add Student
-          </button>
-        </div>
-      </div>
+      <PageHeader
+        breadcrumb="School Management / Students"
+        title="Student Management"
+        description="Manage student records, profiles, academics, attendance and fees in one place."
+        actions={
+          <>
+            <button onClick={exportStudents} className={buttonClass}>
+              <Download size={16} /> Export CSV
+            </button>
+            <button onClick={() => window.print()} className={buttonClass}>
+              <Printer size={16} /> Print
+            </button>
+            <button
+              onClick={openAddForm}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              <Plus size={18} /> Add Student
+            </button>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          { label: "Total Students", value: students.length, icon: Users, color: "text-blue-600", bg: "bg-blue-50" },
-          { label: "Active Students", value: activeCount, icon: UserCheck, color: "text-green-600", bg: "bg-green-50" },
-          { label: "Male Students", value: maleCount, icon: UserRound, color: "text-indigo-600", bg: "bg-indigo-50" },
-          { label: "Female Students", value: femaleCount, icon: UserPlus, color: "text-purple-600", bg: "bg-purple-50" },
-        ].map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <div key={stat.label} className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
-                  <p className="mt-2 text-2xl font-bold text-gray-900">{stat.value}</p>
-                </div>
-                <div className={`rounded-lg p-3 ${stat.bg}`}><Icon size={22} className={stat.color} /></div>
-              </div>
-            </div>
-          );
-        })}
+        <SummaryCard label="Total Students" value={students.length} icon={<Users size={22} />} iconClassName="text-blue-600" iconBackgroundClassName="bg-blue-50" />
+        <SummaryCard label="Active Students" value={activeCount} icon={<UserCheck size={22} />} iconClassName="text-green-600" iconBackgroundClassName="bg-green-50" />
+        <SummaryCard label="Male Students" value={maleCount} icon={<UserRound size={22} />} iconClassName="text-indigo-600" iconBackgroundClassName="bg-indigo-50" />
+        <SummaryCard label="Female Students" value={femaleCount} icon={<UserPlus size={22} />} iconClassName="text-purple-600" iconBackgroundClassName="bg-purple-50" />
       </div>
 
       <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm print:hidden">
@@ -416,111 +403,97 @@ export default function Students() {
             <span className="text-sm text-gray-500">({filteredStudents.length} results)</span>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-6">
-            <div className="relative xl:col-span-2">
-              <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
+            <div className="xl:col-span-2">
+              <SearchBar
                 value={search}
-                onChange={(event) => { setSearch(event.target.value); setPage(1); }}
+                onChange={(value) => { setSearch(value); setPage(1); }}
                 placeholder="Name, admission no. or parent"
-                className={`${inputClass} pl-9`}
               />
             </div>
-            <select value={classFilter} onChange={(event) => { setClassFilter(event.target.value); setSectionFilter("All"); setPage(1); }} className={inputClass}>
-              <option value="All">All Classes</option>
-              {classOptions.map((className) => <option key={className}>{className}</option>)}
-            </select>
-            <select value={sectionFilter} onChange={(event) => { setSectionFilter(event.target.value); setPage(1); }} className={inputClass}>
-              <option value="All">All Sections</option>
-              {sectionOptions.map((section) => <option key={section}>{section}</option>)}
-            </select>
-            <select value={genderFilter} onChange={(event) => { setGenderFilter(event.target.value); setPage(1); }} className={inputClass}>
-              <option value="All">All Genders</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-            <select value={statusFilter} onChange={(event) => { setStatusFilter(event.target.value); setPage(1); }} className={inputClass}>
-              <option value="All">All Statuses</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
+            <FilterSelect
+              value={classFilter}
+              onChange={(value) => { setClassFilter(value); setSectionFilter("All"); setPage(1); }}
+              placeholder="All Classes"
+              options={classOptions}
+            />
+            <FilterSelect
+              value={sectionFilter}
+              onChange={(value) => { setSectionFilter(value); setPage(1); }}
+              placeholder="All Sections"
+              options={sectionOptions}
+            />
+            <FilterSelect
+              value={genderFilter}
+              onChange={(value) => { setGenderFilter(value); setPage(1); }}
+              placeholder="All Genders"
+              options={["Male", "Female"]}
+            />
+            <FilterSelect
+              value={statusFilter}
+              onChange={(value) => { setStatusFilter(value); setPage(1); }}
+              placeholder="All Statuses"
+              options={["Active", "Inactive"]}
+            />
           </div>
           <div className="mt-3 flex justify-end">
             <button onClick={resetFilters} className={buttonClass}><X size={15} /> Clear Filters</button>
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left">
-            <thead className="bg-gray-50">
-              <tr>
-                {["Student", "Admission No.", "Class / Section", "Parent / Guardian", "Phone", "Status", "Actions"].map((heading) => (
-                  <th key={heading} className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">{heading}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {visibleStudents.map((student) => (
-                <tr key={student.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
-                        {student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{student.name}</p>
-                        <p className="text-xs text-gray-500">Roll No. {student.rollNo || "—"}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-5 py-4 text-sm text-gray-600">{student.admissionNo}</td>
-                  <td className="px-5 py-4 text-sm text-gray-600">{student.className} - {student.section}</td>
-                  <td className="px-5 py-4 text-sm text-gray-600">{student.parentName}</td>
-                  <td className="px-5 py-4 text-sm text-gray-600">{student.phone}</td>
-                  <td className="px-5 py-4">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${student.status === "Active" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{student.status}</span>
-                  </td>
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-1">
+        <DataTable
+          data={visibleStudents}
+          rowKey={(student: Student) => student.id}
+          tableClassName="min-w-[900px]"
+          columns={[
+            {
+              key: "student",
+              header: "Student",
+              render: (student: Student) => (
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
+                    {student.name.split(" ").map((part) => part[0]).join("").slice(0, 2)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{student.name}</p>
+                    <p className="text-xs text-gray-500">Roll No. {student.rollNo || "—"}</p>
+                  </div>
+                </div>
+              ),
+            },
+            { key: "admissionNo", header: "Admission No.", render: (student: Student) => <span className="text-sm text-gray-600">{student.admissionNo}</span> },
+            { key: "class", header: "Class / Section", render: (student: Student) => <span className="text-sm text-gray-600">{student.className} - {student.section}</span> },
+            { key: "parent", header: "Parent / Guardian", render: (student: Student) => <span className="text-sm text-gray-600">{student.parentName}</span> },
+            { key: "phone", header: "Phone", render: (student: Student) => <span className="text-sm text-gray-600">{student.phone}</span> },
+            { key: "status", header: "Status", render: (student: Student) => <StatusBadge status={student.status} /> },
+            {
+              key: "actions",
+              header: "Actions",
+              render: (student: Student) => (
+                <div className="flex items-center gap-1">
+                  <button type="button" title="View full profile" onClick={() => { setSelectedStudentId(student.id); setActiveTab("Overview"); setShowForm(false); }} className="rounded-md p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600"><Eye size={17} /></button>
+                  <button type="button" title="Edit student" onClick={() => openEditForm(student)} className="rounded-md p-2 text-gray-500 hover:bg-amber-50 hover:text-amber-600"><Pencil size={17} /></button>
+                  <button type="button" title="Print profile" onClick={() => printStudent(student)} className="rounded-md p-2 text-gray-500 hover:bg-gray-100"><Printer size={17} /></button>
+                </div>
+              ),
+            },
+          ]}
+          emptyState={
+            <>
+              <Users className="mx-auto text-gray-300" size={32} />
+              <p className="mt-2 text-sm font-medium text-gray-700">No students found</p>
+              <p className="mt-1 text-sm text-gray-500">Try changing your search or filters.</p>
+            </>
+          }
+        />
 
-<button
-  type="button"
-  onClick={() => {
-    setSelectedStudentId(student.id);
-    setActiveTab("Overview");
-    setShowForm(false);
-  }}
-  title="View Student Profile"
-  className="rounded-md p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600"
->
-  <Eye size={18} />
-</button>
-                     <button title="Edit student" onClick={() => openEditForm(student)} className="rounded-md p-2 text-gray-500 hover:bg-amber-50 hover:text-amber-600"><Pencil size={17} /></button>
-                      <button title="Print profile" onClick={() => printStudent(student)} className="rounded-md p-2 text-gray-500 hover:bg-gray-100"><Printer size={17} /></button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {visibleStudents.length === 0 && (
-                <tr><td colSpan={7} className="px-5 py-12 text-center">
-                  <Users className="mx-auto text-gray-300" size={32} />
-                  <p className="mt-2 text-sm font-medium text-gray-700">No students found</p>
-                  <p className="mt-1 text-sm text-gray-500">Try changing your search or filters.</p>
-                </td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-gray-500">
-            Showing {filteredStudents.length === 0 ? 0 : startIndex + 1} to {Math.min(startIndex + pageSize, filteredStudents.length)} of {filteredStudents.length} students
-          </p>
-          <div className="flex items-center gap-2">
-            <button disabled={currentPage <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))} className={buttonClass} aria-label="Previous page"><ChevronLeft size={18} /> Previous</button>
-            <span className="px-2 text-sm text-gray-600">Page {currentPage} of {totalPages}</span>
-            <button disabled={currentPage >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className={buttonClass} aria-label="Next page">Next <ChevronRight size={18} /></button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredStudents.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          itemLabel="students"
+        />
       </section>
 
       {selectedStudent && (
@@ -532,7 +505,7 @@ export default function Students() {
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h2 className="text-xl font-bold text-gray-900">{selectedStudent.name}</h2>
-                  <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${selectedStudent.status === "Active" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>{selectedStudent.status}</span>
+                  <StatusBadge status={selectedStudent.status} />
                 </div>
                 <p className="mt-1 text-sm text-gray-500">{selectedStudent.admissionNo}</p>
                 <p className="mt-1 text-sm font-medium text-blue-700">{selectedStudent.className} · Section {selectedStudent.section}</p>
