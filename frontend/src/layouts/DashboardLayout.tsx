@@ -7,6 +7,10 @@ import MainHeader from "./mainHeader";
 
 import {
   
+   ShoppingCart,
+  Upload,
+  RefreshCw,
+  Barcode,
   LayoutDashboard,
   School,
   GraduationCap,
