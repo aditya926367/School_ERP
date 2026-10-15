@@ -118,6 +118,11 @@ import AcquireBook from "./pages/admin/library/aquireBook.tsx";
 import LibraryReports from "./pages/admin/library/libraryReports.tsx";
 import LibrarySetup from "./pages/admin/library/librarySetup.tsx";
 
+///my profile 
+import MyProfile from "./pages/common/myProfile.tsx";
+import ChangePassword from "./pages/common/changePassword.tsx";
+import Settings from "./pages/common/settings.tsx";
+
 
 
 function App() {
@@ -230,8 +235,8 @@ function App() {
           <Route path="/barcodeGenerator" element={<BarcodeGenerator />} />
           <Route path="/stockVerification" element={<StockVerification />} />
           <Route path="/acquireBook" element={<AcquireBook />} />
-          <Route path="/libraryReports" element={<LibraryReports/>} />
-          <Route path="/librarySetup" element={<LibrarySetup/>} />
+          <Route path="/libraryReports" element={<LibraryReports />} />
+          <Route path="/librarySetup" element={<LibrarySetup />} />
 
 
 
@@ -287,20 +292,27 @@ function App() {
           <Route path="/parent/messages" element={<ParentMessages />} />
 
           {/* Certificates & Awards  */}
-       <Route path="/certificateDashboard" element={<CertificateDashboard />} />
-      <Route path="/createCertificate" element={<CreateCertificate />} />
-      <Route path="/manageCertificates" element={<ManageCertificates />} />
-      <Route path="/bulkCertificate" element={<BulkCertificate />} />
-      <Route path="/individualCertificate" element={<IndividualCertificate />} />
-      <Route path="/awards" element={<Awards />} />
-      <Route path="/transferCertificate" element={<TransferCertificate />} />
-      <Route path="/characterCertificate" element={<CharacterCertificate />} />
-      <Route path="/lockUnlockCertificate" element={<LockUnlockCertificate />} />
+          <Route path="/certificateDashboard" element={<CertificateDashboard />} />
+          <Route path="/createCertificate" element={<CreateCertificate />} />
+          <Route path="/manageCertificates" element={<ManageCertificates />} />
+          <Route path="/bulkCertificate" element={<BulkCertificate />} />
+          <Route path="/individualCertificate" element={<IndividualCertificate />} />
+          <Route path="/awards" element={<Awards />} />
+          <Route path="/transferCertificate" element={<TransferCertificate />} />
+          <Route path="/characterCertificate" element={<CharacterCertificate />} />
+          <Route path="/lockUnlockCertificate" element={<LockUnlockCertificate />} />
 
           {/* Communicaton routes) */}
           <Route path="/announcements" element={<AdminAnnouncement />} />
           <Route path="/notices" element={<AdminNotices />} />
           <Route path="/messages" element={<AdminMessages />} />
+
+
+
+          {/* mainheader myProfile routes*/}
+          <Route path="/myProfile" element={<MyProfile />} />
+          <Route path="/myProChangePassword" element={<ChangePassword />} />
+           <Route path="/settings" element={<Settings />} />
         </Route>
       </Routes>
     </BrowserRouter>
