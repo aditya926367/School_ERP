@@ -560,27 +560,49 @@ teacher: [
 
 
   
-  library: [
+  // library: [
+  //   {
+  //     title: "Library Management",
+  //     items: [
+  //       // { label: "Home", path: "/librarydashboard", icon: Home },
+  //       { label: "Library Setup", path: "/librarySetup", icon: Pencil },
+  //       {
+  //         label: "Stock Verifications",
+  //         path: "/stockVerification",
+  //         icon: ClipboardCheck,
+  //       },
+  //       {
+  //         label: "Issue and Return",
+  //         path: "/issueReturns",
+  //         icon: BookMarked,
+  //       },
+  //       {
+  //         label: "Reports",
+  //         path: "/libraryReports",
+  //         icon: BarChart3,
+  //       },
+  //     ],
+  //   },
+  // ],
+    library: [
     {
       title: "Library Management",
       items: [
-        // { label: "Home", path: "/librarydashboard", icon: Home },
         { label: "Library Setup", path: "/librarySetup", icon: Pencil },
-        {
-          label: "Stock Verifications",
-          path: "/stockVerification",
-          icon: ClipboardCheck,
-        },
-        {
-          label: "Issue and Return",
-          path: "/issueReturns",
-          icon: BookMarked,
-        },
-        {
-          label: "Reports",
-          path: "/libraryReports",
-          icon: BarChart3,
-        },
+        { label: "Issue and Return", path: "/issueReturns", icon: BookMarked },
+        { label: "Stock Verification", path: "/stockVerification", icon: ClipboardCheck },
+        { label: "Reports", path: "/libraryReports", icon: BarChart3 },
+      ],
+    },
+    {
+      title: "Books",
+      items: [
+        { label: "Book Master", path: "/books", icon: BookOpen },
+        { label: "Acquire Book", path: "/acquireBook", icon: ShoppingCart },
+        { label: "Import BookMaster", path: "/importBookMaster", icon: Upload },
+        { label: "Change Book Status", path: "/changeBookStatus", icon: RefreshCw },
+        { label: "Barcode Generator", path: "/barcodeGenerator", icon: Barcode },
+        { label: "Author List", path: "/authorList", icon: Users },
       ],
     },
   ],
@@ -777,7 +799,9 @@ useEffect(() => {
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
      {/* Header - full width */}
-    <MainHeader />
+   {/* Header - full width. The hamburger button opens the sidebar on mobile. */}
+      <MainHeader onMenuClick={() => setSidebarOpen(true)} />
+    {/* <MainHeader /> */}
       {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
@@ -797,7 +821,7 @@ useEffect(() => {
         `}
       >
         {/* Logo */}
-        <div className="flex h-[72px] items-center border-b border-white/10 px-5">
+        {/* <div className="flex h-[72px] items-center border-b border-white/10 px-5">
           {!collapsed ? (
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#27348b]">
@@ -826,10 +850,10 @@ useEffect(() => {
           >
             <X size={20} />
           </button>
-        </div>
+        </div> */}
 
         {/* Role */}
-        {!collapsed && (
+        {/* {!collapsed && (
           <div className="mx-4 mt-5 rounded-xl bg-white/10 p-3">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-bold text-[#27348b]">
@@ -847,7 +871,37 @@ useEffect(() => {
               </div>
             </div>
           </div>
-        )}
+        )} */}
+
+        {/* Profile card */}
+<div className="flex items-center gap-2 border-b border-white/10 px-4 py-5">
+  <div
+    className={`flex-1 rounded-xl bg-white/10 p-3 ${
+      collapsed ? "flex justify-center" : ""
+    }`}
+  >
+    <div className="flex items-center gap-3">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white font-bold text-[#27348b]">
+        {user.initials}
+      </div>
+
+      {!collapsed && (
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold">{user.name}</p>
+          <p className="text-xs text-blue-200">{user.title}</p>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <button
+    onClick={() => setSidebarOpen(false)}
+    className="shrink-0 rounded-lg p-2 hover:bg-white/10 lg:hidden"
+    aria-label="Close menu"
+  >
+    <X size={20} />
+  </button>
+</div>
 
         {/* Navigation */}
         <nav className="mt-5 flex-1 overflow-y-auto px-3 pb-5">
