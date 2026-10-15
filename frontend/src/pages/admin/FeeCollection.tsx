@@ -2,16 +2,21 @@
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
-  Search,
   Plus,
   IndianRupee,
   Wallet,
   CreditCard,
-  Banknote,
   X,
   Printer,
   CheckCircle2,
 } from "lucide-react";
+import DataTable from "../../components/common/DataTable";
+import FilterSelect from "../../components/common/FilterSelect";
+import PageHeader from "../../components/common/PageHeader";
+import Pagination from "../../components/common/Pagination";
+import SearchBar from "../../components/common/SearchBar";
+import StatusBadge from "../../components/common/StatusBadge";
+import SummaryCard from "../../components/common/SummaryCard";
 
 type PaymentMode = "Cash" | "UPI" | "Card" | "Bank Transfer";
 
@@ -64,6 +69,8 @@ export default function FeeCollection() {
   const [payments, setPayments] = useState(initialPayments);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedReceipt, setSelectedReceipt] = useState<Payment | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -82,6 +89,9 @@ export default function FeeCollection() {
       );
     });
   }, [students, search, classFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredStudents.length / pageSize));
+  const paginatedStudents = filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const totalCollected = payments.reduce((sum, payment) => sum + payment.amount, 0);
   const totalOutstanding = students.reduce(
@@ -183,146 +193,96 @@ export default function FeeCollection() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Fee Collection</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Collect student payments and generate receipts.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setModalOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
-        >
-          <Plus size={18} />
-          Collect Fee
-        </button>
-      </div>
+      <PageHeader
+        title="Fee Collection"
+        description="Collect student payments and generate receipts."
+        actions={
+          <button
+            onClick={() => setModalOpen(true)}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+          >
+            <Plus size={18} />
+            Collect Fee
+          </button>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">Total Collected</p>
-            <IndianRupee size={22} className="text-green-600" />
-          </div>
-          <p className="mt-3 text-2xl font-bold text-gray-900">{money(totalCollected)}</p>
-          <p className="mt-1 text-xs text-gray-500">Recorded demo payments</p>
-        </div>
-
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">Outstanding Dues</p>
-            <Wallet size={22} className="text-red-600" />
-          </div>
-          <p className="mt-3 text-2xl font-bold text-gray-900">{money(totalOutstanding)}</p>
-          <p className="mt-1 text-xs text-gray-500">Across sample students</p>
-        </div>
-
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">Students Listed</p>
-            <CreditCard size={22} className="text-blue-600" />
-          </div>
-          <p className="mt-3 text-2xl font-bold text-gray-900">{students.length}</p>
-        </div>
-
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">Fully Paid</p>
-            <CheckCircle2 size={22} className="text-purple-600" />
-          </div>
-          <p className="mt-3 text-2xl font-bold text-gray-900">{paidStudents}</p>
-        </div>
+        <SummaryCard label="Total Collected" value={money(totalCollected)} icon={<IndianRupee size={22} />} iconClassName="text-green-600" iconBackgroundClassName="bg-green-50" />
+        <SummaryCard label="Outstanding Dues" value={money(totalOutstanding)} icon={<Wallet size={22} />} iconClassName="text-red-600" iconBackgroundClassName="bg-red-50" />
+        <SummaryCard label="Students Listed" value={students.length} icon={<CreditCard size={22} />} iconClassName="text-blue-600" iconBackgroundClassName="bg-blue-50" />
+        <SummaryCard label="Fully Paid" value={paidStudents} icon={<CheckCircle2 size={22} />} iconClassName="text-purple-600" iconBackgroundClassName="bg-purple-50" />
       </div>
 
       <div className="rounded-xl border bg-white p-5 shadow-sm">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
-            <Search
-              size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search student name or ID..."
-              className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm"
+          <SearchBar
+            value={search}
+            onChange={(value) => { setSearch(value); setCurrentPage(1); }}
+            placeholder="Search student name or ID..."
+            className="flex-1"
+          />
+          <div className="w-full sm:w-48">
+            <FilterSelect
+              value={classFilter}
+              onChange={(value) => { setClassFilter(value); setCurrentPage(1); }}
+              placeholder="All Classes"
+              options={Array.from({ length: 12 }, (_, index) => `Class ${index + 1}`)}
             />
           </div>
+        </div>
 
-          <select
-            value={classFilter}
-            onChange={(event) => setClassFilter(event.target.value)}
-            className="rounded-lg border bg-white px-3 py-2.5 text-sm"
-          >
-            <option value="All">All Classes</option>
-            {Array.from({ length: 12 }, (_, index) => `Class ${index + 1}`).map(
-              (className) => (
-                <option key={className}>{className}</option>
+        <DataTable<StudentFee>
+          data={paginatedStudents}
+          rowKey={(student) => student.id}
+          tableClassName="min-w-[850px] text-sm"
+          columns={[
+            {
+              key: "student",
+              header: "Student",
+              render: (student) => (
+                <div>
+                  <p className="font-semibold text-gray-900">{student.studentName}</p>
+                  <p className="mt-1 text-xs text-gray-500">{student.studentId}</p>
+                </div>
               ),
-            )}
-          </select>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[850px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs uppercase text-gray-500">
-              <tr>
-                <th className="px-4 py-3">Student</th>
-                <th className="px-4 py-3">Class</th>
-                <th className="px-4 py-3">Total Fee</th>
-                <th className="px-4 py-3">Paid</th>
-                <th className="px-4 py-3">Due</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Action</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {filteredStudents.map((student) => {
-                const due = Math.max(0, student.totalFee - student.paid);
-                const fullyPaid = due === 0;
-
+            },
+            { key: "class", header: "Class", render: (student) => <span className="text-gray-600">{student.className}</span> },
+            { key: "totalFee", header: "Total Fee", render: (student) => money(student.totalFee) },
+            { key: "paid", header: "Paid", render: (student) => <span className="font-medium text-green-700">{money(student.paid)}</span> },
+            { key: "due", header: "Due", render: (student) => <span className="font-semibold text-red-600">{money(Math.max(0, student.totalFee - student.paid))}</span> },
+            { key: "status", header: "Status", render: (student) => <StatusBadge status={student.paid >= student.totalFee ? "Paid" : "Due"} /> },
+            {
+              key: "action",
+              header: "Action",
+              className: "text-right",
+              render: (student) => {
+                const fullyPaid = student.paid >= student.totalFee;
                 return (
-                  <tr key={student.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-4">
-                      <p className="font-semibold text-gray-900">{student.studentName}</p>
-                      <p className="mt-1 text-xs text-gray-500">{student.studentId}</p>
-                    </td>
-                    <td className="px-4 py-4 text-gray-600">{student.className}</td>
-                    <td className="px-4 py-4">{money(student.totalFee)}</td>
-                    <td className="px-4 py-4 font-medium text-green-700">{money(student.paid)}</td>
-                    <td className="px-4 py-4 font-semibold text-red-600">{money(due)}</td>
-                    <td className="px-4 py-4">
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${fullyPaid ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
-                        {fullyPaid ? "Paid" : "Due"}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <button
-                        disabled={fullyPaid}
-                        onClick={() => {
-                          setForm({ ...emptyForm, studentId: student.studentId });
-                          setModalOpen(true);
-                        }}
-                        className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
-                      >
-                        Collect
-                      </button>
-                    </td>
-                  </tr>
+                  <button
+                    disabled={fullyPaid}
+                    onClick={() => {
+                      setForm({ ...emptyForm, studentId: student.studentId });
+                      setModalOpen(true);
+                    }}
+                    className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Collect
+                  </button>
                 );
-              })}
-              {filteredStudents.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-gray-500">
-                    No students found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              },
+            },
+          ]}
+          emptyState={<p className="text-sm text-gray-500">No students found.</p>}
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredStudents.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          itemLabel="students"
+        />
       </div>
 
       <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
@@ -330,43 +290,41 @@ export default function FeeCollection() {
           <h2 className="font-semibold text-gray-900">Recent Payments</h2>
           <p className="mt-1 text-sm text-gray-500">Latest recorded transactions</p>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[700px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs uppercase text-gray-500">
-              <tr>
-                <th className="px-5 py-3">Receipt No.</th>
-                <th className="px-5 py-3">Student</th>
-                <th className="px-5 py-3">Date</th>
-                <th className="px-5 py-3">Mode</th>
-                <th className="px-5 py-3">Amount</th>
-                <th className="px-5 py-3 text-right">Receipt</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {payments.map((payment) => (
-                <tr key={payment.id}>
-                  <td className="px-5 py-4 font-medium">{payment.receiptNo}</td>
-                  <td className="px-5 py-4">
-                    <p className="font-medium">{payment.studentName}</p>
-                    <p className="mt-1 text-xs text-gray-500">{payment.studentId}</p>
-                  </td>
-                  <td className="px-5 py-4 text-gray-600">{payment.date}</td>
-                  <td className="px-5 py-4 text-gray-600">{payment.mode}</td>
-                  <td className="px-5 py-4 font-semibold">{money(payment.amount)}</td>
-                  <td className="px-5 py-4 text-right">
-                    <button
-                      onClick={() => printReceipt(payment)}
-                      title="Print receipt"
-                      className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
-                    >
-                      <Printer size={17} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable<Payment>
+          data={payments}
+          rowKey={(payment) => payment.id}
+          tableClassName="min-w-[700px] text-sm"
+          columns={[
+            { key: "receiptNo", header: "Receipt No.", render: (payment) => <span className="font-medium">{payment.receiptNo}</span> },
+            {
+              key: "student",
+              header: "Student",
+              render: (payment) => (
+                <div>
+                  <p className="font-medium">{payment.studentName}</p>
+                  <p className="mt-1 text-xs text-gray-500">{payment.studentId}</p>
+                </div>
+              ),
+            },
+            { key: "date", header: "Date", render: (payment) => <span className="text-gray-600">{payment.date}</span> },
+            { key: "mode", header: "Mode", render: (payment) => <StatusBadge status={payment.mode} /> },
+            { key: "amount", header: "Amount", render: (payment) => <span className="font-semibold">{money(payment.amount)}</span> },
+            {
+              key: "receipt",
+              header: "Receipt",
+              className: "text-right",
+              render: (payment) => (
+                <button
+                  onClick={() => printReceipt(payment)}
+                  title="Print receipt"
+                  className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
+                >
+                  <Printer size={17} />
+                </button>
+              ),
+            },
+          ]}
+        />
         <p className="border-t px-5 py-3 text-xs text-gray-500">
           Demo transactions only; payments are not saved to the database.
         </p>

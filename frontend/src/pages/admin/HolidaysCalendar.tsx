@@ -1,530 +1,253 @@
+import { useMemo, useState } from "react";
 import {
   Plus,
   Pencil,
   Trash2,
   CalendarDays,
-  Search,
-  X,
   ChevronLeft,
   ChevronRight,
+  FileText,
 } from "lucide-react";
-import { useState } from "react";
+import DataTable from "../../components/common/DataTable";
+import FilterSelect from "../../components/common/FilterSelect";
+import PageHeader from "../../components/common/PageHeader";
+import Pagination from "../../components/common/Pagination";
+import SearchBar from "../../components/common/SearchBar";
+import StatusBadge from "../../components/common/StatusBadge";
+import SummaryCard from "../../components/common/SummaryCard";
 
-interface CalendarEvent {
+type CalendarEventType = "Holiday" | "Event" | "Working Day";
+
+type CalendarEvent = {
   id: number;
   title: string;
   date: string;
-  type: "Holiday" | "Event" | "Working Day";
+  type: CalendarEventType;
   description: string;
-}
+};
 
-function HolidaysCalendar() {
-  const [showForm, setShowForm] = useState(false);
+const initialEvents: CalendarEvent[] = [
+  { id: 1, title: "Independence Day", date: "2026-08-15", type: "Holiday", description: "National holiday" },
+  { id: 2, title: "Teachers' Day", date: "2026-09-05", type: "Event", description: "School celebration" },
+  { id: 3, title: "Gandhi Jayanti", date: "2026-10-02", type: "Holiday", description: "National holiday" },
+  { id: 4, title: "Annual Sports Day", date: "2026-11-14", type: "Event", description: "Annual school sports event" },
+  { id: 5, title: "Winter Working Saturday", date: "2026-12-12", type: "Working Day", description: "Special working Saturday" },
+];
+
+const emptyForm = {
+  title: "",
+  date: "",
+  type: "Holiday" as CalendarEventType,
+  description: "",
+};
+
+const inputClass =
+  "mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100";
+
+const typeBadgeStatus: Record<CalendarEventType, string> = {
+  Holiday: "Holiday",
+  Event: "Event",
+  "Working Day": "Working Day",
+};
+
+export default function HolidaysCalendar() {
+  const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
   const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All");
+  const [year, setYear] = useState(2026);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState(emptyForm);
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
 
-  const [events, setEvents] = useState<CalendarEvent[]>([
-    {
-      id: 1,
-      title: "Independence Day",
-      date: "2026-08-15",
-      type: "Holiday",
-      description: "National holiday",
-    },
-    {
-      id: 2,
-      title: "Teachers' Day",
-      date: "2026-09-05",
-      type: "Event",
-      description: "School celebration",
-    },
-    {
-      id: 3,
-      title: "Gandhi Jayanti",
-      date: "2026-10-02",
-      type: "Holiday",
-      description: "National holiday",
-    },
-    {
-      id: 4,
-      title: "Annual Sports Day",
-      date: "2026-11-14",
-      type: "Event",
-      description: "Annual school sports event",
-    },
-    {
-      id: 5,
-      title: "Winter Working Saturday",
-      date: "2026-12-12",
-      type: "Working Day",
-      description: "Special working Saturday",
-    },
-  ]);
+  const filteredEvents = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return events
+      .filter((event) => {
+        const matchesSearch =
+          event.title.toLowerCase().includes(query) ||
+          event.type.toLowerCase().includes(query) ||
+          event.description.toLowerCase().includes(query) ||
+          event.date.includes(query);
+        const matchesType = typeFilter === "All" || event.type === typeFilter;
+        const matchesYear = Number(event.date.slice(0, 4)) === year;
+        return matchesSearch && matchesType && matchesYear;
+      })
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }, [events, search, typeFilter, year]);
 
-  const [form, setForm] = useState({
-    title: "",
-    date: "",
-    type: "Holiday" as CalendarEvent["type"],
-    description: "",
-  });
+  const holidays = events.filter((event) => event.type === "Holiday" && Number(event.date.slice(0, 4)) === year).length;
+  const schoolEvents = events.filter((event) => event.type === "Event" && Number(event.date.slice(0, 4)) === year).length;
+  const workingDays = events.filter((event) => event.type === "Working Day" && Number(event.date.slice(0, 4)) === year).length;
 
-  const handleAddEvent = () => {
-    if (!form.title || !form.date) return;
+  const totalPages = Math.max(1, Math.ceil(filteredEvents.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const visibleEvents = filteredEvents.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
-    setEvents([
-      ...events,
-      {
-        id: Date.now(),
-        title: form.title,
-        date: form.date,
-        type: form.type,
-        description: form.description,
-      },
-    ]);
-
-    setForm({
-      title: "",
-      date: "",
-      type: "Holiday",
-      description: "",
-    });
-
-    setShowForm(false);
-  };
-
-  const deleteEvent = (id: number) => {
-    setEvents(events.filter((event) => event.id !== id));
-  };
-
-  const filteredEvents = events.filter((event) => {
-    const value = search.toLowerCase();
-
-    return (
-      event.title.toLowerCase().includes(value) ||
-      event.type.toLowerCase().includes(value) ||
-      event.description.toLowerCase().includes(value)
-    );
-  });
-
-  const holidays = events.filter(
-    (event) => event.type === "Holiday"
-  ).length;
-
-  const schoolEvents = events.filter(
-    (event) => event.type === "Event"
-  ).length;
-
-  const workingDays = events.filter(
-    (event) => event.type === "Working Day"
-  ).length;
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString("en-IN", {
+  const formatDate = (date: string) =>
+    new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
-  };
+
+  const upcomingEvents = events
+    .filter((event) => Number(event.date.slice(0, 4)) === year)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const upcomingHoliday = upcomingEvents.find((event) => event.type === "Holiday");
+  const upcomingEvent = upcomingEvents.find((event) => event.type === "Event");
+  const upcomingWorkingDay = upcomingEvents.find((event) => event.type === "Working Day");
+
+  function openAddForm() {
+    setEditingId(null);
+    setForm(emptyForm);
+    setShowForm(true);
+  }
+
+  function openEditForm(event: CalendarEvent) {
+    setEditingId(event.id);
+    setForm({ title: event.title, date: event.date, type: event.type, description: event.description });
+    setShowForm(true);
+  }
+
+  function closeForm() {
+    setShowForm(false);
+    setEditingId(null);
+    setForm(emptyForm);
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const title = form.title.trim();
+    if (!title || !form.date) return;
+
+    if (editingId !== null) {
+      setEvents((previous) => previous.map((event) =>
+        event.id === editingId ? { ...event, ...form, title } : event
+      ));
+    } else {
+      setEvents((previous) => [...previous, { ...form, title, id: Date.now() }]);
+    }
+    setYear(Number(form.date.slice(0, 4)));
+    setPage(1);
+    closeForm();
+  }
+
+  function deleteEvent(id: number) {
+    setEvents((previous) => previous.filter((event) => event.id !== id));
+  }
 
   return (
-    <div>
-      {/* Header */}
-      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800">
-            Holidays & Academic Calendar
-          </h1>
+    <div className="space-y-6">
+      <PageHeader
+        breadcrumb="School Management / Holidays & Calendar"
+        title="Holidays & Academic Calendar"
+        description="Manage holidays, school events and working days."
+        actions={
+          <button
+            type="button"
+            onClick={openAddForm}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700"
+          >
+            <Plus size={18} /> Add Calendar Entry
+          </button>
+        }
+      />
 
-          <p className="mt-1 text-sm text-gray-500">
-            Manage holidays, school events and working days.
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setShowForm(true)}
-          className="flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#1f2a70]"
-        >
-          <Plus size={18} />
-          Add Calendar Entry
-        </button>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <SummaryCard label="Holidays" value={holidays} icon={<CalendarDays size={22} />} iconClassName="text-red-600" iconBackgroundClassName="bg-red-50" />
+        <SummaryCard label="School Events" value={schoolEvents} icon={<CalendarDays size={22} />} iconClassName="text-blue-600" iconBackgroundClassName="bg-blue-50" />
+        <SummaryCard label="Working Days" value={workingDays} icon={<CalendarDays size={22} />} iconClassName="text-green-600" iconBackgroundClassName="bg-green-50" />
       </div>
 
-      {/* Summary */}
-      <div className="mb-6 grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Holidays</p>
-
-              <p className="mt-1 text-2xl font-bold text-gray-800">
-                {holidays}
-              </p>
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-red-50 text-red-600">
-              <CalendarDays size={22} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">School Events</p>
-
-              <p className="mt-1 text-2xl font-bold text-gray-800">
-                {schoolEvents}
-              </p>
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-              <CalendarDays size={22} />
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Working Days</p>
-
-              <p className="mt-1 text-2xl font-bold text-gray-800">
-                {workingDays}
-              </p>
-            </div>
-
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-green-50 text-green-600">
-              <CalendarDays size={22} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Calendar Preview */}
-      <div className="mb-6 rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-4 border-b border-gray-200 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-800">
-              Academic Calendar
-            </h2>
-
-            <p className="mt-1 text-sm text-gray-500">
-              Calendar overview for the academic year.
-            </p>
+            <h2 className="text-lg font-semibold text-gray-900">Academic Calendar</h2>
+            <p className="mt-1 text-sm text-gray-500">Calendar overview for {year}.</p>
           </div>
-
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
-            >
+            <button type="button" aria-label="Previous year" onClick={() => { setYear((value) => value - 1); setPage(1); }} className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">
               <ChevronLeft size={17} />
             </button>
-
-            <span className="min-w-28 text-center text-sm font-semibold text-gray-700">
-              2026
-            </span>
-
-            <button
-              type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
-            >
+            <span className="min-w-20 text-center text-sm font-semibold text-gray-700">{year}</span>
+            <button type="button" aria-label="Next year" onClick={() => { setYear((value) => value + 1); setPage(1); }} className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">
               <ChevronRight size={17} />
             </button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-3">
-          <div className="rounded-lg border border-red-100 bg-red-50 p-4">
-            <p className="text-xs font-medium text-red-600">
-              Upcoming Holiday
-            </p>
-
-            <p className="mt-2 text-sm font-semibold text-gray-800">
-              Gandhi Jayanti
-            </p>
-
-            <p className="mt-1 text-xs text-gray-500">
-              02 Oct 2026
-            </p>
-          </div>
-
-          <div className="rounded-lg border border-blue-100 bg-blue-50 p-4">
-            <p className="text-xs font-medium text-blue-600">
-              Upcoming Event
-            </p>
-
-            <p className="mt-2 text-sm font-semibold text-gray-800">
-              Annual Sports Day
-            </p>
-
-            <p className="mt-1 text-xs text-gray-500">
-              14 Nov 2026
-            </p>
-          </div>
-
-          <div className="rounded-lg border border-green-100 bg-green-50 p-4">
-            <p className="text-xs font-medium text-green-600">
-              Working Day
-            </p>
-
-            <p className="mt-2 text-sm font-semibold text-gray-800">
-              Winter Working Saturday
-            </p>
-
-            <p className="mt-1 text-xs text-gray-500">
-              12 Dec 2026
-            </p>
-          </div>
+          <UpcomingCard label="Upcoming Holiday" event={upcomingHoliday} formatDate={formatDate} color="red" />
+          <UpcomingCard label="Upcoming Event" event={upcomingEvent} formatDate={formatDate} color="blue" />
+          <UpcomingCard label="Working Day" event={upcomingWorkingDay} formatDate={formatDate} color="green" />
         </div>
-      </div>
+      </section>
 
-      {/* Calendar Entries */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-4 border-b border-gray-200 p-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-800">
-              Calendar Entries
-            </h2>
-
-            <p className="mt-1 text-sm text-gray-500">
-              All holidays, events and working days.
-            </p>
+      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="border-b border-gray-200 p-5">
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">Calendar Entries</h2>
+            <p className="mt-1 text-sm text-gray-500">Search and manage holidays, events and working days.</p>
           </div>
-
-          <div className="relative w-full sm:w-72">
-            <Search
-              size={17}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-
-            <input
-              type="text"
-              placeholder="Search calendar..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-300 py-2.5 pl-9 pr-4 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10"
-            />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <SearchBar value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Search title, date or description..." />
+            <FilterSelect value={typeFilter} onChange={(value) => { setTypeFilter(value); setPage(1); }} placeholder="All entry types" options={["Holiday", "Event", "Working Day"]} />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[750px] text-left">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Date
-                </th>
+        <DataTable
+          data={visibleEvents}
+          rowKey={(event: CalendarEvent) => event.id}
+          tableClassName="min-w-[750px]"
+          columns={[
+            { key: "date", header: "Date", render: (event: CalendarEvent) => <span className="whitespace-nowrap text-sm font-medium text-gray-800">{formatDate(event.date)}</span> },
+            { key: "title", header: "Title", render: (event: CalendarEvent) => <span className="text-sm font-medium text-gray-800">{event.title}</span> },
+            { key: "type", header: "Type", render: (event: CalendarEvent) => <TypeBadge type={event.type} /> },
+            { key: "description", header: "Description", render: (event: CalendarEvent) => <span className="text-sm text-gray-500">{event.description || "—"}</span> },
+            {
+              key: "actions", header: "Actions", className: "text-right",
+              render: (event: CalendarEvent) => (
+                <div className="flex justify-end gap-1">
+                  <button type="button" title="Edit calendar entry" aria-label={`Edit ${event.title}`} onClick={() => openEditForm(event)} className="rounded-lg p-2 text-gray-400 hover:bg-indigo-50 hover:text-indigo-600"><Pencil size={16} /></button>
+                  <button type="button" title="Delete calendar entry" aria-label={`Delete ${event.title}`} onClick={() => deleteEvent(event.id)} className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600"><Trash2 size={16} /></button>
+                </div>
+              ),
+            },
+          ]}
+          emptyState={<div><FileText size={32} className="mx-auto text-gray-300" /><p className="mt-2 text-sm font-medium text-gray-700">No calendar entries found</p><p className="mt-1 text-sm text-gray-500">Try another search, type or year.</p></div>}
+        />
+        <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredEvents.length} pageSize={pageSize} onPageChange={setPage} itemLabel="entries" />
+      </section>
 
-                <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Title
-                </th>
-
-                <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Type
-                </th>
-
-                <th className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Description
-                </th>
-
-                <th className="px-5 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-gray-200">
-              {filteredEvents
-                .sort((a, b) => a.date.localeCompare(b.date))
-                .map((event) => (
-                  <tr key={event.id} className="hover:bg-gray-50">
-                    <td className="px-5 py-4 text-sm font-medium text-gray-800">
-                      {formatDate(event.date)}
-                    </td>
-
-                    <td className="px-5 py-4 text-sm font-medium text-gray-800">
-                      {event.title}
-                    </td>
-
-                    <td className="px-5 py-4">
-                      <span
-                        className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                          event.type === "Holiday"
-                            ? "bg-red-50 text-red-700"
-                            : event.type === "Event"
-                              ? "bg-blue-50 text-blue-700"
-                              : "bg-green-50 text-green-700"
-                        }`}
-                      >
-                        {event.type}
-                      </span>
-                    </td>
-
-                    <td className="px-5 py-4 text-sm text-gray-500">
-                      {event.description || "—"}
-                    </td>
-
-                    <td className="px-5 py-4 text-right">
-                      <div className="flex justify-end gap-1">
-                        <button
-                          type="button"
-                          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-[#27348b]"
-                        >
-                          <Pencil size={16} />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => deleteEvent(event.id)}
-                          className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-
-              {filteredEvents.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-5 py-10 text-center text-sm text-gray-500"
-                  >
-                    No calendar entries found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Add Entry Modal */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-              <div>
-                <h2 className="text-lg font-semibold text-gray-800">
-                  Add Calendar Entry
-                </h2>
-
-                <p className="mt-1 text-xs text-gray-500">
-                  Add a holiday, event or working day.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="rounded-lg p-2 text-gray-400 hover:bg-gray-100"
-              >
-                <X size={19} />
-              </button>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/40 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) closeForm(); }}>
+          <div role="dialog" aria-modal="true" aria-labelledby="calendar-form-title" className="my-auto w-full max-w-lg rounded-xl bg-white shadow-xl">
+            <div className="border-b border-gray-200 px-6 py-4">
+              <h2 id="calendar-form-title" className="text-lg font-semibold text-gray-900">{editingId !== null ? "Edit Calendar Entry" : "Add Calendar Entry"}</h2>
+              <p className="mt-1 text-sm text-gray-500">Add a holiday, event or working day.</p>
             </div>
-
-            <div className="space-y-5 p-6">
-              {/* Title */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Title
-                </label>
-
-                <input
-                  type="text"
-                  placeholder="Example: Diwali Holiday"
-                  value={form.title}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      title: e.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10"
-                />
-              </div>
-
-              {/* Date */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Date
-                </label>
-
-                <input
-                  type="date"
-                  value={form.date}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      date: e.target.value,
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10"
-                />
-              </div>
-
-              {/* Type */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Entry Type
-                </label>
-
-                <select
-                  value={form.type}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      type: e.target.value as CalendarEvent["type"],
-                    })
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10"
-                >
-                  <option value="Holiday">Holiday</option>
-                  <option value="Event">Event</option>
-                  <option value="Working Day">Working Day</option>
+            <form onSubmit={handleSubmit} className="space-y-4 p-6">
+              <label className="block text-sm font-medium text-gray-700">Title *
+                <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass} placeholder="Example: Diwali Holiday" />
+              </label>
+              <label className="block text-sm font-medium text-gray-700">Date *
+                <input required type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className={inputClass} />
+              </label>
+              <label className="block text-sm font-medium text-gray-700">Entry Type *
+                <select required value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as CalendarEventType })} className={inputClass}>
+                  <option value="Holiday">Holiday</option><option value="Event">Event</option><option value="Working Day">Working Day</option>
                 </select>
+              </label>
+              <label className="block text-sm font-medium text-gray-700">Description
+                <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={`${inputClass} resize-none`} placeholder="Enter description..." />
+              </label>
+              <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
+                <button type="button" onClick={closeForm} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                <button type="submit" className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700">{editingId !== null ? "Save Changes" : "Add Entry"}</button>
               </div>
-
-              {/* Description */}
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-
-                <textarea
-                  rows={3}
-                  placeholder="Enter description..."
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      description: e.target.value,
-                    })
-                  }
-                  className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 border-t border-gray-200 px-6 py-4">
-              <button
-                type="button"
-                onClick={() => setShowForm(false)}
-                className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={handleAddEvent}
-                className="rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#1f2a70]"
-              >
-                Add Entry
-              </button>
-            </div>
+            </form>
           </div>
         </div>
       )}
@@ -532,4 +255,36 @@ function HolidaysCalendar() {
   );
 }
 
-export default HolidaysCalendar;
+function TypeBadge({ type }: { type: CalendarEventType }) {
+  const colors: Record<CalendarEventType, string> = {
+    Holiday: "bg-red-50 text-red-700",
+    Event: "bg-blue-50 text-blue-700",
+    "Working Day": "bg-green-50 text-green-700",
+  };
+  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${colors[type]}`}>{type}</span>;
+}
+
+function UpcomingCard({
+  label,
+  event,
+  formatDate,
+  color,
+}: {
+  label: string;
+  event?: CalendarEvent;
+  formatDate: (date: string) => string;
+  color: "red" | "blue" | "green";
+}) {
+  const colorClasses = {
+    red: "border-red-100 bg-red-50 text-red-600",
+    blue: "border-blue-100 bg-blue-50 text-blue-600",
+    green: "border-green-100 bg-green-50 text-green-600",
+  };
+  return (
+    <div className={`rounded-lg border p-4 ${colorClasses[color]}`}>
+      <p className="text-xs font-medium">{label}</p>
+      <p className="mt-2 text-sm font-semibold text-gray-800">{event?.title ?? "No entry added"}</p>
+      <p className="mt-1 text-xs text-gray-500">{event ? formatDate(event.date) : `No ${label.toLowerCase()} for ${new Date().getFullYear()}`}</p>
+    </div>
+  );
+}

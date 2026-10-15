@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react";
 import {
   CalendarDays,
-  Search,
   Download,
   Users,
   CheckCircle2,
@@ -9,6 +8,13 @@ import {
   Clock,
   ClipboardCheck,
 } from "lucide-react";
+
+import DataTable from "../../components/common/DataTable";
+import FilterSelect from "../../components/common/FilterSelect";
+import PageHeader from "../../components/common/PageHeader";
+import SearchBar from "../../components/common/SearchBar";
+import StatusBadge from "../../components/common/StatusBadge";
+import SummaryCard from "../../components/common/SummaryCard";
 
 type AttendanceStatus = "Present" | "Absent" | "Late" | "Leave";
 
@@ -33,20 +39,13 @@ const initialStudents: Student[] = [
 
 const statuses: AttendanceStatus[] = ["Present", "Absent", "Late", "Leave"];
 
-const statusStyle: Record<AttendanceStatus, string> = {
-  Present: "bg-green-100 text-green-700",
-  Absent: "bg-red-100 text-red-700",
-  Late: "bg-amber-100 text-amber-700",
-  Leave: "bg-blue-100 text-blue-700",
-};
-
 function today() {
   const date = new Date();
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 export default function StudentAttendance() {
-  const [students, setStudents] = useState(initialStudents);
+  const [students, setStudents] = useState<Student[]>(initialStudents);
   const [date, setDate] = useState(today());
   const [classFilter, setClassFilter] = useState("All");
   const [search, setSearch] = useState("");
@@ -68,25 +67,25 @@ export default function StudentAttendance() {
   }, [students, classFilter, search]);
 
   const counts = {
-    present: filteredStudents.filter((s) => s.status === "Present").length,
-    absent: filteredStudents.filter((s) => s.status === "Absent").length,
-    late: filteredStudents.filter((s) => s.status === "Late").length,
-    leave: filteredStudents.filter((s) => s.status === "Leave").length,
+    present: filteredStudents.filter((student) => student.status === "Present").length,
+    absent: filteredStudents.filter((student) => student.status === "Absent").length,
+    late: filteredStudents.filter((student) => student.status === "Late").length,
+    leave: filteredStudents.filter((student) => student.status === "Leave").length,
   };
 
   function updateStatus(id: number, status: AttendanceStatus) {
     setStudents((current) =>
-      current.map((student) => student.id === id ? { ...student, status } : student),
+      current.map((student) => (student.id === id ? { ...student, status } : student)),
     );
     setSavedMessage("");
   }
 
   function markAllPresent() {
+    const visibleIds = new Set(filteredStudents.map((student) => student.id));
+
     setStudents((current) =>
       current.map((student) =>
-        filteredStudents.some((filtered) => filtered.id === student.id)
-          ? { ...student, status: "Present" }
-          : student,
+        visibleIds.has(student.id) ? { ...student, status: "Present" } : student,
       ),
     );
     setSavedMessage("");
@@ -117,115 +116,154 @@ export default function StudentAttendance() {
     URL.revokeObjectURL(url);
   }
 
+  const columns = [
+    {
+      key: "student",
+      header: "Student",
+      render: (student: Student) => (
+        <div>
+          <p className="font-semibold text-gray-900">{student.name}</p>
+          <p className="mt-1 text-xs text-gray-500">{student.studentId}</p>
+        </div>
+      ),
+    },
+    {
+      key: "className",
+      header: "Class",
+      render: (student: Student) => <span className="text-gray-600">{student.className}</span>,
+    },
+    {
+      key: "attendanceStatus",
+      header: "Attendance Status",
+      render: (student: Student) => (
+        <select
+          aria-label={`Attendance status for ${student.name}`}
+          value={student.status}
+          onChange={(event) => updateStatus(student.id, event.target.value as AttendanceStatus)}
+          className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+        >
+          {statuses.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
+      ),
+    },
+    {
+      key: "statusLabel",
+      header: "Status Label",
+      render: (student: Student) => <StatusBadge status={student.status} />,
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Student Attendance</h1>
-          <p className="mt-1 text-sm text-gray-500">Record and manage daily student attendance.</p>
-        </div>
-        <button onClick={exportCSV} className="inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-semibold hover:bg-gray-50">
-          <Download size={17} /> Export CSV
+        <PageHeader
+          title="Student Attendance"
+          description="Record and manage daily student attendance."
+        />
+        <button
+          type="button"
+          onClick={exportCSV}
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+        >
+          <Download size={17} />
+          Export CSV
         </button>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          { title: "Present", value: counts.present, icon: <CheckCircle2 size={22} />, color: "bg-green-100 text-green-600" },
-          { title: "Absent", value: counts.absent, icon: <XCircle size={22} />, color: "bg-red-100 text-red-600" },
-          { title: "Late", value: counts.late, icon: <Clock size={22} />, color: "bg-amber-100 text-amber-600" },
-          { title: "On Leave", value: counts.leave, icon: <ClipboardCheck size={22} />, color: "bg-blue-100 text-blue-600" },
-        ].map((item) => (
-          <div key={item.title} className="flex items-center justify-between rounded-xl border bg-white p-5 shadow-sm">
-            <div>
-              <p className="text-sm text-gray-500">{item.title}</p>
-              <p className="mt-2 text-2xl font-bold text-gray-900">{item.value}</p>
+        <SummaryCard label="Present" value={counts.present} icon={<CheckCircle2 size={22} />} iconClassName="text-green-600" iconBackgroundClassName="bg-green-100" />
+        <SummaryCard label="Absent" value={counts.absent} icon={<XCircle size={22} />} iconClassName="text-red-600" iconBackgroundClassName="bg-red-100" />
+        <SummaryCard label="Late" value={counts.late} icon={<Clock size={22} />} iconClassName="text-amber-600" iconBackgroundClassName="bg-amber-100" />
+        <SummaryCard label="On Leave" value={counts.leave} icon={<ClipboardCheck size={22} />} iconClassName="text-blue-600" iconBackgroundClassName="bg-blue-100" />
+      </div>
+
+      <section className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <label className="min-w-0 space-y-1">
+            <span className="block text-sm font-medium text-gray-700">Attendance Date</span>
+            <div className="relative">
+              <CalendarDays size={17} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="date"
+                value={date}
+                onChange={(event) => {
+                  setDate(event.target.value);
+                  setSavedMessage("");
+                }}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2.5 pl-10 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              />
             </div>
-            <div className={`rounded-xl p-3 ${item.color}`}>{item.icon}</div>
+          </label>
+
+          <div className="min-w-0">
+            <label className="mb-1 block text-sm font-medium text-gray-700">Class</label>
+            <FilterSelect
+              value={classFilter}
+              onChange={setClassFilter}
+              options={[
+                { label: "All Classes", value: "All" },
+                ...classes.map((name) => ({ label: name, value: name })),
+              ]}
+              placeholder="All Classes"
+            />
           </div>
-        ))}
-      </div>
 
-      <div className="rounded-xl border bg-white p-4 shadow-sm">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <label className="space-y-1">
-            <span className="text-sm font-medium text-gray-700">Attendance Date</span>
-            <div className="relative">
-              <CalendarDays size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input type="date" value={date} onChange={(e) => { setDate(e.target.value); setSavedMessage(""); }} className="w-full rounded-lg border px-3 py-2.5 pl-10 text-sm" />
-            </div>
-          </label>
-          <label className="space-y-1">
-            <span className="text-sm font-medium text-gray-700">Class</span>
-            <select value={classFilter} onChange={(e) => setClassFilter(e.target.value)} className="w-full rounded-lg border bg-white px-3 py-2.5 text-sm">
-              <option value="All">All Classes</option>
-              {classes.map((name) => <option key={name}>{name}</option>)}
-            </select>
-          </label>
-          <label className="space-y-1">
-            <span className="text-sm font-medium text-gray-700">Search Students</span>
-            <div className="relative">
-              <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name or student ID..." className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm" />
-            </div>
-          </label>
+          <div className="min-w-0">
+            <label className="mb-1 block text-sm font-medium text-gray-700">Search Students</label>
+            <SearchBar value={search} onChange={setSearch} placeholder="Name or student ID..." />
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
-        <div className="flex flex-col justify-between gap-3 border-b px-5 py-4 sm:flex-row sm:items-center">
+      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="flex flex-col justify-between gap-3 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center">
           <div>
             <h2 className="font-semibold text-gray-900">Attendance Register</h2>
             <p className="mt-1 text-sm text-gray-500">{filteredStudents.length} students · {date}</p>
           </div>
-          <button onClick={markAllPresent} className="rounded-lg border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50">
+          <button
+            type="button"
+            onClick={markAllPresent}
+            className="inline-flex items-center justify-center rounded-lg border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 transition-colors hover:bg-green-50"
+          >
             Mark All Present
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[750px] text-left text-sm">
-            <thead className="bg-gray-50 text-xs uppercase text-gray-500">
-              <tr>
-                <th className="px-5 py-4">Student</th>
-                <th className="px-5 py-4">Class</th>
-                <th className="px-5 py-4">Attendance Status</th>
-                <th className="px-5 py-4">Status Label</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y">
-              {filteredStudents.map((student) => (
-                <tr key={student.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-4">
-                    <p className="font-semibold text-gray-900">{student.name}</p>
-                    <p className="mt-1 text-xs text-gray-500">{student.studentId}</p>
-                  </td>
-                  <td className="px-5 py-4 text-gray-600">{student.className}</td>
-                  <td className="px-5 py-4">
-                    <select value={student.status} onChange={(e) => updateStatus(student.id, e.target.value as AttendanceStatus)} className="rounded-lg border bg-white px-3 py-2 text-sm">
-                      {statuses.map((status) => <option key={status}>{status}</option>)}
-                    </select>
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyle[student.status]}`}>{student.status}</span>
-                  </td>
-                </tr>
-              ))}
-              {filteredStudents.length === 0 && (
-                <tr><td colSpan={4} className="px-5 py-12 text-center text-gray-500"><Users className="mx-auto mb-2" />No students found.</td></tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <DataTable<Student>
+          data={filteredStudents}
+          columns={columns}
+          rowKey={(student) => student.id}
+          tableClassName="min-w-[750px] text-sm text-gray-800"
+          emptyState={
+            <div className="flex flex-col items-center gap-2 text-gray-500">
+              <Users size={22} />
+              <span>No students found.</span>
+            </div>
+          }
+        />
 
-        <div className="flex flex-col justify-between gap-3 border-t px-5 py-4 sm:flex-row sm:items-center">
+        <div className="flex flex-col justify-between gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center">
           <p className="text-xs text-gray-500">Demo data only; records are not saved to the database.</p>
-          <button onClick={() => setSavedMessage(`Attendance changes for ${date} are currently in page memory only.`)} className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
+          <button
+            type="button"
+            onClick={() => setSavedMessage(`Attendance changes for ${date} are currently in page memory only.`)}
+            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
             Save Attendance
           </button>
         </div>
-        {savedMessage && <p role="status" className="border-t bg-amber-50 px-5 py-3 text-sm text-amber-800">{savedMessage}</p>}
-      </div>
+
+        {savedMessage && (
+          <p role="status" className="border-t border-amber-200 bg-amber-50 px-5 py-3 text-sm text-amber-800">
+            {savedMessage}
+          </p>
+        )}
+      </section>
     </div>
   );
 }

@@ -1,6 +1,15 @@
 // src/pages/admin/library/Books.tsx
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
+import { BookOpen, LibraryBig, Plus, X } from "lucide-react";
+
+import DataTable from "../../../components/common/DataTable";
+import FilterSelect from "../../../components/common/FilterSelect";
+import PageHeader from "../../../components/common/PageHeader";
+import Pagination from "../../../components/common/Pagination";
+import SearchBar from "../../../components/common/SearchBar";
+import StatusBadge from "../../../components/common/StatusBadge";
+import SummaryCard from "../../../components/common/SummaryCard";
 
 type Book = {
   id: string;
@@ -20,339 +29,124 @@ const initialBooks: Book[] = [
 ];
 
 const categories = ["Science", "History", "Biography", "Poetry", "Finance", "Fiction", "Other"];
-
-// Form ki khaali state
-const emptyForm = { title: "", author: "", category: "Science", copies: "1" };
-
-const inputStyle =
-  "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b]";
-
-// ---------- Pagination helpers ----------
 const PAGE_SIZES = [5, 10, 25, 50];
-
-// Page numbers ki list: 1 ... 4 5 6 ... 20
-function getPageNumbers(page: number, totalPages: number): (number | "...")[] {
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, i) => i + 1);
-  }
-
-  const pages: (number | "...")[] = [1];
-  const start = Math.max(2, page - 1);
-  const end = Math.min(totalPages - 1, page + 1);
-
-  if (start > 2) pages.push("...");
-  for (let i = start; i <= end; i++) pages.push(i);
-  if (end < totalPages - 1) pages.push("...");
-
-  pages.push(totalPages);
-  return pages;
-}
-
-const pageBtn = "h-8 min-w-8 rounded-lg border px-2 text-sm font-semibold";
-const pageBtnNormal = `${pageBtn} border-gray-300 text-gray-700 hover:bg-gray-50`;
-const pageBtnActive = `${pageBtn} border-[#27348b] bg-[#27348b] text-white`;
-const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-200 text-gray-300`;
+const inputStyle = "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-blue-100";
+const emptyForm = { title: "", author: "", category: "Science", copies: "1" };
 
 export default function Books() {
   const [books, setBooks] = useState<Book[]>(initialBooks);
   const [search, setSearch] = useState("");
-
-  // Pagination state
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [availabilityFilter, setAvailabilityFilter] = useState("All");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-
-  // Popup form state
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
 
-  const filtered = books.filter(
-    (b) =>
-      b.title.toLowerCase().includes(search.toLowerCase()) ||
-      b.author.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredBooks = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return books.filter((book) => {
+      const matchesSearch = [book.id, book.title, book.author].some((value) => value.toLowerCase().includes(query));
+      const matchesCategory = categoryFilter === "All" || book.category === categoryFilter;
+      const matchesAvailability = availabilityFilter === "All" || (availabilityFilter === "Available" ? book.available > 0 : book.available === 0);
+      return matchesSearch && matchesCategory && matchesAvailability;
+    });
+  }, [books, search, categoryFilter, availabilityFilter]);
 
-  // Pagination ka hisaab
-  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  const safePage = Math.min(page, totalPages); // page kabhi total se bada na ho
-  const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
-  const from = filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1;
-  const to = Math.min(safePage * pageSize, filtered.length);
+  const totalPages = Math.max(1, Math.ceil(filteredBooks.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pagedBooks = filteredBooks.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const totalCopies = books.reduce((sum, book) => sum + book.copies, 0);
+  const availableCopies = books.reduce((sum, book) => sum + book.available, 0);
 
-  // Naya ID banana: sabse bada number + 1  (B005 -> B006)
-  function nextId(): string {
-    const max = books.reduce((m, b) => Math.max(m, Number(b.id.slice(1))), 0);
-    return "B" + String(max + 1).padStart(3, "0");
+  function nextId() {
+    const max = books.reduce((currentMax, book) => Math.max(currentMax, Number(book.id.slice(1)) || 0), 0);
+    return `B${String(max + 1).padStart(3, "0")}`;
   }
 
-  function openForm() {
-    setForm(emptyForm);
-    setError("");
-    setShowForm(true);
-  }
-
-  function closeForm() {
-    setShowForm(false);
-  }
-
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     const copies = Number(form.copies);
-
     if (!form.title.trim() || !form.author.trim()) {
-      setError("Title and Author are required");
+      setError("Title and author are required.");
       return;
     }
     if (!Number.isInteger(copies) || copies < 1) {
-      setError("Copies must be 1 or more");
+      setError("Copies must be a whole number of at least 1.");
       return;
     }
 
     const newBook: Book = {
-      id: nextId(),
-      title: form.title.trim(),
-      author: form.author.trim(),
-      category: form.category,
-      copies,
-      available: copies, // nayi book ki saari copies available hain
+      id: nextId(), title: form.title.trim(), author: form.author.trim(),
+      category: form.category, copies, available: copies,
     };
-
-    setBooks([newBook, ...books]);
-    setPage(1); // nayi book sabse upar hai, isliye page 1 par jao
-    closeForm();
+    setBooks((current) => [newBook, ...current]);
+    setPage(1);
+    setForm(emptyForm);
+    setError("");
+    setShowForm(false);
   }
+
+  const columns = [
+    { key: "id", header: "Book ID", render: (book: Book) => <span className="font-medium text-gray-500">{book.id}</span> },
+    { key: "title", header: "Book", render: (book: Book) => <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-700"><BookOpen size={18} /></span><div><p className="font-semibold text-gray-900">{book.title}</p><p className="mt-0.5 text-xs text-gray-500">{book.author}</p></div></div> },
+    { key: "category", header: "Category", render: (book: Book) => book.category },
+    { key: "copies", header: "Total Copies", render: (book: Book) => book.copies },
+    { key: "available", header: "Available", render: (book: Book) => <span className={book.available > 0 ? "font-semibold text-green-700" : "font-semibold text-red-600"}>{book.available}</span> },
+    { key: "status", header: "Availability", render: (book: Book) => <StatusBadge status={book.available > 0 ? "Available" : "Not available"} className={book.available > 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"} /> },
+  ];
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Books</h1>
-        <p className="text-sm text-gray-500">Manage all library books</p>
+      <PageHeader
+        title="Library Books"
+        description="Maintain the library catalogue and track available copies."
+        actions={<button type="button" onClick={() => { setForm(emptyForm); setError(""); setShowForm(true); }} className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"><Plus size={17} /> Add Book</button>}
+      />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <SummaryCard label="Book Titles" value={books.length} icon={<LibraryBig size={21} />} iconClassName="text-indigo-700" iconBackgroundClassName="bg-indigo-50" />
+        <SummaryCard label="Total Copies" value={totalCopies} icon={<BookOpen size={21} />} iconClassName="text-blue-700" iconBackgroundClassName="bg-blue-50" />
+        <SummaryCard label="Available Copies" value={availableCopies} icon={<BookOpen size={21} />} iconClassName="text-green-700" iconBackgroundClassName="bg-green-50" />
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        {/* Top bar: search + add button */}
-        <div className="flex flex-col gap-3 border-b border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between">
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1); // search karne par wapas page 1
-            }}
-            placeholder="Search by title or author..."
-            className="h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] sm:w-[320px]"
-          />
-          <button
-            onClick={openForm}
-            className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
-          >
-            + Add Book
-          </button>
+      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-gray-200 p-4 lg:flex-row lg:items-center">
+          <div className="min-w-0 flex-1"><SearchBar value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Search by book title, author, or ID..." /></div>
+          <div className="w-full sm:w-48"><FilterSelect value={categoryFilter} onChange={(value) => { setCategoryFilter(value); setPage(1); }} options={categories} placeholder="All categories" /></div>
+          <div className="w-full sm:w-44"><FilterSelect value={availabilityFilter} onChange={(value) => { setAvailabilityFilter(value); setPage(1); }} options={["Available", "Not available"]} placeholder="All availability" /></div>
         </div>
-
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm text-gray-800">
-            <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
-              <tr>
-                <th className="px-4 py-3">ID</th>
-                <th className="px-4 py-3">Title</th>
-                <th className="px-4 py-3">Author</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Copies</th>
-                <th className="px-4 py-3">Available</th>
-                <th className="px-4 py-3">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paged.map((b) => (
-                <tr key={b.id} className="border-t border-gray-200 hover:bg-gray-50">
-                  <td className="px-4 py-3 text-gray-500">{b.id}</td>
-                  <td className="px-4 py-3 font-semibold">{b.title}</td>
-                  <td className="px-4 py-3">{b.author}</td>
-                  <td className="px-4 py-3">{b.category}</td>
-                  <td className="px-4 py-3">{b.copies}</td>
-                  <td className="px-4 py-3">{b.available}</td>
-                  <td className="px-4 py-3">
-                    {b.available > 0 ? (
-                      <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
-                        Available
-                      </span>
-                    ) : (
-                      <span className="rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700">
-                        Not available
-                      </span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
-                    No books found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* ================= PAGINATION ================= */}
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-4 py-3 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
-          {/* Left: Showing 1-5 of 12 + rows per page */}
-          <div className="flex items-center gap-3">
-            <span>
-              Showing <b>{from}</b>-<b>{to}</b> of <b>{filtered.length}</b>
-            </span>
-
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPage(1);
-              }}
-              className="h-8 rounded-lg border border-gray-300 px-2 text-sm outline-none focus:border-[#27348b]"
-            >
-              {PAGE_SIZES.map((s) => (
-                <option key={s} value={s}>
-                  {s} / page
-                </option>
-              ))}
+        <DataTable<Book>
+          data={pagedBooks}
+          columns={columns}
+          rowKey={(book) => book.id}
+          tableClassName="min-w-[850px] text-sm text-gray-800"
+          emptyState="No books match your search or filters."
+        />
+        <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <label className="flex items-center gap-2 text-sm text-gray-500">Rows per page
+            <select value={pageSize} onChange={(event) => { setPageSize(Number(event.target.value)); setPage(1); }} className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-blue-500">
+              {PAGE_SIZES.map((size) => <option key={size} value={size}>{size}</option>)}
             </select>
-          </div>
-
-          {/* Right: Prev, 1 2 3, Next */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setPage(safePage - 1)}
-              disabled={safePage === 1}
-              className={safePage === 1 ? pageBtnDisabled : pageBtnNormal}
-            >
-              Prev
-            </button>
-
-            {getPageNumbers(safePage, totalPages).map((p, i) =>
-              p === "..." ? (
-                <span key={`dots-${i}`} className="px-1 text-gray-400">
-                  ...
-                </span>
-              ) : (
-                <button
-                  key={p}
-                  onClick={() => setPage(p)}
-                  className={p === safePage ? pageBtnActive : pageBtnNormal}
-                >
-                  {p}
-                </button>
-              )
-            )}
-
-            <button
-              onClick={() => setPage(safePage + 1)}
-              disabled={safePage === totalPages}
-              className={safePage === totalPages ? pageBtnDisabled : pageBtnNormal}
-            >
-              Next
-            </button>
-          </div>
+          </label>
+          <Pagination currentPage={safePage} totalPages={totalPages} totalItems={filteredBooks.length} pageSize={pageSize} onPageChange={setPage} itemLabel="books" />
         </div>
-      </div>
+      </section>
 
-      {/* ================= ADD BOOK POPUP ================= */}
-      {showForm && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
-          onClick={closeForm} // bahar click karne par band
-        >
-          <div
-            className="w-full max-w-[480px] rounded-xl bg-white shadow-xl"
-            onClick={(e) => e.stopPropagation()} // andar click karne par band nahi hoga
-          >
-            {/* Popup header */}
-            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-              <h2 className="text-lg font-bold text-gray-900">Add Book</h2>
-              <button
-                onClick={closeForm}
-                className="text-2xl leading-none text-gray-400 hover:text-gray-700"
-                aria-label="Close"
-              >
-                ×
-              </button>
-            </div>
-
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
-              <div>
-                <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Title</label>
-                <input
-                  value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  placeholder="e.g. Wings of Fire"
-                  className={inputStyle}
-                />
-              </div>
-
-              <div>
-                <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Author</label>
-                <input
-                  value={form.author}
-                  onChange={(e) => setForm({ ...form, author: e.target.value })}
-                  placeholder="e.g. A.P.J. Abdul Kalam"
-                  className={inputStyle}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Category</label>
-                  <select
-                    value={form.category}
-                    onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className={inputStyle}
-                  >
-                    {categories.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Copies</label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={form.copies}
-                    onChange={(e) => setForm({ ...form, copies: e.target.value })}
-                    className={inputStyle}
-                  />
-                </div>
-              </div>
-
-              {error && <p className="text-sm text-red-600">{error}</p>}
-
-              {/* Buttons */}
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={closeForm}
-                  className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
-                >
-                  Save Book
-                </button>
-              </div>
-            </form>
-          </div>
+      {showForm && <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" onClick={() => setShowForm(false)}>
+        <div className="w-full max-w-[480px] rounded-xl bg-white shadow-xl" onClick={(event) => event.stopPropagation()}>
+          <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4"><div><h2 className="text-lg font-bold text-gray-900">Add Book</h2><p className="mt-1 text-sm text-gray-500">Enter the book details below.</p></div><button type="button" onClick={() => setShowForm(false)} aria-label="Close" className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"><X size={20} /></button></div>
+          <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
+            <div><label className="mb-1 block text-sm font-medium text-gray-700">Title</label><input value={form.title} onChange={(event) => setForm({ ...form, title: event.target.value })} placeholder="e.g. Wings of Fire" className={inputStyle} /></div>
+            <div><label className="mb-1 block text-sm font-medium text-gray-700">Author</label><input value={form.author} onChange={(event) => setForm({ ...form, author: event.target.value })} placeholder="e.g. A.P.J. Abdul Kalam" className={inputStyle} /></div>
+            <div className="grid grid-cols-2 gap-4"><div><label className="mb-1 block text-sm font-medium text-gray-700">Category</label><select value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })} className={inputStyle}>{categories.map((category) => <option key={category} value={category}>{category}</option>)}</select></div><div><label className="mb-1 block text-sm font-medium text-gray-700">Copies</label><input type="number" min={1} step={1} value={form.copies} onChange={(event) => setForm({ ...form, copies: event.target.value })} className={inputStyle} /></div></div>
+            {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+            <div className="flex justify-end gap-3 pt-2"><button type="button" onClick={() => setShowForm(false)} className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50">Cancel</button><button type="submit" className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]">Save Book</button></div>
+          </form>
         </div>
-      )}
+      </div>}
+      <p className="text-xs text-gray-500">Demo data only. Changes are held in page state and are not saved to the backend.</p>
     </div>
   );
 }

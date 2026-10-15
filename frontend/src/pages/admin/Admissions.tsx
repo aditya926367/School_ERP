@@ -1,8 +1,14 @@
 
 import { useState } from "react";
+import DataTable from "../../components/common/DataTable";
+import FilterSelect from "../../components/common/FilterSelect";
+import PageHeader from "../../components/common/PageHeader";
+import Pagination from "../../components/common/Pagination";
+import SearchBar from "../../components/common/SearchBar";
+import StatusBadge from "../../components/common/StatusBadge";
+import SummaryCard from "../../components/common/SummaryCard";
 import {
   Plus,
-  Search,
   Users,
   Clock,
   CheckCircle,
@@ -229,277 +235,189 @@ export default function Admissions() {
     );
   }
 
-  function statusClass(status: AdmissionStatus) {
-    if (status === "Approved") return "bg-green-50 text-green-700";
-    if (status === "Rejected") return "bg-red-50 text-red-700";
-    return "bg-amber-50 text-amber-700";
-  }
+
 
   return (
     <div className="min-h-screen space-y-6 bg-gray-50 p-4 sm:p-6">
-      {/* Page header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <p className="text-sm text-gray-500">
-            School Management / Admissions
-          </p>
-          <h1 className="mt-1 text-2xl font-bold text-gray-900">
-            Student Admissions
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Review applications and manage new student enrollment.
-          </p>
-        </div>
-
-        <button
-          onClick={openAddForm}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          <Plus size={18} />
-          New Application
-        </button>
-      </div>
+      <PageHeader
+        breadcrumb="School Management / Admissions"
+        title="Student Admissions"
+        description="Review applications and manage new student enrollment."
+        actions={
+          <button
+            onClick={openAddForm}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+          >
+            <Plus size={18} />
+            New Application
+          </button>
+        }
+      />
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {[
-          {
-            label: "Total Applications",
-            value: admissions.length,
-            icon: Users,
-            color: "text-blue-600",
-            bg: "bg-blue-50",
-          },
-          {
-            label: "Pending Review",
-            value: pending,
-            icon: Clock,
-            color: "text-amber-600",
-            bg: "bg-amber-50",
-          },
-          {
-            label: "Approved",
-            value: approved,
-            icon: CheckCircle,
-            color: "text-green-600",
-            bg: "bg-green-50",
-          },
-          {
-            label: "Rejected",
-            value: rejected,
-            icon: XCircle,
-            color: "text-red-600",
-            bg: "bg-red-50",
-          },
-        ].map((stat) => {
-          const Icon = stat.icon;
-
-          return (
-            <div
-              key={stat.label}
-              className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
-                  <p className="mt-2 text-2xl font-bold text-gray-900">
-                    {stat.value}
-                  </p>
-                </div>
-                <div className={`rounded-lg p-3 ${stat.bg}`}>
-                  <Icon size={22} className={stat.color} />
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        <SummaryCard
+          label="Total Applications"
+          value={admissions.length}
+          icon={<Users size={22} />}
+          iconClassName="text-blue-600"
+          iconBackgroundClassName="bg-blue-50"
+        />
+        <SummaryCard
+          label="Pending Review"
+          value={pending}
+          icon={<Clock size={22} />}
+          iconClassName="text-amber-600"
+          iconBackgroundClassName="bg-amber-50"
+        />
+        <SummaryCard
+          label="Approved"
+          value={approved}
+          icon={<CheckCircle size={22} />}
+          iconClassName="text-green-600"
+          iconBackgroundClassName="bg-green-50"
+        />
+        <SummaryCard
+          label="Rejected"
+          value={rejected}
+          icon={<XCircle size={22} />}
+          iconClassName="text-red-600"
+          iconBackgroundClassName="bg-red-50"
+        />
       </div>
 
       {/* Application directory */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-4 border-b border-gray-200 p-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="font-semibold text-gray-900">
-              Admission Applications
-            </h2>
+      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="border-b border-gray-200 p-4">
+          <div className="mb-4">
+            <h2 className="font-semibold text-gray-900">Admission Applications</h2>
             <p className="mt-1 text-sm text-gray-500">
               Search, review and update applications.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="relative">
-              <Search
-                size={17}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-              />
-              <input
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-                placeholder="Search applications..."
-                className={`${inputClass} mt-0 pl-9`}
-              />
-            </div>
-
-            <select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <SearchBar
+              value={search}
+              onChange={(value) => {
+                setSearch(value);
                 setPage(1);
               }}
-              className={`${inputClass} mt-0`}
-            >
-              <option value="All">All statuses</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
-            </select>
+              placeholder="Search by student, application no. or parent"
+            />
+            <FilterSelect
+              value={statusFilter}
+              onChange={(value) => {
+                setStatusFilter(value);
+                setPage(1);
+              }}
+              placeholder="All statuses"
+              options={["Pending", "Approved", "Rejected"]}
+            />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px] text-left">
-            <thead className="bg-gray-50">
-              <tr>
-                {[
-                  "Application",
-                  "Student",
-                  "Class",
-                  "Parent / Guardian",
-                  "Applied On",
-                  "Status",
-                  "Actions",
-                ].map((heading) => (
-                  <th
-                    key={heading}
-                    className="px-5 py-3 text-xs font-semibold uppercase tracking-wide text-gray-500"
+        <DataTable
+          data={visible}
+          rowKey={(admission: Admission) => admission.id}
+          tableClassName="min-w-[900px]"
+          columns={[
+            {
+              key: "application",
+              header: "Application",
+              render: (admission: Admission) => (
+                <span className="text-sm font-medium text-blue-700">
+                  {admission.applicationNo}
+                </span>
+              ),
+            },
+            {
+              key: "student",
+              header: "Student",
+              render: (admission: Admission) => (
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{admission.studentName}</p>
+                  <p className="mt-1 text-xs text-gray-500">{admission.gender || "Not specified"}</p>
+                </div>
+              ),
+            },
+            {
+              key: "class",
+              header: "Class",
+              render: (admission: Admission) => (
+                <span className="text-sm text-gray-600">{admission.classApplied}</span>
+              ),
+            },
+            {
+              key: "parent",
+              header: "Parent / Guardian",
+              render: (admission: Admission) => (
+                <div>
+                  <p className="text-sm text-gray-800">{admission.parentName}</p>
+                  <p className="mt-1 text-xs text-gray-500">{admission.phone}</p>
+                </div>
+              ),
+            },
+            {
+              key: "appliedDate",
+              header: "Applied On",
+              render: (admission: Admission) => (
+                <span className="text-sm text-gray-600">{admission.appliedDate}</span>
+              ),
+            },
+            {
+              key: "status",
+              header: "Status",
+              render: (admission: Admission) => <StatusBadge status={admission.status} />,
+            },
+            {
+              key: "actions",
+              header: "Actions",
+              className: "text-right",
+              render: (admission: Admission) => (
+                <div className="flex items-center justify-end gap-1">
+                  <button
+                    type="button"
+                    title="View application"
+                    aria-label={`View ${admission.applicationNo}`}
+                    onClick={() => setSelected(admission)}
+                    className="rounded-md p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600"
                   >
-                    {heading}
-                  </th>
-                ))}
-              </tr>
-            </thead>
+                    <Eye size={17} />
+                  </button>
+                  <button
+                    type="button"
+                    title="Edit application"
+                    aria-label={`Edit ${admission.applicationNo}`}
+                    onClick={() => openEditForm(admission)}
+                    className="rounded-md p-2 text-gray-500 hover:bg-amber-50 hover:text-amber-600"
+                  >
+                    <Pencil size={17} />
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+          emptyState={
+            <div>
+              <FileText size={32} className="mx-auto text-gray-300" />
+              <p className="mt-2 text-sm font-medium text-gray-700">No applications found</p>
+              <p className="mt-1 text-sm text-gray-500">
+                Try another search or status filter.
+              </p>
+            </div>
+          }
+        />
 
-            <tbody className="divide-y divide-gray-100">
-              {visible.map((admission) => (
-                <tr key={admission.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-4 text-sm font-medium text-blue-700">
-                    {admission.applicationNo}
-                  </td>
-
-                  <td className="px-5 py-4">
-                    <p className="text-sm font-medium text-gray-900">
-                      {admission.studentName}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      {admission.gender || "Not specified"}
-                    </p>
-                  </td>
-
-                  <td className="px-5 py-4 text-sm text-gray-600">
-                    {admission.classApplied}
-                  </td>
-
-                  <td className="px-5 py-4">
-                    <p className="text-sm text-gray-800">
-                      {admission.parentName}
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      {admission.phone}
-                    </p>
-                  </td>
-
-                  <td className="px-5 py-4 text-sm text-gray-600">
-                    {admission.appliedDate}
-                  </td>
-
-                  <td className="px-5 py-4">
-                    <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusClass(
-                        admission.status
-                      )}`}
-                    >
-                      {admission.status}
-                    </span>
-                  </td>
-
-                  <td className="px-5 py-4">
-                    <div className="flex items-center gap-1">
-                      <button
-                        title="View application"
-                        onClick={() => setSelected(admission)}
-                        className="rounded-md p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600"
-                      >
-                        <Eye size={17} />
-                      </button>
-
-                      <button
-                        title="Edit application"
-                        onClick={() => openEditForm(admission)}
-                        className="rounded-md p-2 text-gray-500 hover:bg-amber-50 hover:text-amber-600"
-                      >
-                        <Pencil size={17} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {visible.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="px-5 py-12 text-center">
-                    <FileText
-                      size={32}
-                      className="mx-auto text-gray-300"
-                    />
-                    <p className="mt-2 text-sm font-medium text-gray-700">
-                      No applications found
-                    </p>
-                    <p className="mt-1 text-sm text-gray-500">
-                      Try another search or status filter.
-                    </p>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-gray-500">
-            Showing {filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}{" "}
-            to {Math.min(currentPage * pageSize, filtered.length)} of{" "}
-            {filtered.length} applications
-          </p>
-
-          <div className="flex items-center gap-2">
-            <button
-              disabled={currentPage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
-              aria-label="Previous page"
-            >
-              Previous
-            </button>
-
-            <span className="px-2 text-sm text-gray-600">
-              {currentPage} / {totalPages}
-            </span>
-
-            <button
-              disabled={currentPage >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded-lg border border-gray-300 p-2 text-gray-600 hover:bg-gray-50 disabled:opacity-40"
-              aria-label="Next page"
-            >
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filtered.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          itemLabel="applications"
+        />
+      </section>
 
       {/* Add / edit application form */}
       {showForm && (
