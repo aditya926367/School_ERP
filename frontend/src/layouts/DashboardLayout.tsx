@@ -259,6 +259,11 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
           icon: Users,
         },
         {
+  label: "Add Teachers",
+  path: "/addTeachers",
+  icon: GraduationCap,
+},
+        {
           label: "Roles & Permissions",
           path: "/admin/roles-permissions",
           icon: ShieldCheck,
