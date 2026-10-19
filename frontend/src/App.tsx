@@ -122,6 +122,7 @@ import LibrarySetup from "./pages/admin/library/librarySetup.tsx";
 import MyProfile from "./pages/common/myProfile.tsx";
 import ChangePassword from "./pages/common/changePassword.tsx";
 import Settings from "./pages/common/settings.tsx";
+import Teachers from "./pages/admin/teacher.tsx";
 
 
 
@@ -313,6 +314,10 @@ function App() {
           <Route path="/myProfile" element={<MyProfile />} />
           <Route path="/myProChangePassword" element={<ChangePassword />} />
            <Route path="/settings" element={<Settings />} />
+
+
+           {/*teacher */}
+            <Route path="/addTeachers" element={<Teachers />} />
         </Route>
       </Routes>
     </BrowserRouter>
