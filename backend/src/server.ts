@@ -1,20 +1,23 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-import healthRoutes from "./routes/health.routes.js";
 import { env } from "./config/env.js";
-
-dotenv.config();
+import { prisma } from "./lib/prisma.js";
+import healthRoutes from "./routes/health.routes.js";
 
 const app = express();
 
-app.use(cors());
+// Allow only our frontend (Vite dev server) to call this API
+app.use(cors({ origin: env.clientUrl }));
 app.use(express.json());
 
 app.use("/api/health", healthRoutes);
 
-app.listen(env.port, () => {
-  console.log(
-    `School ERP backend running on http://localhost:${env.port}`
-  );
+app.listen(env.port, async () => {
+  console.log(`School ERP backend running on http://localhost:${env.port}`);
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    console.log("MySQL connected");
+  } catch (error) {
+    console.error("MySQL connection failed:", error);
+  }
 });
