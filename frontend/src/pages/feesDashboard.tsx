@@ -1,13 +1,8 @@
-// src/pages/fees.tsx
+// src/pages/feesDashboard.tsx
 import type { ReactNode } from "react";
-import PortalLayout from "../layouts/PortalLayout";
-import type { MenuItem } from "../layouts/sidebar";
-import { FiHome } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import {
-  FaPencilAlt,
   FaFileAlt,
-  FaUser,
-  FaCreditCard,
   FaRegFile,
   FaRegListAlt,
   FaBars,
@@ -20,23 +15,12 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 
-// ---------- Sidebar menu for the Fees page ----------
-const feesMenu: MenuItem[] = [
-  { label: "Home", icon: <FiHome />, path: "/dashboard" },
-  { label: "Fees Tasks", icon: <FaPencilAlt />, path: "/fees", hasArrow: true },
-  { label: "Fees Reports", icon: <FaFileAlt />, path: "/fees", hasArrow: true },
-  { label: "Miscellaneous Fee", icon: <FaUser />, path: "/fees", hasArrow: true },
-  { label: "Hostel Fee", icon: <FaCreditCard />, path: "/fees", hasArrow: true },
-  { label: "Hostel Report", icon: <FaRegFile />, path: "/fees", hasArrow: true },
-  { label: "Crons", icon: <FaCreditCard />, path: "/fees", hasArrow: true },
-  { label: "Student Transport", icon: <FaCreditCard />, path: "/fees", hasArrow: true },
-];
-
 // ---------- Data for the 10 cards ----------
 type CardItem = {
   icon: ReactNode;
   title: string;
   description: string;
+  path?: string; // route of the page, only for cards whose page already exists
 };
 
 const cards: CardItem[] = [
@@ -44,6 +28,7 @@ const cards: CardItem[] = [
     icon: <FaRegListAlt />,
     title: "Fee Collection",
     description: "Manage and record student fee payments. Ensure smooth and secure transactions.",
+    path: "/admin/fee-collection",
   },
   {
     icon: <FaBars />,
@@ -59,11 +44,13 @@ const cards: CardItem[] = [
     icon: <FaThList />,
     title: "Defaulters List",
     description: "View students with pending fees. Take action on overdue payments.",
+    path: "/admin/pending-dues",
   },
   {
     icon: <FaTable />,
     title: "Total Fee Collection",
     description: "Track overall fee collection details. Generate insights on financial status.",
+    path: "/admin/finance-reports",
   },
   {
     icon: <FaFile />,
@@ -94,8 +81,11 @@ const cards: CardItem[] = [
 
 // ---------- One card (written once, used 10 times) ----------
 function FeeCard({ item }: { item: CardItem }) {
+  const navigate = useNavigate();
+
   function handleClick() {
-    console.log("Clicked:", item.title); // later: navigate to that page here
+    if (item.path) navigate(item.path);
+    else console.log("Clicked:", item.title); // page not built yet
   }
 
   return (
@@ -120,22 +110,20 @@ function FeeCard({ item }: { item: CardItem }) {
   );
 }
 
-// ---------- Page ----------
+// ---------- Page (DashboardLayout already adds the header and sidebar) ----------
 export default function FeesDashboard() {
   return (
-    <PortalLayout menu={feesMenu}>
-      <div className="bg-white border border-gray-200 rounded-[4px] px-4 pt-6 pb-8">
-        <h1 className="text-center text-[22px] font-bold text-[#2a2a63]">
-          Welcome, Fees Management
-        </h1>
+    <div className="bg-white border border-gray-200 rounded-[4px] px-4 pt-6 pb-8">
+      <h1 className="text-center text-[22px] font-bold text-[#2a2a63]">
+        Welcome, Fees Management
+      </h1>
 
-        {/* Grid: 1 column on mobile, 2 on tablet, 4 on desktop */}
-        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {cards.map((item) => (
-            <FeeCard key={item.title} item={item} />
-          ))}
-        </div>
+      {/* Grid: 1 column on mobile, 2 on tablet, 4 on desktop */}
+      <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {cards.map((item) => (
+          <FeeCard key={item.title} item={item} />
+        ))}
       </div>
-    </PortalLayout>
+    </div>
   );
 }
