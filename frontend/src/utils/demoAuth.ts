@@ -3,7 +3,7 @@ export type DemoUser = {
   userId: string;
   email: string;
   password: string;
-  role: "admin" | "teacher" | "student" | "parent" | "library";
+  role: "admin" | "teacher" | "student" | "parent" | "library"|"accountant";
 };
 
 const STORAGE_KEY = "school_erp_demo_users";
@@ -39,13 +39,42 @@ const defaultUsers: DemoUser[] = [
     password: "LIBRARY",
     role: "library",
   },
+   {
+    userId: "ACCOUNTANT",
+    email: "accountant@school.demo",
+    password: "ACCOUNTANT",
+    role: "accountant",
+  },
 ];
 
+// export function getDemoUsers(): DemoUser[] {
+//   const savedUsers = localStorage.getItem(STORAGE_KEY);
+
+//   if (savedUsers) {
+//     return JSON.parse(savedUsers) as DemoUser[];
+//   }
+
+//   localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultUsers));
+//   return defaultUsers;
+// }
 export function getDemoUsers(): DemoUser[] {
   const savedUsers = localStorage.getItem(STORAGE_KEY);
 
   if (savedUsers) {
-    return JSON.parse(savedUsers) as DemoUser[];
+    const saved = JSON.parse(savedUsers) as DemoUser[];
+
+    // Add any default user that is missing (for example a newly added role)
+    const missing = defaultUsers.filter(
+      (d) => !saved.some((s) => s.userId === d.userId)
+    );
+
+    if (missing.length > 0) {
+      const merged = [...saved, ...missing];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      return merged;
+    }
+
+    return saved;
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultUsers));

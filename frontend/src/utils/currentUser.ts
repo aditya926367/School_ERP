@@ -8,7 +8,8 @@ export type UserRole =
   | "student"
   | "parent"
   | "library"
-  | "certificate";
+  | "certificate"
+  | "accountant";
 
 type RoleDefaults = {
   name: string;
@@ -69,6 +70,14 @@ const roleDefaults: Record<UserRole, RoleDefaults> = {
     extraLabel: "Section",
     extraValue: "Certificates & Awards",
   },
+  accountant: {
+  name: "Accountant",
+  title: "Fees Management",
+  email: "accountant@yourschool.com",
+  phone: "+91 98765 43216",
+  extraLabel: "Section",
+  extraValue: "Fees & Accounts",
+},
 };
 
 // Same sources the header uses: "logged_in_user" (JSON) first, then "role"

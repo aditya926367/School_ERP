@@ -229,7 +229,7 @@ function App() {
           <Route path="/members" element={<Members />} />
           <Route path="/issueReturns" element={<IssueReturn />} />
           <Route path="/fines" element={<Fines />} />
-          <Route path="/fees" element={<FeesDashboard />} />
+          <Route path="/feesdashboard" element={<FeesDashboard />} />
           <Route path="/authorList" element={<AuthorList />} />
           <Route path="/importBookMaster" element={<ImportBookMaster />} />
           <Route path="/changeBookStatus" element={<ChangeBookStatus />} />

@@ -48,7 +48,7 @@ import {
   Pencil
 } from "lucide-react";
 
-type UserRole = "admin" | "teacher" | "student" | "parent" |"library" |"certificate";
+type UserRole = "admin" | "teacher" | "student" | "parent" |"library" |"certificate"|"accountant";
 
 type MenuItem = {
   label: string;
@@ -604,6 +604,7 @@ teacher: [
         { label: "Reports", path: "/libraryReports", icon: BarChart3 },
       ],
     },
+    
     {
       title: "Books",
       items: [
@@ -616,6 +617,18 @@ teacher: [
       ],
     },
   ],
+  accountant: [
+    {
+      title: "Fees Management",
+      items: [
+        { label: "Fee Structure", path: "/admin/fee-structure", icon: ClipboardList },
+        { label: "Fee Collection", path: "/admin/fee-collection", icon: CircleDollarSign },
+        { label: "Receipts", path: "/admin/receipts", icon: Receipt },
+        { label: "Pending Dues", path: "/admin/pending-dues", icon: Clock3 },
+        { label: "Finance Reports", path: "/admin/finance-reports", icon: BarChart3 },
+      ],
+    },
+  ],
 };
 
 const roleInfo = {
@@ -624,6 +637,11 @@ const roleInfo = {
     title: "Administrator",
     initials: "A",
   },
+  accountant: {
+  name: "Accountant",
+  title: "Fees Management",
+  initials: "AC",
+},
   teacher: {
     name: "Rahul Sharma",
     title: "Teacher",
@@ -659,6 +677,7 @@ const dashboardPaths: Record<UserRole, string> = {
   parent: "/parentdashboard",
   library: "/librarydashboard",
   certificate: "/certificateDashboard",
+  accountant: "/feesdashboard",
 };
 
 export default function DashboardLayout() {
@@ -672,6 +691,10 @@ export default function DashboardLayout() {
 
   const currentRole: UserRole = (() => {
   const path = location.pathname;
+  
+  if (storedRole === "accountant") {
+    return "accountant";
+  }
 
   if (path === "/studentdashboard" || path.startsWith("/student/")) {
     return "student";
