@@ -1,4 +1,4 @@
-
+import ActionButtons from "../../components/common/ActionButtons";
 import { useMemo, useState } from "react";
 import {
   Search,
@@ -213,7 +213,7 @@ export default function StudentDocuments() {
           <button
             type="button"
             onClick={() => setShowUploadModal(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white shadow-sm "
           >
             <Upload size={18} />
             Upload Document
@@ -350,26 +350,18 @@ export default function StudentDocuments() {
                       </span>
                     </td>
 
-                    <td className="px-5 py-4">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedDocument(doc)}
-                          title="View document details"
-                          className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-100"
-                        >
-                          <Eye size={17} />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDownload(doc)}
-                          title="Download document"
-                          className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-100"
-                        >
-                          <Download size={17} />
-                        </button>
-                      </div>
-                    </td>
+                    <td className="px-5 py-4 align-middle">
+  <div className="flex h-full items-center justify-end gap-2">
+    <ActionButtons
+      onView={() => setSelectedDocument(doc)}
+      onDownload={() => handleDownload(doc)}
+      showView={true}
+      showDownload={true}
+      showEdit={false}
+      showDelete={false}
+    />
+  </div>
+</td>
                   </tr>
                 ))}
 

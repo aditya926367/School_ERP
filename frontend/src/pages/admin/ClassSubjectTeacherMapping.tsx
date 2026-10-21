@@ -1,10 +1,15 @@
 import { useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, X, BookOpen, Users, GraduationCap } from "lucide-react";
+import { Plus, X, BookOpen, Users, GraduationCap } from "lucide-react";
 import DataTable from "../../components/common/DataTable";
 import SearchBar from "../../components/common/SearchBar";
 import PageHeader from "../../components/common/PageHeader";
 import SummaryCard from "../../components/common/SummaryCard";
 import StatusBadge from "../../components/common/StatusBadge";
+import {
+  EditButton,
+  DeleteButton,
+} from "../../components/common/ActionButtons";
+
 
 interface Mapping {
   id: number;
@@ -159,34 +164,25 @@ export default function ClassSubjectTeacherMapping() {
       className: "text-right",
       render: (mapping: Mapping) => (
         <div className="flex justify-end gap-1">
-          <button
-            type="button"
-            onClick={() => {
-              setEditingId(mapping.id);
-              setForm({
-                className: mapping.className,
-                section: mapping.section,
-                subject: mapping.subject,
-                teacher: mapping.teacher,
-              });
-              setShowForm(true);
-            }}
-            aria-label={`Edit ${mapping.subject} mapping`}
-            title="Edit mapping"
-            className="rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-[#27348b]"
-          >
-            <Pencil size={16} />
-          </button>
-          <button
-            type="button"
-            onClick={() => deleteMapping(mapping.id)}
-            aria-label={`Delete ${mapping.subject} mapping`}
-            title="Delete mapping"
-            className="rounded-lg p-2 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
+  <EditButton
+    title="Edit Mapping"
+    onClick={() => {
+      setEditingId(mapping.id);
+      setForm({
+        className: mapping.className,
+        section: mapping.section,
+        subject: mapping.subject,
+        teacher: mapping.teacher,
+      });
+      setShowForm(true);
+    }}
+  />
+
+  <DeleteButton
+    title="Delete Mapping"
+    onClick={() => deleteMapping(mapping.id)}
+  />
+</div>
       ),
     },
   ];

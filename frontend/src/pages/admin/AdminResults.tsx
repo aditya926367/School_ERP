@@ -288,7 +288,7 @@ export default function AdminResults() {
         <button
           type="button"
           onClick={exportCSV}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white"
         >
           <Download size={18} />
           Export CSV

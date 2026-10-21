@@ -5,15 +5,16 @@ import {
   CalendarDays,
   Plus,
   Search,
-  Pencil,
-  Trash2,
   X,
   FileText,
   Users,
   CheckCircle2,
   Clock,
 } from "lucide-react";
-
+import {
+  EditButton,
+  DeleteButton,
+} from "../../components/common/ActionButtons";
 type ExamStatus = "Upcoming" | "Ongoing" | "Completed";
 
 type Exam = {
@@ -257,7 +258,7 @@ export default function AdminExams() {
         <button
           type="button"
           onClick={openAddModal}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white "
         >
           <Plus size={18} />
           Create Exam
@@ -315,7 +316,7 @@ export default function AdminExams() {
             className={`${inputClass} md:w-48`}
             aria-label="Filter exams by status"
           >
-            <option value="All">All statuses</option>
+            <option value="All">All status</option>
             <option value="Upcoming">Upcoming</option>
             <option value="Ongoing">Ongoing</option>
             <option value="Completed">Completed</option>
@@ -377,25 +378,16 @@ export default function AdminExams() {
                     <StatusBadge status={exam.status} />
                   </td>
                   <td className="px-5 py-4">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
+                    <div className="flex items-center justify-end gap-2">
+                      <EditButton
+                        title="Edit Exam"
                         onClick={() => openEditModal(exam)}
-                        aria-label={`Edit ${exam.name}`}
-                        title="Edit exam"
-                        className="rounded-lg p-2 text-blue-600 transition hover:bg-blue-50"
-                      >
-                        <Pencil size={17} />
-                      </button>
-                      <button
-                        type="button"
+                      />
+
+                      <DeleteButton
+                        title="Delete Exam"
                         onClick={() => deleteExam(exam.id)}
-                        aria-label={`Delete ${exam.name}`}
-                        title="Delete exam"
-                        className="rounded-lg p-2 text-red-600 transition hover:bg-red-50"
-                      >
-                        <Trash2 size={17} />
-                      </button>
+                      />
                     </div>
                   </td>
                 </tr>
@@ -633,7 +625,7 @@ export default function AdminExams() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                  className="rounded-lg bg-[#27348b] px-5 py-2.5 text-sm font-semibold text-white "
                 >
                   {editingId !== null ? "Save Changes" : "Create Exam"}
                 </button>

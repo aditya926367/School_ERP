@@ -1,11 +1,9 @@
-
+import ActionButtons from "../../components/common/ActionButtons";
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
   Plus,
   Search,
-  Pencil,
-  Trash2,
   X,
   WalletCards,
   Users,
@@ -136,7 +134,7 @@ export default function FeeStructure() {
 
         <button
           onClick={openAddModal}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white "
         >
           <Plus size={18} />
           Add Fee Structure
@@ -144,7 +142,7 @@ export default function FeeStructure() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <div className="rounded-xl border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">Total Fee Structures</p>
             <WalletCards className="text-blue-600" size={22} />
@@ -152,7 +150,7 @@ export default function FeeStructure() {
           <p className="mt-3 text-2xl font-bold text-gray-900">{fees.length}</p>
         </div>
 
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <div className="rounded-xl border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">Active Structures</p>
             <Users className="text-green-600" size={22} />
@@ -160,7 +158,7 @@ export default function FeeStructure() {
           <p className="mt-3 text-2xl font-bold text-gray-900">{activeCount}</p>
         </div>
 
-        <div className="rounded-xl border bg-white p-5 shadow-sm">
+        <div className="rounded-xl border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">Sum of Active Fee Amounts</p>
             <IndianRupee className="text-purple-600" size={22} />
@@ -174,27 +172,24 @@ export default function FeeStructure() {
         </div>
       </div>
 
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-          <div className="relative flex-1">
-            <Search
-              size={18}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search fee type, class or year..."
-              className="w-full rounded-lg border py-2.5 pl-10 pr-3 text-sm outline-none focus:border-blue-500"
-            />
-          </div>
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">          <div className="relative flex-1">
+          <Search
+            size={18}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search fee type, class or year..."
+            className="w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+        </div>
 
           <select
             value={classFilter}
             onChange={(event) => setClassFilter(event.target.value)}
-            className="rounded-lg border bg-white px-3 py-2.5 text-sm"
-          >
-            <option value="All">All Classes</option>
+className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"  >        
+  <option value="All">All Classes</option>
             {Array.from({ length: 12 }, (_, index) => `Class ${index + 1}`).map(
               (className) => (
                 <option key={className} value={className}>
@@ -205,8 +200,7 @@ export default function FeeStructure() {
           </select>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[850px] text-left text-sm">
+<div className="overflow-x-auto rounded-lg border border-gray-200">          <table className="w-full min-w-[850px] text-left text-sm">
             <thead className="bg-gray-50 text-xs uppercase text-gray-500">
               <tr>
                 <th className="px-4 py-3">Class</th>
@@ -235,32 +229,26 @@ export default function FeeStructure() {
                   <td className="px-4 py-4 text-gray-600">{fee.frequency}</td>
                   <td className="px-4 py-4">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        fee.status === "Active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${fee.status === "Active"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-100 text-gray-600"
+                        }`}
                     >
                       {fee.status}
                     </span>
                   </td>
-                  <td className="px-4 py-4">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => openEditModal(fee)}
-                        title="Edit fee structure"
-                        className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
-                      >
-                        <Pencil size={17} />
-                      </button>
-                      <button
-                        onClick={() => deleteFee(fee.id)}
-                        title="Delete fee structure"
-                        className="rounded-lg p-2 text-red-600 hover:bg-red-50"
-                      >
-                        <Trash2 size={17} />
-                      </button>
-                    </div>
+                  <td className="px-4 py-4 align-middle">
+                    <ActionButtons
+                      onEdit={() => openEditModal(fee)}
+                      onDelete={() => deleteFee(fee.id)}
+                      showView={false}
+                      showEdit={true}
+                      showDelete={true}
+                      showPrint={false}
+                      showDownload={false}
+                      editTitle={`Edit ${fee.feeType}`}
+                      deleteTitle={`Delete ${fee.feeType}`}
+                    />
                   </td>
                 </tr>
               ))}
@@ -276,16 +264,12 @@ export default function FeeStructure() {
           </table>
         </div>
 
-        <p className="mt-4 text-xs text-gray-500">
-          Demo data only. Changes are held in page memory and are not saved to
-          PostgreSQL.
-        </p>
+
       </div>
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b p-5">
+<div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-xl">            <div className="flex items-center justify-between border-b p-5">
               <div>
                 <h2 className="text-lg font-bold text-gray-900">
                   {editingId !== null ? "Edit Fee Structure" : "Add Fee Structure"}

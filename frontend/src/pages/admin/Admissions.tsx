@@ -18,6 +18,7 @@ import {
   X,
   FileText,
 } from "lucide-react";
+import ActionButtons from "../../components/common/ActionButtons";
 
 type AdmissionStatus = "Pending" | "Approved" | "Rejected";
 
@@ -246,7 +247,7 @@ export default function Admissions() {
         actions={
           <button
             onClick={openAddForm}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white "
           >
             <Plus size={18} />
             New Application
@@ -375,26 +376,15 @@ export default function Admissions() {
               header: "Actions",
               className: "text-right",
               render: (admission: Admission) => (
-                <div className="flex items-center justify-end gap-1">
-                  <button
-                    type="button"
-                    title="View application"
-                    aria-label={`View ${admission.applicationNo}`}
-                    onClick={() => setSelected(admission)}
-                    className="rounded-md p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600"
-                  >
-                    <Eye size={17} />
-                  </button>
-                  <button
-                    type="button"
-                    title="Edit application"
-                    aria-label={`Edit ${admission.applicationNo}`}
-                    onClick={() => openEditForm(admission)}
-                    className="rounded-md p-2 text-gray-500 hover:bg-amber-50 hover:text-amber-600"
-                  >
-                    <Pencil size={17} />
-                  </button>
-                </div>
+              
+         <ActionButtons
+      onView={() => setSelected(admission)}
+      onEdit={() => openEditForm(admission)}
+      showDelete={false}
+      viewTitle={`View ${admission.studentName}`}
+      editTitle={`Edit ${admission.studentName}`}
+    />
+              
               ),
             },
           ]}

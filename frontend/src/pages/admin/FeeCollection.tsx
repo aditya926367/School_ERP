@@ -7,7 +7,6 @@ import {
   Wallet,
   CreditCard,
   X,
-  Printer,
   CheckCircle2,
 } from "lucide-react";
 import DataTable from "../../components/common/DataTable";
@@ -17,7 +16,7 @@ import Pagination from "../../components/common/Pagination";
 import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import SummaryCard from "../../components/common/SummaryCard";
-
+import ActionButtons from "../../components/common/ActionButtons";
 type PaymentMode = "Cash" | "UPI" | "Card" | "Bank Transfer";
 
 type StudentFee = {
@@ -199,7 +198,7 @@ export default function FeeCollection() {
         actions={
           <button
             onClick={() => setModalOpen(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white "
           >
             <Plus size={18} />
             Collect Fee
@@ -214,7 +213,7 @@ export default function FeeCollection() {
         <SummaryCard label="Fully Paid" value={paidStudents} icon={<CheckCircle2 size={22} />} iconClassName="text-purple-600" iconBackgroundClassName="bg-purple-50" />
       </div>
 
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row">
           <SearchBar
             value={search}
@@ -285,8 +284,9 @@ export default function FeeCollection() {
         />
       </div>
 
-      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
-        <div className="border-b px-5 py-4">
+      <div className="overflow-hidden rounded-xl border border-gray-200
+       bg-white shadow-sm">
+        <div className="border-b border-gray-200 px-5 py-4">
           <h2 className="font-semibold text-gray-900">Recent Payments</h2>
           <p className="mt-1 text-sm text-gray-500">Latest recorded transactions</p>
         </div>
@@ -314,13 +314,15 @@ export default function FeeCollection() {
               header: "Receipt",
               className: "text-right",
               render: (payment) => (
-                <button
-                  onClick={() => printReceipt(payment)}
-                  title="Print receipt"
-                  className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
-                >
-                  <Printer size={17} />
-                </button>
+                <ActionButtons
+                  onPrint={() => printReceipt(payment)}
+                  showView={false}
+                  showEdit={false}
+                  showDelete={false}
+                  showPrint={true}
+                  showDownload={false}
+                  printTitle={`Print receipt ${payment.receiptNo}`}
+                />
               ),
             },
           ]}
@@ -332,20 +334,20 @@ export default function FeeCollection() {
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b p-5">
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">Collect Student Fee</h2>
-                <p className="mt-1 text-sm text-gray-500">Enter payment details.</p>
-              </div>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
-                aria-label="Close dialog"
-              >
-                <X size={20} />
-              </button>
+          <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white shadow-xl">            
+            <div className="flex items-center justify-between border-b border-gray-200 p-5">
+            <div>
+              <h2 className="text-lg font-bold text-gray-900">Collect Student Fee</h2>
+              <p className="mt-1 text-sm text-gray-500">Enter payment details.</p>
             </div>
+            <button
+              onClick={() => setModalOpen(false)}
+              className="rounded-lg p-2 text-gray-500 hover:bg-gray-100"
+              aria-label="Close dialog"
+            >
+              <X size={20} />
+            </button>
+          </div>
 
             <form onSubmit={collectFee} className="space-y-4 p-5">
               <label className="block space-y-1.5">

@@ -337,16 +337,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
 
 
 teacher: [
-  {
-    title: "Overview",
-    items: [
-      {
-        label: "Dashboard",
-        path: "/teacherdashboard",
-        icon: LayoutDashboard,
-      },
-    ],
-  },
+ 
 
   {
     title: "My Teaching",

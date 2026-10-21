@@ -7,6 +7,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { EditButton, DeleteButton } from "../../components/common/ActionButtons";
 
 interface Subject {
   id: number;
@@ -19,6 +20,8 @@ interface Subject {
 
 function Subjects() {
   const [showForm, setShowForm] = useState(false);
+  const [editingSubjectId, setEditingSubjectId] = useState<number | null>(null);
+  
   const [search, setSearch] = useState("");
 
   const [subjects, setSubjects] = useState<Subject[]>([
@@ -72,28 +75,72 @@ function Subjects() {
   });
 
   const handleAddSubject = () => {
-    if (!form.name || !form.code) return;
+  if (!form.name.trim() || !form.code.trim()) {
+    alert("Please enter subject name and code.");
+    return;
+  }
 
+  if (editingSubjectId !== null) {
+    setSubjects((previous) =>
+      previous.map((subject) =>
+        subject.id === editingSubjectId
+          ? {
+              ...subject,
+              ...form,
+              name: form.name.trim(),
+              code: form.code.trim().toUpperCase(),
+            }
+          : subject
+      )
+    );
+  } else {
     const newSubject: Subject = {
       id: Date.now(),
-      name: form.name,
-      code: form.code.toUpperCase(),
+      name: form.name.trim(),
+      code: form.code.trim().toUpperCase(),
       type: form.type,
       description: form.description,
       status: "Active",
     };
 
-    setSubjects([...subjects, newSubject]);
+    setSubjects((previous) => [...previous, newSubject]);
+  }
 
-    setForm({
-      name: "",
-      code: "",
-      type: "Core",
-      description: "",
-    });
+  setForm({
+    name: "",
+    code: "",
+    type: "Core",
+    description: "",
+  });
 
-    setShowForm(false);
-  };
+  setEditingSubjectId(null);
+  setShowForm(false);
+};
+
+const handleEditSubject = (subject: Subject) => {
+  setEditingSubjectId(subject.id);
+
+  setForm({
+    name: subject.name,
+    code: subject.code,
+    type: subject.type,
+    description: subject.description,
+  });
+
+  setShowForm(true);
+};
+
+const handleCloseForm = () => {
+  setShowForm(false);
+  setEditingSubjectId(null);
+  setForm({
+    name: "",
+    code: "",
+    type: "Core",
+    description: "",
+  });
+};
+  
 
   const deleteSubject = (id: number) => {
     setSubjects(subjects.filter((subject) => subject.id !== id));
@@ -132,7 +179,16 @@ function Subjects() {
 
         <button
           type="button"
-          onClick={() => setShowForm(true)}
+          onClick={() => {
+  setEditingSubjectId(null);
+  setForm({
+    name: "",
+    code: "",
+    type: "Core",
+    description: "",
+  });
+  setShowForm(true);
+}}
           className="flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#1f2a70]"
         >
           <Plus size={18} />
@@ -270,11 +326,10 @@ function Subjects() {
 
                   <td className="px-5 py-4">
                     <span
-                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                        subject.type === "Core"
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${subject.type === "Core"
                           ? "bg-blue-50 text-blue-700"
                           : "bg-purple-50 text-purple-700"
-                      }`}
+                        }`}
                     >
                       {subject.type}
                     </span>
@@ -290,24 +345,19 @@ function Subjects() {
                     </span>
                   </td>
 
-                  <td className="px-5 py-4 text-right">
-                    <div className="flex justify-end gap-1">
-                      <button
-                        type="button"
-                        className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-[#27348b]"
-                      >
-                        <Pencil size={16} />
-                      </button>
+               <td className="px-4 py-3">
+  <div className="flex items-center justify-end gap-2">
+    <EditButton
+      title="Edit Subject"
+      onClick={() => handleEditSubject(subject)}
+    />
 
-                      <button
-                        type="button"
-                        onClick={() => deleteSubject(subject.id)}
-                        className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+    <DeleteButton
+      title="Delete Subject"
+      onClick={() => deleteSubject(subject.id)}
+    />
+  </div>
+</td>
                 </tr>
               ))}
 
@@ -333,7 +383,7 @@ function Subjects() {
             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">
-                  Add Subject
+                  {editingSubjectId !== null ? "Edit Subject" : "Add Subject"}
                 </h2>
 
                 <p className="mt-1 text-xs text-gray-500">
@@ -447,7 +497,7 @@ function Subjects() {
                 onClick={handleAddSubject}
                 className="rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#1f2a70]"
               >
-                Add Subject
+                {editingSubjectId !== null ? "Update Subject" : "Add Subject"}
               </button>
             </div>
           </div>
