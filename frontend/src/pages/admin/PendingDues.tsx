@@ -322,7 +322,7 @@ export default function PendingDues() {
           <button
             type="button"
             onClick={exportCSV}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white"
           >
             <Download size={18} />
             Export Dues
@@ -381,9 +381,8 @@ export default function PendingDues() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl border bg-white p-5 shadow-sm">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm ">
         <h2 className="mb-4 font-semibold text-gray-900">Filter Dues</h2>
-
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <label className="space-y-1.5">
             <span className="block text-sm font-medium text-gray-700">
@@ -438,8 +437,8 @@ export default function PendingDues() {
       </div>
 
       {/* Pending dues table */}
-      <div className="overflow-hidden rounded-xl border bg-white shadow-sm">
-        <div className="border-b px-5 py-4">
+      <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white text-slate-900 shadow-sm">
+        <div className="border-b border-gray-200 px-5 py-4">
           <h2 className="font-semibold text-gray-900">
             Students With Pending Fees
           </h2>
@@ -453,10 +452,9 @@ export default function PendingDues() {
           data={paginatedDues}
           columns={columns}
           rowKey={(due) => due.id}
-          tableClassName="min-w-[1000px] text-sm"
+          tableClassName="min-w-[1000px] text-sm "
           emptyState={
-            <p className="px-5 py-12 text-center text-gray-500">
-              No pending dues match your filters.
+<p className="border-b border-gray-100 px-5 py-12 text-center text-gray-500">              No pending dues match your filters.
             </p>
           }
         />
@@ -470,10 +468,7 @@ export default function PendingDues() {
           itemLabel="records"
         />
 
-        <p className="border-t px-5 py-3 text-xs text-gray-500">
-          Demo data only. Reminder delivery is not configured, and dues are not
-          loaded from PostgreSQL.
-        </p>
+
       </div>
     </div>
   );

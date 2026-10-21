@@ -7,6 +7,7 @@ import Pagination from "../../components/common/Pagination";
 import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import SummaryCard from "../../components/common/SummaryCard";
+import ActionButtons from "../../components/common/ActionButtons";
 import {
   Plus,
   Users,
@@ -152,7 +153,7 @@ const initialStudents: Student[] = [
 const inputClass =
   "mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
 const buttonClass =
-  "inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40";
+  "inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-[#27348b] px-3 py-2 text-sm font-medium text-white";
 
 const tabs: Tab[] = ["Overview", "Academics", "Attendance", "Fees", "Documents"];
 
@@ -371,21 +372,32 @@ export default function Students() {
         title="Student Management"
         description="Manage student records, profiles, academics, attendance and fees in one place."
         actions={
-          <>
-            <button onClick={exportStudents} className={buttonClass}>
-              <Download size={16} /> Export CSV
-            </button>
-            <button onClick={() => window.print()} className={buttonClass}>
-              <Printer size={16} /> Print
-            </button>
-            <button
-              onClick={openAddForm}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              <Plus size={18} /> Add Student
-            </button>
-          </>
-        }
+  <div className="flex w-full flex-wrap justify-end gap-2">
+    <button
+      onClick={exportStudents}
+      className={buttonClass}
+    >
+      <Download size={16} />
+      Export CSV
+    </button>
+
+    <button
+      onClick={() => window.print()}
+      className={buttonClass}
+    >
+      <Printer size={16} />
+      Print
+    </button>
+
+    <button
+      onClick={openAddForm}
+      className={buttonClass}
+    >
+      <Plus size={18} />
+      Add Student
+    </button>
+  </div>
+}
       />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -465,17 +477,26 @@ export default function Students() {
             { key: "parent", header: "Parent / Guardian", render: (student: Student) => <span className="text-sm text-gray-600">{student.parentName}</span> },
             { key: "phone", header: "Phone", render: (student: Student) => <span className="text-sm text-gray-600">{student.phone}</span> },
             { key: "status", header: "Status", render: (student: Student) => <StatusBadge status={student.status} /> },
-            {
-              key: "actions",
-              header: "Actions",
-              render: (student: Student) => (
-                <div className="flex items-center gap-1">
-                  <button type="button" title="View full profile" onClick={() => { setSelectedStudentId(student.id); setActiveTab("Overview"); setShowForm(false); }} className="rounded-md p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-600"><Eye size={17} /></button>
-                  <button type="button" title="Edit student" onClick={() => openEditForm(student)} className="rounded-md p-2 text-gray-500 hover:bg-amber-50 hover:text-amber-600"><Pencil size={17} /></button>
-                  <button type="button" title="Print profile" onClick={() => printStudent(student)} className="rounded-md p-2 text-gray-500 hover:bg-gray-100"><Printer size={17} /></button>
-                </div>
-              ),
-            },
+           {
+  key: "actions",
+  header: "Actions",
+  render: (student: Student) => (
+    <ActionButtons
+      onView={() => {
+        setSelectedStudentId(student.id);
+        setActiveTab("Overview");
+        setShowForm(false);
+      }}
+      onEdit={() => openEditForm(student)}
+      onPrint={() => printStudent(student)}
+      showPrint={true}
+      showDelete={false}
+      viewTitle={`View ${student.name}`}
+      editTitle={`Edit ${student.name}`}
+      printTitle={`Print ${student.name}'s profile`}
+    />
+  ),
+},
           ]}
           emptyState={
             <>

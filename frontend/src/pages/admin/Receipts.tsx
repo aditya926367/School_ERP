@@ -1,8 +1,6 @@
 import { useMemo, useState } from "react";
 import {
   Download,
-  Eye,
-  Printer,
   ReceiptText,
   Search,
   X,
@@ -14,6 +12,8 @@ import PageHeader from "../../components/common/PageHeader";
 import Pagination from "../../components/common/Pagination";
 import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
+import ActionButtons from "../../components/common/ActionButtons";
+
 
 type PaymentMode = "Cash" | "UPI" | "Card" | "Bank Transfer";
 
@@ -314,7 +314,7 @@ export default function Receipts() {
           <button
             type="button"
             onClick={exportCSV}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white"
           >
             <Download size={18} />
             Export Receipts
@@ -492,27 +492,17 @@ export default function Receipts() {
               header: "Actions",
               className: "text-right",
               render: (receipt: Receipt) => (
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSelectedReceipt(receipt)}
-                    title="View receipt"
-                    aria-label={`View receipt ${receipt.receiptNo}`}
-                    className="rounded-lg p-2 text-gray-600 hover:bg-gray-100"
-                  >
-                    <Eye size={17} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => printReceipt(receipt)}
-                    title="Print receipt"
-                    aria-label={`Print receipt ${receipt.receiptNo}`}
-                    className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
-                  >
-                    <Printer size={17} />
-                  </button>
-                </div>
+                <ActionButtons
+                  onView={() => setSelectedReceipt(receipt)}
+                  viewTitle={`View receipt ${receipt.receiptNo}`}
+                  showView={true}
+                  showEdit={false}
+                  showDelete={false}
+                  showPrint={true}
+                  onPrint={() => printReceipt(receipt)}
+                  printTitle={`Print receipt ${receipt.receiptNo}`}
+                  showDownload={false}
+                />
               ),
             },
           ]}
@@ -529,10 +519,7 @@ export default function Receipts() {
           />
         </div>
 
-        <p className="border-t px-5 py-3 text-xs text-gray-500">
-          Demo data only. Connect this page to your backend API to load actual
-          payment records.
-        </p>
+
       </section>
 
       {/* Receipt details modal */}

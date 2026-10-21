@@ -1,290 +1,509 @@
+
 import { useMemo, useState } from "react";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  FileText,
-} from "lucide-react";
+import type { FormEvent } from "react";
+import { CalendarDays, Plus, X } from "lucide-react";
+
 import DataTable from "../../components/common/DataTable";
-import FilterSelect from "../../components/common/FilterSelect";
-import PageHeader from "../../components/common/PageHeader";
-import Pagination from "../../components/common/Pagination";
-import SearchBar from "../../components/common/SearchBar";
-import StatusBadge from "../../components/common/StatusBadge";
-import SummaryCard from "../../components/common/SummaryCard";
+import type { DataTableColumn } from "../../components/common/DataTable";
 
-type CalendarEventType = "Holiday" | "Event" | "Working Day";
+import {
+  EditButton,
+  DeleteButton,
+} from "../../components/common/ActionButtons";
 
-type CalendarEvent = {
+type HolidayCategory =
+  | "Public Holiday"
+  | "School Holiday"
+  | "Event";
+
+interface Holiday {
   id: number;
-  title: string;
+  name: string;
   date: string;
-  type: CalendarEventType;
+  category: HolidayCategory;
   description: string;
-};
+}
 
-const initialEvents: CalendarEvent[] = [
-  { id: 1, title: "Independence Day", date: "2026-08-15", type: "Holiday", description: "National holiday" },
-  { id: 2, title: "Teachers' Day", date: "2026-09-05", type: "Event", description: "School celebration" },
-  { id: 3, title: "Gandhi Jayanti", date: "2026-10-02", type: "Holiday", description: "National holiday" },
-  { id: 4, title: "Annual Sports Day", date: "2026-11-14", type: "Event", description: "Annual school sports event" },
-  { id: 5, title: "Winter Working Saturday", date: "2026-12-12", type: "Working Day", description: "Special working Saturday" },
+type HolidayForm = Omit<Holiday, "id">;
+
+const INITIAL_HOLIDAYS: Holiday[] = [
+  {
+    id: 1,
+    name: "Diwali",
+    date: "2026-11-08",
+    category: "Public Holiday",
+    description: "Festival of lights",
+  },
+  {
+    id: 2,
+    name: "Children's Day",
+    date: "2026-11-14",
+    category: "School Holiday",
+    description: "School celebration",
+  },
+  {
+    id: 3,
+    name: "Winter Break Begins",
+    date: "2026-12-24",
+    category: "School Holiday",
+    description: "Winter vacation",
+  },
 ];
 
-const emptyForm = {
-  title: "",
+const EMPTY_FORM: HolidayForm = {
+  name: "",
   date: "",
-  type: "Holiday" as CalendarEventType,
+  category: "School Holiday",
   description: "",
 };
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100";
+  "w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-800 outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10";
 
-const typeBadgeStatus: Record<CalendarEventType, string> = {
-  Holiday: "Holiday",
-  Event: "Event",
-  "Working Day": "Working Day",
-};
+function formatDate(value: string): string {
+  if (!value) return "—";
 
-export default function HolidaysCalendar() {
-  const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
+  const date = new Date(`${value}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) return value;
+
+  return date.toLocaleDateString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+export default function HolidaysCalender() {
+  const [holidays, setHolidays] =
+    useState<Holiday[]>(INITIAL_HOLIDAYS);
+
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("All");
-  const [year, setYear] = useState(2026);
-  const [showForm, setShowForm] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [form, setForm] = useState(emptyForm);
-  const [page, setPage] = useState(1);
-  const pageSize = 5;
+  const [form, setForm] = useState<HolidayForm>(EMPTY_FORM);
+  const [error, setError] = useState("");
 
-  const filteredEvents = useMemo(() => {
+  const filteredHolidays = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return events
-      .filter((event) => {
-        const matchesSearch =
-          event.title.toLowerCase().includes(query) ||
-          event.type.toLowerCase().includes(query) ||
-          event.description.toLowerCase().includes(query) ||
-          event.date.includes(query);
-        const matchesType = typeFilter === "All" || event.type === typeFilter;
-        const matchesYear = Number(event.date.slice(0, 4)) === year;
-        return matchesSearch && matchesType && matchesYear;
-      })
+
+    return holidays
+      .filter((holiday) =>
+        [
+          holiday.name,
+          holiday.date,
+          holiday.category,
+          holiday.description,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(query),
+      )
       .sort((a, b) => a.date.localeCompare(b.date));
-  }, [events, search, typeFilter, year]);
+  }, [holidays, search]);
 
-  const holidays = events.filter((event) => event.type === "Holiday" && Number(event.date.slice(0, 4)) === year).length;
-  const schoolEvents = events.filter((event) => event.type === "Event" && Number(event.date.slice(0, 4)) === year).length;
-  const workingDays = events.filter((event) => event.type === "Working Day" && Number(event.date.slice(0, 4)) === year).length;
+  const openAddForm = () => {
+    setEditingId(null);
+    setForm(EMPTY_FORM);
+    setError("");
+    setIsFormOpen(true);
+  };
 
-  const totalPages = Math.max(1, Math.ceil(filteredEvents.length / pageSize));
-  const currentPage = Math.min(page, totalPages);
-  const visibleEvents = filteredEvents.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const openEditForm = (holiday: Holiday) => {
+    setEditingId(holiday.id);
 
-  const formatDate = (date: string) =>
-    new Date(`${date}T00:00:00`).toLocaleDateString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
+    setForm({
+      name: holiday.name,
+      date: holiday.date,
+      category: holiday.category,
+      description: holiday.description,
     });
 
-  const upcomingEvents = events
-    .filter((event) => Number(event.date.slice(0, 4)) === year)
-    .sort((a, b) => a.date.localeCompare(b.date));
-  const upcomingHoliday = upcomingEvents.find((event) => event.type === "Holiday");
-  const upcomingEvent = upcomingEvents.find((event) => event.type === "Event");
-  const upcomingWorkingDay = upcomingEvents.find((event) => event.type === "Working Day");
+    setError("");
+    setIsFormOpen(true);
+  };
 
-  function openAddForm() {
+  const closeForm = () => {
+    setIsFormOpen(false);
     setEditingId(null);
-    setForm(emptyForm);
-    setShowForm(true);
-  }
+    setForm(EMPTY_FORM);
+    setError("");
+  };
 
-  function openEditForm(event: CalendarEvent) {
-    setEditingId(event.id);
-    setForm({ title: event.title, date: event.date, type: event.type, description: event.description });
-    setShowForm(true);
-  }
+  const handleDelete = (id: number) => {
+    const holiday = holidays.find((item) => item.id === id);
 
-  function closeForm() {
-    setShowForm(false);
-    setEditingId(null);
-    setForm(emptyForm);
-  }
+    if (!holiday) return;
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const title = form.title.trim();
-    if (!title || !form.date) return;
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${holiday.name}"?`,
+    );
+
+    if (!confirmed) return;
+
+    setHolidays((current) =>
+      current.filter((item) => item.id !== id),
+    );
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError("");
+
+    const name = form.name.trim();
+
+    if (!name || !form.date) {
+      setError("Holiday name and date are required.");
+      return;
+    }
+
+    const duplicate = holidays.some(
+      (holiday) =>
+        holiday.id !== editingId &&
+        holiday.date === form.date &&
+        holiday.name.toLowerCase() === name.toLowerCase(),
+    );
+
+    if (duplicate) {
+      setError(
+        "A holiday with this name and date already exists.",
+      );
+      return;
+    }
 
     if (editingId !== null) {
-      setEvents((previous) => previous.map((event) =>
-        event.id === editingId ? { ...event, ...form, title } : event
-      ));
+      setHolidays((current) =>
+        current.map((holiday) =>
+          holiday.id === editingId
+            ? { ...holiday, ...form, name }
+            : holiday,
+        ),
+      );
     } else {
-      setEvents((previous) => [...previous, { ...form, title, id: Date.now() }]);
-    }
-    setYear(Number(form.date.slice(0, 4)));
-    setPage(1);
-    closeForm();
-  }
+      const newHoliday: Holiday = {
+        ...form,
+        name,
+        id: Date.now(),
+      };
 
-  function deleteEvent(id: number) {
-    setEvents((previous) => previous.filter((event) => event.id !== id));
-  }
+      setHolidays((current) => [...current, newHoliday]);
+    }
+
+    closeForm();
+  };
+
+  const columns: DataTableColumn<Holiday>[] = [
+    {
+      key: "holiday",
+      header: "Holiday",
+      render: (holiday) => (
+        <div>
+          <p className="font-medium text-gray-800">
+            {holiday.name}
+          </p>
+
+          {holiday.description && (
+            <p className="mt-1 text-xs text-gray-500">
+              {holiday.description}
+            </p>
+          )}
+        </div>
+      ),
+    },
+    {
+      key: "date",
+      header: "Date",
+      render: (holiday) => (
+        <span className="whitespace-nowrap text-sm text-gray-600">
+          {formatDate(holiday.date)}
+        </span>
+      ),
+    },
+    {
+      key: "category",
+      header: "Category",
+      render: (holiday) => {
+        const categoryClass =
+          holiday.category === "Public Holiday"
+            ? "bg-blue-50 text-blue-700"
+            : holiday.category === "Event"
+              ? "bg-purple-50 text-purple-700"
+              : "bg-green-50 text-green-700";
+
+        return (
+          <span
+            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${categoryClass}`}
+          >
+            {holiday.category}
+          </span>
+        );
+      },
+    },
+    {
+      key: "actions",
+      header: "Actions",
+      className: "w-28",
+      headerClassName: "text-right",
+      cellClassName: "text-right",
+      render: (holiday) => (
+        <div className="flex items-center justify-end gap-2">
+          <EditButton
+            onClick={() => openEditForm(holiday)}
+          />
+
+          <DeleteButton
+            onClick={() => handleDelete(holiday.id)}
+          />
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        breadcrumb="School Management / Holidays & Calendar"
-        title="Holidays & Academic Calendar"
-        description="Manage holidays, school events and working days."
-        actions={
-          <button
-            type="button"
-            onClick={openAddForm}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700"
-          >
-            <Plus size={18} /> Add Calendar Entry
-          </button>
-        }
-      />
+    <div className="mx-auto w-full max-w-6xl space-y-6 pb-8">
+      {/* Page header */}
+      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#27348b]/10 text-[#27348b]">
+            <CalendarDays size={22} />
+          </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <SummaryCard label="Holidays" value={holidays} icon={<CalendarDays size={22} />} iconClassName="text-red-600" iconBackgroundClassName="bg-red-50" />
-        <SummaryCard label="School Events" value={schoolEvents} icon={<CalendarDays size={22} />} iconClassName="text-blue-600" iconBackgroundClassName="bg-blue-50" />
-        <SummaryCard label="Working Days" value={workingDays} icon={<CalendarDays size={22} />} iconClassName="text-green-600" iconBackgroundClassName="bg-green-50" />
-      </div>
-
-      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-4 border-b border-gray-200 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Academic Calendar</h2>
-            <p className="mt-1 text-sm text-gray-500">Calendar overview for {year}.</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button type="button" aria-label="Previous year" onClick={() => { setYear((value) => value - 1); setPage(1); }} className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">
-              <ChevronLeft size={17} />
-            </button>
-            <span className="min-w-20 text-center text-sm font-semibold text-gray-700">{year}</span>
-            <button type="button" aria-label="Next year" onClick={() => { setYear((value) => value + 1); setPage(1); }} className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50">
-              <ChevronRight size={17} />
-            </button>
+            <h1 className="text-2xl font-bold text-gray-800">
+              Holidays Calendar
+            </h1>
+
+            <p className="mt-1 text-sm text-gray-500">
+              Manage school holidays and events.
+            </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 p-5 md:grid-cols-3">
-          <UpcomingCard label="Upcoming Holiday" event={upcomingHoliday} formatDate={formatDate} color="red" />
-          <UpcomingCard label="Upcoming Event" event={upcomingEvent} formatDate={formatDate} color="blue" />
-          <UpcomingCard label="Working Day" event={upcomingWorkingDay} formatDate={formatDate} color="green" />
-        </div>
-      </section>
+        <button
+          type="button"
+          onClick={openAddForm}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#1f2a70]"
+        >
+          <Plus size={18} />
+          Add Holiday
+        </button>
+      </header>
 
-      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="border-b border-gray-200 p-5">
-          <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Calendar Entries</h2>
-            <p className="mt-1 text-sm text-gray-500">Search and manage holidays, events and working days.</p>
+      {/* Holiday table */}
+      <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-gray-800">
+              Holiday Schedule
+            </h2>
+
+            <p className="mt-1 text-sm text-gray-500">
+              {filteredHolidays.length}{" "}
+              {filteredHolidays.length === 1
+                ? "record"
+                : "records"}
+            </p>
           </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <SearchBar value={search} onChange={(value) => { setSearch(value); setPage(1); }} placeholder="Search title, date or description..." />
-            <FilterSelect value={typeFilter} onChange={(value) => { setTypeFilter(value); setPage(1); }} placeholder="All entry types" options={["Holiday", "Event", "Working Day"]} />
-          </div>
+
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search holidays..."
+            aria-label="Search holidays"
+            className={`${inputClass} sm:max-w-xs`}
+          />
         </div>
 
         <DataTable
-          data={visibleEvents}
-          rowKey={(event: CalendarEvent) => event.id}
-          tableClassName="min-w-[750px]"
-          columns={[
-            { key: "date", header: "Date", render: (event: CalendarEvent) => <span className="whitespace-nowrap text-sm font-medium text-gray-800">{formatDate(event.date)}</span> },
-            { key: "title", header: "Title", render: (event: CalendarEvent) => <span className="text-sm font-medium text-gray-800">{event.title}</span> },
-            { key: "type", header: "Type", render: (event: CalendarEvent) => <TypeBadge type={event.type} /> },
-            { key: "description", header: "Description", render: (event: CalendarEvent) => <span className="text-sm text-gray-500">{event.description || "—"}</span> },
-            {
-              key: "actions", header: "Actions", className: "text-right",
-              render: (event: CalendarEvent) => (
-                <div className="flex justify-end gap-1">
-                  <button type="button" title="Edit calendar entry" aria-label={`Edit ${event.title}`} onClick={() => openEditForm(event)} className="rounded-lg p-2 text-gray-400 hover:bg-indigo-50 hover:text-indigo-600"><Pencil size={16} /></button>
-                  <button type="button" title="Delete calendar entry" aria-label={`Delete ${event.title}`} onClick={() => deleteEvent(event.id)} className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600"><Trash2 size={16} /></button>
-                </div>
-              ),
-            },
-          ]}
-          emptyState={<div><FileText size={32} className="mx-auto text-gray-300" /><p className="mt-2 text-sm font-medium text-gray-700">No calendar entries found</p><p className="mt-1 text-sm text-gray-500">Try another search, type or year.</p></div>}
+          data={filteredHolidays}
+          columns={columns}
+          rowKey={(holiday) => holiday.id}
+          emptyState={
+            <p className="text-sm text-gray-500">
+              No holidays found. Add a holiday or change your search.
+            </p>
+          }
         />
-        <Pagination currentPage={currentPage} totalPages={totalPages} totalItems={filteredEvents.length} pageSize={pageSize} onPageChange={setPage} itemLabel="entries" />
       </section>
 
-      {showForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/40 p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) closeForm(); }}>
-          <div role="dialog" aria-modal="true" aria-labelledby="calendar-form-title" className="my-auto w-full max-w-lg rounded-xl bg-white shadow-xl">
-            <div className="border-b border-gray-200 px-6 py-4">
-              <h2 id="calendar-form-title" className="text-lg font-semibold text-gray-900">{editingId !== null ? "Edit Calendar Entry" : "Add Calendar Entry"}</h2>
-              <p className="mt-1 text-sm text-gray-500">Add a holiday, event or working day.</p>
+      {/* Add/Edit modal */}
+      {isFormOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeForm();
+            }
+          }}
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="holiday-form-title"
+            className="w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-xl"
+          >
+            <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+              <div>
+                <h2
+                  id="holiday-form-title"
+                  className="text-lg font-semibold text-gray-800"
+                >
+                  {editingId === null
+                    ? "Add Holiday"
+                    : "Edit Holiday"}
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-500">
+                  Enter the holiday details.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeForm}
+                aria-label="Close form"
+                className="rounded-lg p-2 text-gray-400 hover:bg-gray-100"
+              >
+                <X size={19} />
+              </button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4 p-6">
-              <label className="block text-sm font-medium text-gray-700">Title *
-                <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} className={inputClass} placeholder="Example: Diwali Holiday" />
-              </label>
-              <label className="block text-sm font-medium text-gray-700">Date *
-                <input required type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} className={inputClass} />
-              </label>
-              <label className="block text-sm font-medium text-gray-700">Entry Type *
-                <select required value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value as CalendarEventType })} className={inputClass}>
-                  <option value="Holiday">Holiday</option><option value="Event">Event</option><option value="Working Day">Working Day</option>
+
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 p-6"
+            >
+              {error && (
+                <p
+                  role="alert"
+                  className="rounded-lg bg-red-50 p-3 text-sm text-red-700"
+                >
+                  {error}
+                </p>
+              )}
+
+              <div>
+                <label
+                  htmlFor="holiday-name"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                  Holiday Name *
+                </label>
+
+                <input
+                  id="holiday-name"
+                  value={form.name}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      name: event.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                  placeholder="e.g. Republic Day"
+                  maxLength={100}
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="holiday-date"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                  Date *
+                </label>
+
+                <input
+                  id="holiday-date"
+                  type="date"
+                  value={form.date}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      date: event.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                  required
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="holiday-category"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                  Category
+                </label>
+
+                <select
+                  id="holiday-category"
+                  value={form.category}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      category: event.target.value as HolidayCategory,
+                    }))
+                  }
+                  className={inputClass}
+                >
+                  <option value="Public Holiday">
+                    Public Holiday
+                  </option>
+                  <option value="School Holiday">
+                    School Holiday
+                  </option>
+                  <option value="Event">Event</option>
                 </select>
-              </label>
-              <label className="block text-sm font-medium text-gray-700">Description
-                <textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className={`${inputClass} resize-none`} placeholder="Enter description..." />
-              </label>
-              <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
-                <button type="button" onClick={closeForm} className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
-                <button type="submit" className="rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700">{editingId !== null ? "Save Changes" : "Add Entry"}</button>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="holiday-description"
+                  className="mb-1.5 block text-sm font-medium text-gray-700"
+                >
+                  Description
+                </label>
+
+                <textarea
+                  id="holiday-description"
+                  value={form.description}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      description: event.target.value,
+                    }))
+                  }
+                  className={`${inputClass} resize-y`}
+                  rows={3}
+                  placeholder="Optional details"
+                  maxLength={300}
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 border-t border-gray-200 pt-4">
+                <button
+                  type="button"
+                  onClick={closeForm}
+                  className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#1f2a70]"
+                >
+                  {editingId === null
+                    ? "Add Holiday"
+                    : "Save Changes"}
+                </button>
               </div>
             </form>
-          </div>
+          </section>
         </div>
       )}
-    </div>
-  );
-}
-
-function TypeBadge({ type }: { type: CalendarEventType }) {
-  const colors: Record<CalendarEventType, string> = {
-    Holiday: "bg-red-50 text-red-700",
-    Event: "bg-blue-50 text-blue-700",
-    "Working Day": "bg-green-50 text-green-700",
-  };
-  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${colors[type]}`}>{type}</span>;
-}
-
-function UpcomingCard({
-  label,
-  event,
-  formatDate,
-  color,
-}: {
-  label: string;
-  event?: CalendarEvent;
-  formatDate: (date: string) => string;
-  color: "red" | "blue" | "green";
-}) {
-  const colorClasses = {
-    red: "border-red-100 bg-red-50 text-red-600",
-    blue: "border-blue-100 bg-blue-50 text-blue-600",
-    green: "border-green-100 bg-green-50 text-green-600",
-  };
-  return (
-    <div className={`rounded-lg border p-4 ${colorClasses[color]}`}>
-      <p className="text-xs font-medium">{label}</p>
-      <p className="mt-2 text-sm font-semibold text-gray-800">{event?.title ?? "No entry added"}</p>
-      <p className="mt-1 text-xs text-gray-500">{event ? formatDate(event.date) : `No ${label.toLowerCase()} for ${new Date().getFullYear()}`}</p>
     </div>
   );
 }

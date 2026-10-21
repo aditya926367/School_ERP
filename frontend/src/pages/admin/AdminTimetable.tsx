@@ -4,13 +4,12 @@ import {
   CalendarDays,
   Plus,
   Search,
-  Pencil,
-  Trash2,
   Clock,
   Users,
   BookOpen,
   X,
 } from "lucide-react";
+import {EditButton,DeleteButton} from "../../components/common/ActionButtons";
 
 type TimetableEntry = {
   id: number;
@@ -254,7 +253,7 @@ export default function AdminTimetable() {
 
           <button
             onClick={openCreate}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white hover:bg-indigo-700"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-4 py-3 text-sm font-semibold text-white "
           >
             <Plus size={18} />
             Create Timetable Entry
@@ -395,23 +394,18 @@ export default function AdminTimetable() {
                     </td>
                     <td className="px-5 py-4 text-slate-600">{entry.room}</td>
                     <td className="px-5 py-4">
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => openEdit(entry)}
-                          aria-label={`Edit ${entry.subject}`}
-                          className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-100"
-                        >
-                          <Pencil size={15} />
-                        </button>
-                        <button
-                          onClick={() => deleteEntry(entry)}
-                          aria-label={`Delete ${entry.subject}`}
-                          className="rounded-lg border border-red-100 p-2 text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </td>
+  <div className="flex items-center gap-2">
+    <EditButton
+      title="Edit Timetable Entry"
+      onClick={() => openEdit(entry)}
+    />
+
+    <DeleteButton
+      title="Delete Timetable Entry"
+      onClick={() => deleteEntry(entry)}
+    />
+  </div>
+</td>
                   </tr>
                 ))}
                 {filteredEntries.length === 0 && (

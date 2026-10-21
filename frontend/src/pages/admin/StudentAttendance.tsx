@@ -167,7 +167,7 @@ export default function StudentAttendance() {
         <button
           type="button"
           onClick={exportCSV}
-          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white "
         >
           <Download size={17} />
           Export CSV
@@ -247,12 +247,12 @@ export default function StudentAttendance() {
           }
         />
 
-        <div className="flex flex-col justify-between gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center">
-          <p className="text-xs text-gray-500">Demo data only; records are not saved to the database.</p>
+        <div className="flex flex-col justify-end gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center">
+          
           <button
             type="button"
             onClick={() => setSavedMessage(`Attendance changes for ${date} are currently in page memory only.`)}
-            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="rounded-lg bg-[#27348b] px-5 py-2.5 text-sm font-semibold text-white "
           >
             Save Attendance
           </button>

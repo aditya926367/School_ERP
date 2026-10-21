@@ -156,7 +156,7 @@ export default function AttendanceReports() {
         </div>
         <button
           onClick={exportCSV}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white "
         >
           <Download size={17} /> Export Report
         </button>
@@ -352,9 +352,7 @@ export default function AttendanceReports() {
             </tbody>
           </table>
         </div>
-        <div className="border-t px-5 py-4 text-xs text-gray-500">
-          Report data is sample data. Connect the report to saved attendance records for production use.
-        </div>
+        
       </div>
     </div>
 );

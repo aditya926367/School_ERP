@@ -7,6 +7,7 @@ import {
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { EditButton, DeleteButton } from "../../components/common/ActionButtons";
 
 interface Section {
   id: number;
@@ -25,7 +26,7 @@ interface SchoolClass {
 function ClassesSections() {
   const [showClassForm, setShowClassForm] = useState(false);
   const [showSectionForm, setShowSectionForm] = useState(false);
-
+const [editingSectionId, setEditingSectionId] = useState<number | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<number | null>(
     null
   );
@@ -87,6 +88,7 @@ function ClassesSections() {
   ]);
 
   const [className, setClassName] = useState("");
+const [editingClassId, setEditingClassId] = useState<number | null>(null);
 
   const [sectionForm, setSectionForm] = useState({
     name: "",
@@ -102,60 +104,103 @@ function ClassesSections() {
     "Vikas Gupta",
   ];
 
-  const handleAddClass = () => {
-    if (!className.trim()) return;
+ const handleAddClass = () => {
+  if (!className.trim()) return;
 
-    setClasses([
-      ...classes,
-      {
-        id: Date.now(),
-        name: className,
-        sections: [],
-      },
-    ]);
-
-    setClassName("");
-    setShowClassForm(false);
-  };
-
-  const handleAddSection = () => {
-    if (
-      selectedClassId === null ||
-      !sectionForm.name ||
-      !sectionForm.capacity ||
-      !sectionForm.classTeacher
-    ) {
-      return;
-    }
-
-    setClasses(
-      classes.map((schoolClass) =>
-        schoolClass.id === selectedClassId
-          ? {
-              ...schoolClass,
-              sections: [
-                ...schoolClass.sections,
-                {
-                  id: Date.now(),
-                  name: sectionForm.name,
-                  capacity: Number(sectionForm.capacity),
-                  classTeacher: sectionForm.classTeacher,
-                  status: "Active",
-                },
-              ],
-            }
+  if (editingClassId !== null) {
+    // Update the existing class
+    setClasses((previousClasses) =>
+      previousClasses.map((schoolClass) =>
+        schoolClass.id === editingClassId
+          ? { ...schoolClass, name: className.trim() }
           : schoolClass
       )
     );
+  } else {
+    // Add a new class
+    setClasses((previousClasses) => [
+      ...previousClasses,
+      {
+        id: Date.now(),
+        name: className.trim(),
+        sections: [],
+      },
+    ]);
+  }
 
-    setSectionForm({
-      name: "",
-      capacity: "",
-      classTeacher: "",
-    });
+  setClassName("");
+  setEditingClassId(null);
+  setShowClassForm(false);
+};
 
-    setShowSectionForm(false);
-  };
+ const handleAddSection = () => {
+  if (
+    selectedClassId === null ||
+    !sectionForm.name.trim() ||
+    !sectionForm.capacity ||
+    !sectionForm.classTeacher
+  ) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const capacity = Number(sectionForm.capacity);
+
+  if (!Number.isFinite(capacity) || capacity <= 0) {
+    alert("Please enter a valid capacity.");
+    return;
+  }
+
+  setClasses((previousClasses) =>
+    previousClasses.map((schoolClass) => {
+      if (schoolClass.id !== selectedClassId) {
+        return schoolClass;
+      }
+
+      if (editingSectionId !== null) {
+        // Update the existing section
+        return {
+          ...schoolClass,
+          sections: schoolClass.sections.map((section) =>
+            section.id === editingSectionId
+              ? {
+                  ...section,
+                  name: sectionForm.name.trim(),
+                  capacity,
+                  classTeacher: sectionForm.classTeacher,
+                }
+              : section
+          ),
+        };
+      }
+
+      // Add a new section
+      return {
+        ...schoolClass,
+        sections: [
+          ...schoolClass.sections,
+          {
+            id: Date.now(),
+            name: sectionForm.name.trim(),
+            capacity,
+            classTeacher: sectionForm.classTeacher,
+            status: "Active",
+          },
+        ],
+      };
+    })
+  );
+
+  setSectionForm({
+    name: "",
+    capacity: "",
+    classTeacher: "",
+  });
+
+  setEditingSectionId(null);
+  setSelectedClassId(null);
+  setShowSectionForm(false);
+};
 
   const deleteClass = (id: number) => {
     setClasses(classes.filter((schoolClass) => schoolClass.id !== id));
@@ -166,11 +211,11 @@ function ClassesSections() {
       classes.map((schoolClass) =>
         schoolClass.id === classId
           ? {
-              ...schoolClass,
-              sections: schoolClass.sections.filter(
-                (section) => section.id !== sectionId
-              ),
-            }
+            ...schoolClass,
+            sections: schoolClass.sections.filter(
+              (section) => section.id !== sectionId
+            ),
+          }
           : schoolClass
       )
     );
@@ -300,20 +345,18 @@ function ClassesSections() {
                   Add Section
                 </button>
 
-                <button
-                  type="button"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-[#27348b]"
-                >
-                  <Pencil size={16} />
-                </button>
+               <EditButton
+  title="Edit Class"
+  onClick={() => {
+    setEditingClassId(schoolClass.id);
+    setClassName(schoolClass.name);
+    setShowClassForm(true);
+  }}
+/>
 
-                <button
-                  type="button"
+                <DeleteButton
                   onClick={() => deleteClass(schoolClass.id)}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-red-50 hover:text-red-600"
-                >
-                  <Trash2 size={16} />
-                </button>
+                />
               </div>
             </div>
 
@@ -373,19 +416,10 @@ function ClassesSections() {
                             </span>
                           </td>
 
-                          <td className="px-4 py-3 text-right">
-                            <button
-                              type="button"
-                              onClick={() =>
-                                deleteSection(
-                                  schoolClass.id,
-                                  section.id
-                                )
-                              }
-                              className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-600"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                          <td className="px-4 py-3">
+                            <div className="flex justify-end">
+                              <DeleteButton onClick={() => deleteSection(schoolClass.id, section.id)} />
+                            </div>
                           </td>
                         </tr>
                       ))}
