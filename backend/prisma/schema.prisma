@@ -1,0 +1,13 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// Temporary table to test the connection, we will replace it later
+model Test {
+  id   Int    @id @default(autoincrement())
+  name String
+}

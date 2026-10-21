@@ -122,6 +122,7 @@ import LibrarySetup from "./pages/admin/library/librarySetup.tsx";
 import MyProfile from "./pages/common/myProfile.tsx";
 import ChangePassword from "./pages/common/changePassword.tsx";
 import Settings from "./pages/common/settings.tsx";
+import Teachers from "./pages/admin/teacher.tsx";
 
 
 
@@ -228,7 +229,7 @@ function App() {
           <Route path="/members" element={<Members />} />
           <Route path="/issueReturns" element={<IssueReturn />} />
           <Route path="/fines" element={<Fines />} />
-          <Route path="/fees" element={<FeesDashboard />} />
+          <Route path="/feesdashboard" element={<FeesDashboard />} />
           <Route path="/authorList" element={<AuthorList />} />
           <Route path="/importBookMaster" element={<ImportBookMaster />} />
           <Route path="/changeBookStatus" element={<ChangeBookStatus />} />
@@ -313,6 +314,10 @@ function App() {
           <Route path="/myProfile" element={<MyProfile />} />
           <Route path="/myProChangePassword" element={<ChangePassword />} />
            <Route path="/settings" element={<Settings />} />
+
+
+           {/*teacher */}
+            <Route path="/addTeachers" element={<Teachers />} />
         </Route>
       </Routes>
     </BrowserRouter>
