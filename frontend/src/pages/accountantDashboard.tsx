@@ -48,7 +48,7 @@ const cards: CardItem[] = [
   },
   {
     icon: <FaThList />,
-    title: "Defaulters List",
+    title: "Pending dues",
     description: "View students with pending fees. Take action on overdue payments.",
     path: "/pendingdues",
   },
