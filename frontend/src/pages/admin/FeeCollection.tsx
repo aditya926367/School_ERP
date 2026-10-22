@@ -327,9 +327,7 @@ export default function FeeCollection() {
             },
           ]}
         />
-        <p className="border-t px-5 py-3 text-xs text-gray-500">
-          Demo transactions only; payments are not saved to the database.
-        </p>
+       
       </div>
 
       {modalOpen && (
@@ -418,7 +416,7 @@ export default function FeeCollection() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                  className="rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                 >
                   Save Payment
                 </button>

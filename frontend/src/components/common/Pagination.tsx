@@ -20,11 +20,10 @@ export default function Pagination({
   itemLabel = "items",
 }: PaginationProps) {
   const start = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
-  const end = Math.min(currentPage * pageSize, totalItems);
+ 
 
   return (
-    <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm text-gray-500">Showing {start} to {end} of {totalItems} </p>
+    <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-end">
       <div className="flex items-center gap-2">
         <button type="button" disabled={currentPage <= 1} onClick={() => onPageChange(Math.max(1, currentPage - 1))} className={buttonClass} aria-label="Previous page">
           <ChevronLeft size={18} /> Prev

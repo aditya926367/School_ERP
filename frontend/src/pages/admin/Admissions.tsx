@@ -629,7 +629,7 @@ export default function Admissions() {
 
                 <button
                   type="submit"
-                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                  className="rounded-lg bg-[#27348b] px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
                 >
                   {editingId !== null
                     ? "Save Changes"

@@ -12,7 +12,7 @@ import {
   X,
   Filter,
 } from "lucide-react";
-
+import Pagination from "../../components/common/Pagination";
 type DocumentStatus = "Pending" | "Verified" | "Rejected";
 
 type StudentDocument = {
@@ -88,6 +88,7 @@ const documentTypes = [
   "Other",
 ];
 
+
 export default function StudentDocuments() {
   const [documents, setDocuments] = useState(initialDocuments);
   const [search, setSearch] = useState("");
@@ -102,6 +103,8 @@ export default function StudentDocuments() {
   const [className, setClassName] = useState("");
   const [documentType, setDocumentType] = useState(documentTypes[0]);
   const [file, setFile] = useState<File | null>(null);
+
+const [page, setPage] = useState(1); 
 
   const filteredDocuments = useMemo(() => {
     return documents.filter((doc) => {
@@ -122,6 +125,15 @@ export default function StudentDocuments() {
     });
   }, [documents, search, statusFilter, typeFilter]);
 
+  const pageSize = 100;
+  const totalPages = Math.max(1, Math.ceil(filteredDocuments.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+
+  const visibleDocuments = filteredDocuments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  
   const stats = [
     {
       label: "Total Documents",
@@ -305,7 +317,7 @@ export default function StudentDocuments() {
               </thead>
 
               <tbody className="divide-y divide-slate-100">
-                {filteredDocuments.map((doc) => (
+                {visibleDocuments.map((doc) => (
                   <tr key={doc.id} className="transition hover:bg-slate-50">
                     <td className="px-5 py-4">
                       <p className="font-semibold text-slate-800">
@@ -338,30 +350,29 @@ export default function StudentDocuments() {
 
                     <td className="px-5 py-4">
                       <span
-                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                          doc.status === "Verified"
+                        className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${doc.status === "Verified"
                             ? "bg-green-50 text-green-700"
                             : doc.status === "Pending"
                               ? "bg-amber-50 text-amber-700"
                               : "bg-red-50 text-red-700"
-                        }`}
+                          }`}
                       >
                         {doc.status}
                       </span>
                     </td>
 
                     <td className="px-5 py-4 align-middle">
-  <div className="flex h-full items-center justify-end gap-2">
-    <ActionButtons
-      onView={() => setSelectedDocument(doc)}
-      onDownload={() => handleDownload(doc)}
-      showView={true}
-      showDownload={true}
-      showEdit={false}
-      showDelete={false}
-    />
-  </div>
-</td>
+                      <div className="flex h-full items-center justify-end gap-2">
+                        <ActionButtons
+                          onView={() => setSelectedDocument(doc)}
+                          onDownload={() => handleDownload(doc)}
+                          showView={true}
+                          showDownload={true}
+                          showEdit={false}
+                          showDelete={false}
+                        />
+                      </div>
+                    </td>
                   </tr>
                 ))}
 
@@ -378,9 +389,14 @@ export default function StudentDocuments() {
               </tbody>
             </table>
           </div>
-          <div className="border-t border-slate-100 px-5 py-3 text-sm text-slate-500">
-            Showing {filteredDocuments.length} of {documents.length} documents
-          </div>
+          <Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  totalItems={filteredDocuments.length}
+  pageSize={pageSize}
+  onPageChange={setPage}
+  itemLabel="documents"
+/>
         </div>
       </div>
 
