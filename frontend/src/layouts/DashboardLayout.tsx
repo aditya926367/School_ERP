@@ -607,6 +607,16 @@ teacher: [
         { label: "Author List", path: "/authorList", icon: Users },
       ],
     },
+
+    {
+  title: "Payroll",
+  items: [
+    { label: "Salary Structure", path: "/salaryStructure", icon: WalletCards },
+    { label: "Monthly Payroll", path: "/monthlyPayroll", icon: CalendarDays },
+    { label: "Salary Payments", path: "/salaryPayments", icon: CircleDollarSign },
+    { label: "Payslips", path: "/payslips", icon: Receipt },
+  ],
+},
   ],
   accountant: [
     {
@@ -620,6 +630,7 @@ teacher: [
       ],
     },
   ],
+  
 };
 
 const roleInfo = {

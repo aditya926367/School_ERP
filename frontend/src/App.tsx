@@ -125,6 +125,15 @@ import Settings from "./pages/common/settings.tsx";
 import Teachers from "./pages/admin/teacher.tsx";
 
 
+//teachher salary 
+import SalaryStructure from "./pages/admin/payroll/salaryStructure.tsx";
+import MonthlyPayroll from "./pages/admin/payroll/monthlyPayroll.tsx";
+import SalaryPayments from "./pages/admin/payroll/salaryPayments.tsx";
+import Payslips from "./pages/admin/payroll/paySlips.tsx";
+
+
+
+
 
 function App() {
   return (
@@ -313,11 +322,19 @@ function App() {
           {/* mainheader myProfile routes*/}
           <Route path="/myProfile" element={<MyProfile />} />
           <Route path="/myProChangePassword" element={<ChangePassword />} />
-           <Route path="/settings" element={<Settings />} />
+          <Route path="/settings" element={<Settings />} />
 
 
-           {/*teacher */}
-            <Route path="/addTeachers" element={<Teachers />} />
+          {/*teacher */}
+          <Route path="/addTeachers" element={<Teachers />} />
+
+          {/*teacher salary */}
+          <Route path="/salaryStructure" element={<SalaryStructure />} />
+          <Route path="/monthlyPayroll" element={<MonthlyPayroll />} />
+          <Route path="/salaryPayments" element={<SalaryPayments />} />
+          <Route path="/payslips" element={<Payslips />} />
+         
+
         </Route>
       </Routes>
     </BrowserRouter>
