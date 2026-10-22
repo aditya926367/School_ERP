@@ -32,54 +32,61 @@ const cards: CardItem[] = [
     icon: <FaRegListAlt />,
     title: "Fee Collection",
     description: "Manage and record student fee payments. Ensure smooth and secure transactions.",
-    path: "/admin/fee-collection",
+    path: "/feeCollection",
   },
   {
     icon: <FaBars />,
     title: "Student Fee-Bill",
     description: "Generate and track student fee bills. Maintain accurate billing records.",
+     path: "/studentFeeBill",
   },
   {
     icon: <FaRegFile />,
     title: "Fee Challan",
     description: "Create and manage fee challans. Streamline the payment process.",
+     path: "/feeChallan",
   },
   {
     icon: <FaThList />,
     title: "Defaulters List",
     description: "View students with pending fees. Take action on overdue payments.",
-    path: "/admin/pending-dues",
+    path: "/pendingdues",
   },
   {
     icon: <FaTable />,
     title: "Total Fee Collection",
     description: "Track overall fee collection details. Generate insights on financial status.",
-    path: "/admin/finance-reports",
+    path: "/financeReports",
   },
   {
     icon: <FaFile />,
     title: "Reconciliation",
     description: "Compare records for accuracy. Ensure balanced financial reports.",
+     path: "/reconciliation",
   },
   {
     icon: <FaHistory />,
     title: "MIS Status",
     description: "Monitor and analyze financial reports. Keep track of key metrics and data.",
+    path: "/misStatus",
   },
   {
     icon: <FaBell />,
     title: "Monthly Projection",
     description: "Forecast expected fee collections. Plan financial strategies effectively.",
+    path: "/monthlyProjection",
   },
   {
     icon: <FaBook />,
     title: "Daybook Report",
     description: "View daily transaction records. Keep a clear day-wise account.",
+     path: "/daybookReport",
   },
   {
     icon: <FaFileAlt />,
     title: "Fee Logs",
     description: "Check logs of fee activities. Track every change and entry.",
+     path: "/feeLogs",
   },
 
 
@@ -143,7 +150,7 @@ function FeeCard({ item }: { item: CardItem }) {
 }
 
 // ---------- Page (DashboardLayout already adds the header and sidebar) ----------
-export default function FeesDashboard() {
+export default function AccountantDashboard() {
   return (
     <div className="bg-white border border-gray-200 rounded-[4px] px-4 pt-6 pb-8">
       <h1 className="text-center text-[22px] font-bold text-[#2a2a63]">

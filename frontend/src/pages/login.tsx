@@ -131,7 +131,7 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     student: "/studentdashboard",
     parent: "/parentdashboard",
     library: "/librarydashboard",
-    accountant: "/feesdashboard",
+    accountant: "/accountantDashboard",
   };
 
   navigate(dashboardRoutes[user.role]);
