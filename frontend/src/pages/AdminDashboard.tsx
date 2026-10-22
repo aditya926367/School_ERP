@@ -8,6 +8,7 @@ import {
   CalendarDays,
   FileText,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const stats = [
   {
@@ -64,6 +65,7 @@ const recentAdmissions = [
 ];
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -174,14 +176,16 @@ export default function AdminDashboard() {
           </h2>
 
           <div className="mt-5 space-y-3">
-            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+            <button  
+            className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
               <UserPlus className="h-5 w-5 text-blue-600" />
               <span className="text-sm font-medium text-gray-700">
                 Add Student
               </span>
             </button>
 
-            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+            <button   onClick={() => navigate("/addTeachers?add=1")}
+             className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
               <GraduationCap className="h-5 w-5 text-blue-600" />
               <span className="text-sm font-medium text-gray-700">
                 Add Teacher

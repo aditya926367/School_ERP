@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
+import { getDemoUsers, saveDemoUsers } from "../../utils/demoAuth";
 import {
   Download,
   Eye,
@@ -710,21 +711,53 @@ export default function Teachers() {
     setSearchParams({});
   }
 
+  // function handleSave(teacher: Teacher) {
+  //   const exists = teachers.some((t) => t.id === teacher.id);
+
+  //   if (exists) {
+  //     setTeachers(teachers.map((t) => (t.id === teacher.id ? teacher : t)));
+  //     setNotice(`${fullName(teacher)} was updated successfully`);
+  //   } else {
+  //     setTeachers([teacher, ...teachers]);
+  //     setPage(1);
+  //     setNotice(`${fullName(teacher)} was added successfully (Employee ID ${teacher.id})`);
+  //   }
+
+  //   closeForm();
+  //   window.scrollTo({ top: 0, behavior: "smooth" });
+  // }
   function handleSave(teacher: Teacher) {
-    const exists = teachers.some((t) => t.id === teacher.id);
+  const exists = teachers.some((t) => t.id === teacher.id);
 
-    if (exists) {
-      setTeachers(teachers.map((t) => (t.id === teacher.id ? teacher : t)));
-      setNotice(`${fullName(teacher)} was updated successfully`);
-    } else {
-      setTeachers([teacher, ...teachers]);
-      setPage(1);
-      setNotice(`${fullName(teacher)} was added successfully (Employee ID ${teacher.id})`);
-    }
+  if (exists) {
+    setTeachers(teachers.map((t) => (t.id === teacher.id ? teacher : t)));
+    setNotice(`${fullName(teacher)} was updated successfully`);
+  } else {
+    setTeachers([teacher, ...teachers]);
+    setPage(1);
 
-    closeForm();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // naya teacher: login account bhi banao
+    const users = getDemoUsers();
+    const tempPassword = teacher.id + "@123"; // jaise T009@123
+
+    saveDemoUsers([
+      ...users,
+      {
+        userId: teacher.id,
+        email: teacher.email,
+        password: tempPassword,
+        role: "teacher",
+      },
+    ]);
+
+    setNotice(
+      `${fullName(teacher)} added. Login: ${teacher.id} / ${tempPassword}`
+    );
   }
+
+  closeForm();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
   function handleDelete(t: Teacher) {
     if (!window.confirm(`Delete ${fullName(t)} (${t.id})? This cannot be undone.`)) return;

@@ -13,6 +13,10 @@ import {
   FaBell,
   FaBook,
   FaChevronRight,
+  FaMoneyBillWave,
+  FaCalendarAlt,
+  FaWallet,
+  FaFileInvoiceDollar,
 } from "react-icons/fa";
 
 // ---------- Data for the 10 cards ----------
@@ -77,6 +81,34 @@ const cards: CardItem[] = [
     title: "Fee Logs",
     description: "Check logs of fee activities. Track every change and entry.",
   },
+
+
+{
+  icon: <FaWallet />,
+  title: "Salary Structure",
+  description: "Set basic salary, allowances and deductions for each teacher.",
+  path: "/salaryStructure",
+},
+{
+  icon: <FaCalendarAlt />,
+  title: "Monthly Payroll",
+  description: "Generate the month's salary list and approve it for payment.",
+  path: "/monthlyPayroll",
+},
+{
+  icon: <FaMoneyBillWave />,
+  title: "Salary Payments",
+  description: "Record which teachers have been paid for each month.",
+  path: "/salaryPayments",
+},
+{
+  icon: <FaFileInvoiceDollar />,
+  title: "Payslips",
+  description: "View and print a teacher's salary slip.",
+  path: "/payslips",
+},
+
+
 ];
 
 // ---------- One card (written once, used 10 times) ----------
