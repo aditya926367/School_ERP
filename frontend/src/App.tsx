@@ -36,11 +36,11 @@ import AcademicReports from "./pages/admin/AcademicReports";
 import StudentAttendance from "./pages/admin/StudentAttendance";
 import StaffAttendance from "./pages/admin/StaffAttendance";
 import AttendanceReports from "./pages/admin/AttendanceReports";
-import FeeStructure from "./pages/admin/FeeStructure";
-import FeeCollection from "./pages/admin/FeeCollection";
-import Receipts from "./pages/admin/Receipts";
-import PendingDues from "./pages/admin/PendingDues";
-import FinanceReports from "./pages/admin/FinanceReports";
+import FeeStructure from "./pages/accountant/FeeStructure.tsx";
+import FeeCollection from "./pages/accountant/feeCollection.tsx";
+import Receipts from "./pages/accountant/Receipts.tsx";
+import PendingDues from "./pages/accountant/PendingDues.tsx";
+import FinanceReports from "./pages/accountant/FinanceReports.tsx";
 
 
 //student pages
@@ -108,7 +108,7 @@ import AdminMessages from "./pages/admin/communication/messages.tsx";
 
 //library
 import LibraryDashboard from "./pages/libraryDashboard";
-import FeesDashboard from "./pages/feesDashboard";
+import AccountDashbaord from "./pages/accountantDashboard.tsx";
 import AuthorList from "./pages/admin/library/author.tsx";
 import ImportBookMaster from "./pages/admin/library/importBookMaster.tsx";
 import ChangeBookStatus from "./pages/admin/library/changeBookStatus.tsx";
@@ -126,10 +126,23 @@ import Teachers from "./pages/admin/teacher.tsx";
 
 
 //teachher salary 
-import SalaryStructure from "./pages/admin/payroll/salaryStructure.tsx";
-import MonthlyPayroll from "./pages/admin/payroll/monthlyPayroll.tsx";
-import SalaryPayments from "./pages/admin/payroll/salaryPayments.tsx";
-import Payslips from "./pages/admin/payroll/paySlips.tsx";
+import SalaryStructure from "./pages/accountant/payroll/salaryStructure.tsx";
+import MonthlyPayroll from "./pages/accountant/payroll/monthlyPayroll.tsx";
+import SalaryPayments from "./pages/accountant/payroll/salaryPayments.tsx";
+import Payslips from "./pages/accountant/payroll/paySlips.tsx";
+
+
+// accountant dashbbaord links 
+import FeeLogs from "./pages/accountant/feeLogs.tsx";
+import studentFeeBill from "./pages/accountant/studentFeeBill.tsx";
+import FeeChallan from "./pages/accountant/feeChallan.tsx";
+import Reconclination from "./pages/accountant/reconciliation.tsx";
+import MisStatus from "./pages/accountant/misStatus.tsx";
+import MonthlyProjection from "./pages/accountant/monthlyProjection.tsx";
+import DayBookReport from "./pages/accountant/dayBookReport.tsx";
+import StudentFeeBill from "./pages/accountant/studentFeeBill.tsx";
+
+
 
 
 
@@ -238,7 +251,7 @@ function App() {
           <Route path="/members" element={<Members />} />
           <Route path="/issueReturns" element={<IssueReturn />} />
           <Route path="/fines" element={<Fines />} />
-          <Route path="/feesdashboard" element={<FeesDashboard />} />
+          <Route path="/accountantDashboard" element={<AccountDashbaord />} />
           <Route path="/authorList" element={<AuthorList />} />
           <Route path="/importBookMaster" element={<ImportBookMaster />} />
           <Route path="/changeBookStatus" element={<ChangeBookStatus />} />
@@ -263,23 +276,21 @@ function App() {
           <Route path="/admin/attendance-reports" element={<AttendanceReports />} />
 
           <Route
-            path="/admin/fee-structure"
+            path="/feeStructure"
             element={<FeeStructure />}
           />
           <Route
-            path="/admin/fee-collection"
+            path="/feeCollection"
             element={<FeeCollection />}
           />
           <Route
-            path="/admin/receipts"
-            element={<Receipts />}
-          />
+            path="/receipts" element={<Receipts />} />
           <Route
-            path="/admin/pending-dues"
+            path="pendingdues"
             element={<PendingDues />}
           />
           <Route
-            path="/admin/finance-reports"
+            path="/financeReports"
             element={<FinanceReports />}
           />
 
@@ -328,12 +339,24 @@ function App() {
           {/*teacher */}
           <Route path="/addTeachers" element={<Teachers />} />
 
-          {/*teacher salary */}
+
+       
+
+               {/*Accountant dashbaord links  */}
+          <Route path="/feeLogs" element={<FeeLogs />} />
+          <Route path="/studentFeeBill" element={<StudentFeeBill />} />
+          <Route path="/feeChallan " element={<FeeChallan />} />
+          <Route path="/reconciliation" element={<Reconclination />} />
+          <Route path="/misStatus" element={<MisStatus />} />
+          <Route path="/monthlyProjection" element={<MonthlyProjection />} />
+          <Route path="/dayBookReport" element={<DayBookReport />} />
+
+                    {/*teacher salary  in accoutant dashboard*/}
           <Route path="/salaryStructure" element={<SalaryStructure />} />
           <Route path="/monthlyPayroll" element={<MonthlyPayroll />} />
           <Route path="/salaryPayments" element={<SalaryPayments />} />
           <Route path="/payslips" element={<Payslips />} />
-         
+
 
         </Route>
       </Routes>
