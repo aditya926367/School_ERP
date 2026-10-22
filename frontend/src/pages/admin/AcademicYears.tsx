@@ -413,6 +413,7 @@ function AcademicYears() {
                 <ActionButtons
                   onEdit={() => handleEditYear(year)}
                   onDelete={() => deleteYear(year.id)}
+                  showView={false}
                 />
               </div>
             </div>
@@ -486,6 +487,7 @@ function AcademicYears() {
                                 onDelete={() =>
                                   deleteTerm(year.id, term.id)
                                 }
+                                showView={false}
                               />
                             </div>
                           </td>

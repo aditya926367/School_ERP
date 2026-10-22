@@ -418,7 +418,7 @@ className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                  className="rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                 >
                   {editingId !== null ? "Update Fee" : "Save Fee"}
                 </button>

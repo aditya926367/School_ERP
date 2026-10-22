@@ -1,5 +1,6 @@
 
 import { useMemo, useState } from "react";
+import Pagination from "../../components/common/Pagination";
 import {
   Banknote,
   Download,
@@ -140,6 +141,7 @@ export default function FinanceReports() {
   const [classFilter, setClassFilter] = useState("All");
   const [modeFilter, setModeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState(1);
 
   const filteredPayments = useMemo(() => {
     return payments.filter((payment) => {
@@ -178,6 +180,14 @@ export default function FinanceReports() {
     modeFilter,
     statusFilter,
   ]);
+
+  const pageSize = 5;
+  const totalPages = Math.max(1, Math.ceil(filteredPayments.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const visiblePayments = filteredPayments.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const totalCollected = filteredPayments
     .filter((payment) => payment.status !== "Refunded")
@@ -311,7 +321,10 @@ export default function FinanceReports() {
               />
               <input
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
                 placeholder="Student, admission or receipt..."
                 className={`${inputClass} pl-9`}
               />
@@ -324,7 +337,10 @@ export default function FinanceReports() {
               type="date"
               value={fromDate}
               max={toDate || undefined}
-              onChange={(e) => setFromDate(e.target.value)}
+              onChange={(e) => {
+                setFromDate(e.target.value);
+                setPage(1);
+              }}
               className={inputClass}
             />
           </div>
@@ -335,7 +351,10 @@ export default function FinanceReports() {
               type="date"
               value={toDate}
               min={fromDate || undefined}
-              onChange={(e) => setToDate(e.target.value)}
+              onChange={(e) => {
+                setToDate(e.target.value);
+                setPage(1);
+              }}
               className={inputClass}
             />
           </div>
@@ -344,7 +363,10 @@ export default function FinanceReports() {
             <label className={labelClass}>Class</label>
             <select
               value={classFilter}
-              onChange={(e) => setClassFilter(e.target.value)}
+              onChange={(e) => {
+                setClassFilter(e.target.value);
+                setPage(1);
+              }}
               className={inputClass}
             >
               <option value="All">All Classes</option>
@@ -358,7 +380,10 @@ export default function FinanceReports() {
             <label className={labelClass}>Payment Mode</label>
             <select
               value={modeFilter}
-              onChange={(e) => setModeFilter(e.target.value)}
+              onChange={(e) => {
+                setModeFilter(e.target.value);
+                setPage(1);
+              }}
               className={inputClass}
             >
               <option value="All">All Modes</option>
@@ -373,7 +398,10 @@ export default function FinanceReports() {
             <label className={labelClass}>Payment Status</label>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(1);
+              }}
               className={inputClass}
             >
               <option value="All">All Statuses</option>
@@ -573,7 +601,7 @@ export default function FinanceReports() {
                   </td>
                 </tr>
               ) : (
-                filteredPayments.map((payment) => (
+                visiblePayments.map((payment) => (
                   <tr key={payment.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 font-medium text-blue-600">
                       {payment.receiptNo}
@@ -620,6 +648,15 @@ export default function FinanceReports() {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredPayments.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          itemLabel="transactions"
+        />
       </div>
     </div>
   );
