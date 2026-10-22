@@ -182,27 +182,27 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       items: [
         {
           label: "Fee Structure",
-          path: "/admin/fee-structure",
+          path: "/feeStructure",
           icon: WalletCards,
         },
         {
           label: "Fee Collection",
-          path: "/admin/fee-collection",
+          path: "/feeCollection",
           icon: CircleDollarSign,
         },
         {
           label: "Receipts",
-          path: "/admin/receipts",
+          path: "/receipts",
           icon: Receipt,
         },
         {
           label: "Pending Dues",
-          path: "/admin/pending-dues",
+          path: "/pendingdues",
           icon: WalletCards,
         },
         {
           label: "Finance Reports",
-          path: "/admin/finance-reports",
+          path: "/financeReports",
           icon: BarChart3,
         },
       ],
@@ -622,11 +622,11 @@ teacher: [
     {
       title: "Fees Management",
       items: [
-        { label: "Fee Structure", path: "/admin/fee-structure", icon: ClipboardList },
-        { label: "Fee Collection", path: "/admin/fee-collection", icon: CircleDollarSign },
-        { label: "Receipts", path: "/admin/receipts", icon: Receipt },
-        { label: "Pending Dues", path: "/admin/pending-dues", icon: Clock3 },
-        { label: "Finance Reports", path: "/admin/finance-reports", icon: BarChart3 },
+        { label: "Fee Structure", path: "/feeStructure", icon: ClipboardList },
+        { label: "Fee Collection", path: "/feeCollection", icon: CircleDollarSign },
+        { label: "Receipts", path: "/receipts", icon: Receipt },
+        { label: "Pending Dues", path: "/pendingdues", icon: Clock3 },
+        { label: "Finance Reports", path: "/financeReports", icon: BarChart3 },
       ],
     },
   ],
@@ -679,7 +679,7 @@ const dashboardPaths: Record<UserRole, string> = {
   parent: "/parentdashboard",
   library: "/librarydashboard",
   certificate: "/certificateDashboard",
-  accountant: "/feesdashboard",
+  accountant: "/accountantDashboard",
 };
 
 export default function DashboardLayout() {
