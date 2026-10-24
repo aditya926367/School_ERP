@@ -5,7 +5,7 @@ export default function MonthlyProjection() {
   const months = [...new Set(STUDENTS.map((s) => s.dueDate.slice(0, 7)))].sort();
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <Head
         title="Monthly Projection"
         sub="How much fee we expect to collect each month, based on the due dates."

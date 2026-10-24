@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Plus, X, BookOpen, Users, GraduationCap } from "lucide-react";
 import DataTable from "../../components/common/DataTable";
 import SearchBar from "../../components/common/SearchBar";
+import Pagination from "../../components/common/Pagination";
 import PageHeader from "../../components/common/PageHeader";
 import SummaryCard from "../../components/common/SummaryCard";
 import StatusBadge from "../../components/common/StatusBadge";
@@ -55,6 +56,9 @@ export default function ClassSubjectTeacherMapping() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const PAGE_SIZES = [5, 10, 20, 50];
   const [mappings, setMappings] = useState<Mapping[]>(initialMappings);
   const [form, setForm] = useState<MappingForm>({
     className: "",
@@ -73,6 +77,13 @@ export default function ClassSubjectTeacherMapping() {
         .some((value) => value.toLowerCase().includes(query))
     );
   }, [mappings, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredMappings.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const visibleMappings = filteredMappings.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   const classesCovered = new Set(mappings.map((mapping) => `${mapping.className}-${mapping.section}`)).size;
   const teachersAssigned = new Set(mappings.map((mapping) => mapping.teacher)).size;
@@ -113,6 +124,7 @@ export default function ClassSubjectTeacherMapping() {
         ? [...current, updatedMapping]
         : current.map((mapping) => (mapping.id === editingId ? updatedMapping : mapping))
     );
+    if (editingId === null) setPage(1);
     resetForm();
   };
 
@@ -188,7 +200,7 @@ export default function ClassSubjectTeacherMapping() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <PageHeader
         title="Class-Subject-Teacher Mapping"
         description="Assign subjects and teachers to each class and section."
@@ -239,12 +251,19 @@ export default function ClassSubjectTeacherMapping() {
             <p className="mt-1 text-sm text-gray-500">Current subject and teacher assignments.</p>
           </div>
           <div className="w-full sm:w-72">
-            <SearchBar value={search} onChange={setSearch} placeholder="Search mappings..." />
+            <SearchBar
+              value={search}
+              onChange={(value) => {
+                setSearch(value);
+                setPage(1);
+              }}
+              placeholder="Search mappings..."
+            />
           </div>
         </div>
 
         <DataTable
-          data={filteredMappings}
+          data={visibleMappings}
           columns={columns}
           rowKey={(mapping: Mapping) => mapping.id}
           emptyState={
@@ -253,6 +272,16 @@ export default function ClassSubjectTeacherMapping() {
               <p className="mt-1 text-sm text-gray-500">Try another search or add a mapping.</p>
             </div>
           }
+        />
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredMappings.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          pageSizes={PAGE_SIZES}
         />
       </section>
 

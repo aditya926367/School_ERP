@@ -157,7 +157,7 @@ export default function ParentResults() {
   const latestSummary = getSummary(latestResult);
 
   return (
-    <div className="space-y-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Academic Results</h1>
         <p className="mt-1 text-sm text-gray-500">

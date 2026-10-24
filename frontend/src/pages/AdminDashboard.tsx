@@ -67,7 +67,7 @@ const recentAdmissions = [
 export default function AdminDashboard() {
   const navigate = useNavigate();
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
           </h2>
 
           <div className="mt-5 space-y-3">
-            <button  
+            <button   onClick={() => navigate("/admin/students")}
             className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
               <UserPlus className="h-5 w-5 text-blue-600" />
               <span className="text-sm font-medium text-gray-700">
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
               </span>
             </button>
 
-            <button   onClick={() => navigate("/addTeachers?add=1")}
+            <button   onClick={() => navigate("/addTeachers")}
              className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
               <GraduationCap className="h-5 w-5 text-blue-600" />
               <span className="text-sm font-medium text-gray-700">
@@ -192,14 +192,16 @@ export default function AdminDashboard() {
               </span>
             </button>
 
-            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+            <button onClick={() => navigate("/admin/class-subject-teacher")}
+            className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
               <BookOpen className="h-5 w-5 text-blue-600" />
               <span className="text-sm font-medium text-gray-700">
                 Manage Classes
               </span>
             </button>
 
-            <button className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
+            <button onClick={() => navigate("/admin/holidays-calendar")}
+            className="flex w-full items-center gap-3 rounded-lg border border-gray-200 p-3 text-left hover:bg-gray-50">
               <CalendarDays className="h-5 w-5 text-blue-600" />
               <span className="text-sm font-medium text-gray-700">
                 Academic Calendar

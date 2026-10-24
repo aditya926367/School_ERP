@@ -9,7 +9,7 @@ export default function StudentFeeBill() {
   const due = outstanding(student);
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <Head
         title="Student Fee-Bill"
         sub="Pick a student to see and print the fee bill."

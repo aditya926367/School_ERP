@@ -263,7 +263,7 @@ export default function MyStudents() {
   };
 
   return (
-    <div className="space-y-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <PageHeader
         title="My Students"
         description="View student profiles, attendance, and academic performance in your assigned classes."

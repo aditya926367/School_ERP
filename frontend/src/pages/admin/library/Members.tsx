@@ -95,7 +95,7 @@ export default function Members() {
   ];
 
   return (
-    <div className="space-y-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <PageHeader title="Library Members" description="Manage students and staff who are allowed to borrow library books." actions={<button type="button" onClick={() => { setForm(emptyForm); setError(""); setShowForm(true); }} className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"><Plus size={17} /> Add Member</button>} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

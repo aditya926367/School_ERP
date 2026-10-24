@@ -164,7 +164,7 @@ const handleCloseForm = () => {
   ).length;
 
   return (
-    <div>
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       {/* Header */}
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>

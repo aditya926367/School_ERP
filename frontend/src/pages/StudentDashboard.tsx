@@ -91,7 +91,7 @@ export default function StudentDashboard() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       {/* Welcome banner */}
       <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-600 p-6 text-white shadow-sm sm:p-8">
         <div className="pointer-events-none absolute -right-10 -top-16 h-64 w-64 rounded-full border-[35px] border-white/10" />
@@ -191,7 +191,7 @@ export default function StudentDashboard() {
       {/* Main content grid */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         {/* Attendance and performance */}
-        <div className="space-y-6 xl:col-span-2">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6 xl:col-span-2">
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -300,7 +300,7 @@ export default function StudentDashboard() {
         </div>
 
         {/* Right side */}
-        <div className="space-y-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
           {/* Timetable */}
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
