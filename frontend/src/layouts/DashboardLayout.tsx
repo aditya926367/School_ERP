@@ -73,6 +73,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       title: "Academics",
       items: [
         { label: "Class-Subject-Teacher", path: "/admin/class-subject-teacher", icon: Users },
+        { label: "Add Teacher", path: "/addTeachers", icon: GraduationCap },
         { label: "Timetable", path: "/admin/timetable", icon: Clock3 },
         { label: "Exams", path: "/admin/exams", icon: ClipboardList },
         { label: "Marks & Grades", path: "/admin/marks-grades", icon: NotebookTabs },
@@ -144,7 +145,6 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       title: "Administration",
       items: [
         { label: "Users", path: "/admin/users", icon: Users },
-        { label: "Add Teachers", path: "/addTeachers", icon: GraduationCap },
         { label: "Roles & Permissions", path: "/admin/roles-permissions", icon: ShieldCheck },
         { label: "Notification Templates", path: "/admin/notification-templates", icon: Bell },
         { label: "System Settings", path: "/admin/settings", icon: Settings },

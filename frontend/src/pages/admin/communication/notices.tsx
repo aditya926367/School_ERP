@@ -227,7 +227,7 @@ export default function AdminNotices() {
   ];
 
   return (
-    <div className="space-y-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <PageHeader
         title="Notices"
         description="Official school notices with an expiry date"

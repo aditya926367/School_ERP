@@ -100,6 +100,196 @@ const initialAdmissions: Admission[] = [
       photograph: true,
     },
   },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
+  {
+    id: 3,
+    applicationNo: "ADM-2026-003",
+    studentName: "Rohan Kumar",
+    dateOfBirth: "2013-02-11",
+    gender: "Male",
+    classApplied: "Class 8",
+    parentName: "Suresh Kumar",
+    phone: "9876543212",
+    email: "suresh@example.com",
+    previousSchool: "City Model School",
+    appliedDate: "2026-10-03",
+    status: "Rejected",
+    documents: {
+      birthCertificate: true,
+      transferCertificate: false,
+      photograph: true,
+    },
+  },
 ];
 
 const inputClass =
@@ -124,6 +314,8 @@ export default function Admissions() {
   const [selected, setSelected] = useState<Admission | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const PAGE_SIZES = [5, 10, 20, 50];
   const [form, setForm] = useState(emptyForm);
   const [documents, setDocuments] = useState({
     birthCertificate: false,
@@ -150,7 +342,6 @@ export default function Admissions() {
     );
   });
 
-  const pageSize = 5;
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const visible = filtered.slice(
@@ -405,6 +596,8 @@ export default function Admissions() {
           totalItems={filtered.length}
           pageSize={pageSize}
           onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          pageSizes={PAGE_SIZES}
           itemLabel="applications"
         />
       </section>

@@ -9,7 +9,8 @@ import {
   BookOpen,
   X,
 } from "lucide-react";
-import {EditButton,DeleteButton} from "../../components/common/ActionButtons";
+import { EditButton, DeleteButton } from "../../components/common/ActionButtons";
+import Pagination from "../../components/common/Pagination";
 
 type TimetableEntry = {
   id: number;
@@ -118,6 +119,9 @@ export default function AdminTimetable() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [notice, setNotice] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const pageSizes = [5, 10, 25, 50];
 
   const filteredEntries = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -145,6 +149,11 @@ export default function AdminTimetable() {
           a.startTime.localeCompare(b.startTime)
       );
   }, [entries, selectedClass, selectedDay, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredEntries.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const startIndex = (currentPage - 1) * pageSize;
+  const visibleEntries = filteredEntries.slice(startIndex, startIndex + pageSize);
 
   const openCreate = () => {
     setEditingId(null);
@@ -209,6 +218,7 @@ export default function AdminTimetable() {
       setNotice("Timetable entry updated.");
     } else {
       setEntries((current) => [...current, entry]);
+      setPage(1);
       setNotice("Timetable entry created.");
     }
 
@@ -299,7 +309,7 @@ export default function AdminTimetable() {
               </label>
               <select
                 value={selectedClass}
-                onChange={(event) => setSelectedClass(event.target.value)}
+                onChange={(event) => { setSelectedClass(event.target.value); setPage(1); }}
                 className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm"
               >
                 <option>All Classes</option>
@@ -315,7 +325,7 @@ export default function AdminTimetable() {
               </label>
               <select
                 value={selectedDay}
-                onChange={(event) => setSelectedDay(event.target.value)}
+                onChange={(event) => { setSelectedDay(event.target.value); setPage(1); }}
                 className="w-full rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm"
               >
                 <option>All Days</option>
@@ -336,7 +346,7 @@ export default function AdminTimetable() {
                 />
                 <input
                   value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                  onChange={(event) => { setSearch(event.target.value); setPage(1); }}
                   placeholder="Subject, teacher, or room"
                   className="w-full rounded-xl border border-slate-200 py-3 pl-9 pr-3 text-sm"
                 />
@@ -367,7 +377,7 @@ export default function AdminTimetable() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredEntries.map((entry) => (
+                {visibleEntries.map((entry) => (
                   <tr key={entry.id} className="hover:bg-slate-50">
                     <td className="px-5 py-4 font-semibold text-slate-800">
                       {entry.className}-{entry.section}
@@ -408,7 +418,7 @@ export default function AdminTimetable() {
 </td>
                   </tr>
                 ))}
-                {filteredEntries.length === 0 && (
+                {visibleEntries.length === 0 && (
                   <tr>
                     <td
                       colSpan={7}
@@ -422,6 +432,20 @@ export default function AdminTimetable() {
               </tbody>
             </table>
           </div>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredEntries.length}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            pageSizes={pageSizes}
+            itemLabel="timetable entries"
+          />
         </section>
 
        
@@ -635,7 +659,7 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div>
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <label className="mb-1.5 block text-sm font-medium text-slate-700">
         {label}
       </label>

@@ -22,7 +22,7 @@ export default function SalaryPayments() {
   const pending = run ? run.rows.filter((r) => !r.paid).map((r) => r.id) : [];
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <Head
         title="Salary Payments"
         sub="Record which teachers have been paid for each approved month."

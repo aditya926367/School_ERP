@@ -184,7 +184,7 @@ export default function AdminMessages() {
     "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10";
 
   return (
-    <div className="space-y-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <PageHeader
         title="Messages"
         description="Read and send messages to teachers, parents and students"
