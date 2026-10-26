@@ -100,31 +100,11 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
     {
       title: "Fees & Finance",
       items: [
-        {
-          label: "Fee Structure",
-          path: "/feeStructure",
-          icon: WalletCards,
-        },
-        {
-          label: "Fee Collection",
-          path: "/feeCollection",
-          icon: CircleDollarSign,
-        },
-        {
-          label: "Receipts",
-          path: "/receipts",
-          icon: Receipt,
-        },
-        {
-          label: "Pending Dues",
-          path: "/pendingdues",
-          icon: WalletCards,
-        },
-        {
-          label: "Finance Reports",
-          path: "/financeReports",
-          icon: BarChart3,
-        },
+        { label: "Fee Structure", path: "/feeStructure", icon: WalletCards },
+        { label: "Fee Collection", path: "/feeCollection", icon: CircleDollarSign },
+        { label: "Receipts", path: "/receipts", icon: Receipt },
+        { label: "Pending Dues", path: "/pendingdues", icon: WalletCards },
+        { label: "Finance Reports", path: "/financeReports", icon: BarChart3 },
       ],
     },
     {
@@ -289,15 +269,6 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
         { label: "Author List", path: "/authorList", icon: Users },
       ],
     },
-    {
-      title: "Payroll",
-      items: [
-        { label: "Salary Structure", path: "/salaryStructure", icon: WalletCards },
-        { label: "Monthly Payroll", path: "/monthlyPayroll", icon: CalendarDays },
-        { label: "Salary Payments", path: "/salaryPayments", icon: CircleDollarSign },
-        { label: "Payslips", path: "/payslips", icon: Receipt },
-      ],
-    },
   ],
 
   accountant: [
@@ -308,7 +279,28 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
         { label: "Fee Collection", path: "/feeCollection", icon: CircleDollarSign },
         { label: "Receipts", path: "/receipts", icon: Receipt },
         { label: "Pending Dues", path: "/pendingdues", icon: Clock3 },
+        { label: "Student Fee-Bill", path: "/studentFeeBill", icon: FileText },
+        { label: "Fee Challan", path: "/feeChallan", icon: Receipt },
+      ],
+    },
+    {
+      title: "Reports",
+      items: [
+        { label: "Daybook Report", path: "/daybookReport", icon: BookMarked },
         { label: "Finance Reports", path: "/financeReports", icon: BarChart3 },
+        { label: "MIS Status", path: "/misStatus", icon: BarChart3 },
+        { label: "Monthly Projection", path: "/monthlyProjection", icon: CalendarDays },
+        { label: "Reconciliation", path: "/reconciliation", icon: ClipboardCheck },
+        { label: "Fee Logs", path: "/feeLogs", icon: ClipboardList },
+      ],
+    },
+    {
+      title: "Payroll",
+      items: [
+        { label: "Salary Structure", path: "/salaryStructure", icon: WalletCards },
+        { label: "Monthly Payroll", path: "/monthlyPayroll", icon: CalendarDays },
+        { label: "Salary Payments", path: "/salaryPayments", icon: CircleDollarSign },
+        { label: "Payslips", path: "/payslips", icon: Receipt },
       ],
     },
   ],
@@ -365,6 +357,24 @@ const libraryPaths = [
   "/acquireBook",
 ];
 
+// Pages that only the accountant uses (the admin menu does not have these).
+// Written in lower case because the path is compared in lower case.
+// Fee Collection, Receipts etc. are NOT here because the admin opens them too.
+const accountantPaths = [
+  "/accountantdashboard",
+  "/studentfeebill",
+  "/feechallan",
+  "/daybookreport",
+  "/reconciliation",
+  "/misstatus",
+  "/monthlyprojection",
+  "/feelogs",
+  "/salarystructure",
+  "/monthlypayroll",
+  "/salarypayments",
+  "/payslips",
+];
+
 export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -380,23 +390,29 @@ export default function DashboardLayout() {
   const closeOnMobile = () => {
     if (window.innerWidth < 1024) setSidebarOpen(false);
   };
-useEffect(() => {
-  const mq = window.matchMedia("(min-width: 1024px)");
 
-  const handleChange = (e: MediaQueryListEvent) => {
-    // desktop -> open, mobile -> closed
-    setSidebarOpen(e.matches);
-  };
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
 
-  mq.addEventListener("change", handleChange);
-  return () => mq.removeEventListener("change", handleChange);
-}, []);
+    const handleChange = (e: MediaQueryListEvent) => {
+      // desktop -> open, mobile -> closed
+      setSidebarOpen(e.matches);
+    };
+
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
+
   const storedRole = localStorage.getItem("role") as UserRole | null;
 
   const currentRole: UserRole = (() => {
     const path = location.pathname;
+    const lowerPath = path.toLowerCase();
 
-    if (storedRole === "accountant") return "accountant";
+    // Accountant: saved role is accountant, or the page is accountant-only
+    if (storedRole === "accountant" || accountantPaths.includes(lowerPath)) {
+      return "accountant";
+    }
 
     if (path === "/studentdashboard" || path.startsWith("/student/")) {
       return "student";
@@ -454,7 +470,9 @@ useEffect(() => {
     navigate("/");
   };
 
-  const isDashboardActive = location.pathname === dashboardPaths[currentRole];
+  // Compare in lower case so /accountantDashboard and /accountantdashboard both match
+  const isDashboardActive =
+    location.pathname.toLowerCase() === dashboardPaths[currentRole].toLowerCase();
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
