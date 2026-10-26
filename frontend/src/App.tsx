@@ -345,7 +345,7 @@ function App() {
                {/*Accountant dashbaord links  */}
           <Route path="/feeLogs" element={<FeeLogs />} />
           <Route path="/studentFeeBill" element={<StudentFeeBill />} />
-          <Route path="/feeChallan " element={<FeeChallan />} />
+          <Route path="/feeChallan" element={<FeeChallan />} />
           <Route path="/reconciliation" element={<Reconclination />} />
           <Route path="/misStatus" element={<MisStatus />} />
           <Route path="/monthlyProjection" element={<MonthlyProjection />} />
