@@ -1,13 +1,12 @@
 import {
   Plus,
-  Pencil,
-  Trash2,
   Users,
   GraduationCap,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditButton, DeleteButton } from "../../components/common/ActionButtons";
+import Pagination from "../../components/common/Pagination"; // Adjust the import path if necessary
 
 interface Section {
   id: number;
@@ -26,10 +25,12 @@ interface SchoolClass {
 function ClassesSections() {
   const [showClassForm, setShowClassForm] = useState(false);
   const [showSectionForm, setShowSectionForm] = useState(false);
-const [editingSectionId, setEditingSectionId] = useState<number | null>(null);
+  const [editingSectionId, setEditingSectionId] = useState<number | null>(null);
   const [selectedClassId, setSelectedClassId] = useState<number | null>(
     null
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(2);
 
   const [classes, setClasses] = useState<SchoolClass[]>([
     {
@@ -88,7 +89,7 @@ const [editingSectionId, setEditingSectionId] = useState<number | null>(null);
   ]);
 
   const [className, setClassName] = useState("");
-const [editingClassId, setEditingClassId] = useState<number | null>(null);
+  const [editingClassId, setEditingClassId] = useState<number | null>(null);
 
   const [sectionForm, setSectionForm] = useState({
     name: "",
@@ -104,103 +105,103 @@ const [editingClassId, setEditingClassId] = useState<number | null>(null);
     "Vikas Gupta",
   ];
 
- const handleAddClass = () => {
-  if (!className.trim()) return;
+  const handleAddClass = () => {
+    if (!className.trim()) return;
 
-  if (editingClassId !== null) {
-    // Update the existing class
+    if (editingClassId !== null) {
+      // Update the existing class
+      setClasses((previousClasses) =>
+        previousClasses.map((schoolClass) =>
+          schoolClass.id === editingClassId
+            ? { ...schoolClass, name: className.trim() }
+            : schoolClass
+        )
+      );
+    } else {
+      // Add a new class
+      setClasses((previousClasses) => [
+        ...previousClasses,
+        {
+          id: Date.now(),
+          name: className.trim(),
+          sections: [],
+        },
+      ]);
+    }
+
+    setClassName("");
+    setEditingClassId(null);
+    setShowClassForm(false);
+  };
+
+  const handleAddSection = () => {
+    if (
+      selectedClassId === null ||
+      !sectionForm.name.trim() ||
+      !sectionForm.capacity ||
+      !sectionForm.classTeacher
+    ) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    const capacity = Number(sectionForm.capacity);
+
+    if (!Number.isFinite(capacity) || capacity <= 0) {
+      alert("Please enter a valid capacity.");
+      return;
+    }
+
     setClasses((previousClasses) =>
-      previousClasses.map((schoolClass) =>
-        schoolClass.id === editingClassId
-          ? { ...schoolClass, name: className.trim() }
-          : schoolClass
-      )
-    );
-  } else {
-    // Add a new class
-    setClasses((previousClasses) => [
-      ...previousClasses,
-      {
-        id: Date.now(),
-        name: className.trim(),
-        sections: [],
-      },
-    ]);
-  }
+      previousClasses.map((schoolClass) => {
+        if (schoolClass.id !== selectedClassId) {
+          return schoolClass;
+        }
 
-  setClassName("");
-  setEditingClassId(null);
-  setShowClassForm(false);
-};
+        if (editingSectionId !== null) {
+          // Update the existing section
+          return {
+            ...schoolClass,
+            sections: schoolClass.sections.map((section) =>
+              section.id === editingSectionId
+                ? {
+                    ...section,
+                    name: sectionForm.name.trim(),
+                    capacity,
+                    classTeacher: sectionForm.classTeacher,
+                  }
+                : section
+            ),
+          };
+        }
 
- const handleAddSection = () => {
-  if (
-    selectedClassId === null ||
-    !sectionForm.name.trim() ||
-    !sectionForm.capacity ||
-    !sectionForm.classTeacher
-  ) {
-    alert("Please fill in all fields.");
-    return;
-  }
-
-  const capacity = Number(sectionForm.capacity);
-
-  if (!Number.isFinite(capacity) || capacity <= 0) {
-    alert("Please enter a valid capacity.");
-    return;
-  }
-
-  setClasses((previousClasses) =>
-    previousClasses.map((schoolClass) => {
-      if (schoolClass.id !== selectedClassId) {
-        return schoolClass;
-      }
-
-      if (editingSectionId !== null) {
-        // Update the existing section
+        // Add a new section
         return {
           ...schoolClass,
-          sections: schoolClass.sections.map((section) =>
-            section.id === editingSectionId
-              ? {
-                  ...section,
-                  name: sectionForm.name.trim(),
-                  capacity,
-                  classTeacher: sectionForm.classTeacher,
-                }
-              : section
-          ),
+          sections: [
+            ...schoolClass.sections,
+            {
+              id: Date.now(),
+              name: sectionForm.name.trim(),
+              capacity,
+              classTeacher: sectionForm.classTeacher,
+              status: "Active",
+            },
+          ],
         };
-      }
+      })
+    );
 
-      // Add a new section
-      return {
-        ...schoolClass,
-        sections: [
-          ...schoolClass.sections,
-          {
-            id: Date.now(),
-            name: sectionForm.name.trim(),
-            capacity,
-            classTeacher: sectionForm.classTeacher,
-            status: "Active",
-          },
-        ],
-      };
-    })
-  );
+    setSectionForm({
+      name: "",
+      capacity: "",
+      classTeacher: "",
+    });
 
-  setSectionForm({
-    name: "",
-    capacity: "",
-    classTeacher: "",
-  });
-
-  setEditingSectionId(null);
-  setSelectedClassId(null);
-  setShowSectionForm(false);
-};
+    setEditingSectionId(null);
+    setSelectedClassId(null);
+    setShowSectionForm(false);
+  };
 
   const deleteClass = (id: number) => {
     setClasses(classes.filter((schoolClass) => schoolClass.id !== id));
@@ -211,15 +212,28 @@ const [editingClassId, setEditingClassId] = useState<number | null>(null);
       classes.map((schoolClass) =>
         schoolClass.id === classId
           ? {
-            ...schoolClass,
-            sections: schoolClass.sections.filter(
-              (section) => section.id !== sectionId
-            ),
-          }
+              ...schoolClass,
+              sections: schoolClass.sections.filter(
+                (section) => section.id !== sectionId
+              ),
+            }
           : schoolClass
       )
     );
   };
+
+  const totalPages = Math.max(1, Math.ceil(classes.length / pageSize));
+
+  const paginatedClasses = classes.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   return (
     <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
@@ -307,8 +321,8 @@ const [editingClassId, setEditingClassId] = useState<number | null>(null);
       </div>
 
       {/* Classes */}
-      <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
-        {classes.map((schoolClass) => (
+      <div className="space-y-6">
+        {paginatedClasses.map((schoolClass) => (
           <div
             key={schoolClass.id}
             className="rounded-xl border border-gray-200 bg-white shadow-sm"
@@ -345,14 +359,14 @@ const [editingClassId, setEditingClassId] = useState<number | null>(null);
                   Add Section
                 </button>
 
-               <EditButton
-  title="Edit Class"
-  onClick={() => {
-    setEditingClassId(schoolClass.id);
-    setClassName(schoolClass.name);
-    setShowClassForm(true);
-  }}
-/>
+                <EditButton
+                  title="Edit Class"
+                  onClick={() => {
+                    setEditingClassId(schoolClass.id);
+                    setClassName(schoolClass.name);
+                    setShowClassForm(true);
+                  }}
+                />
 
                 <DeleteButton
                   onClick={() => deleteClass(schoolClass.id)}
@@ -430,6 +444,27 @@ const [editingClassId, setEditingClassId] = useState<number | null>(null);
             </div>
           </div>
         ))}
+
+        {classes.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={classes.length}
+            pageSize={pageSize}
+            onPageChange={(page) => setCurrentPage(page)}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            pageSizes={[2, 5, 10, 25]}
+          />
+        )}
+
+        {classes.length === 0 && (
+          <div className="rounded-xl border border-dashed border-gray-300 bg-white py-10 text-center">
+            <p className="text-sm text-gray-500">No classes available. Add a class to get started.</p>
+          </div>
+        )}
       </div>
 
       {/* Add Class Modal */}
@@ -439,11 +474,11 @@ const [editingClassId, setEditingClassId] = useState<number | null>(null);
             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">
-                  Add Class
+                  {editingClassId !== null ? "Edit Class" : "Add Class"}
                 </h2>
 
                 <p className="mt-1 text-xs text-gray-500">
-                  Create a new school class.
+                  {editingClassId !== null ? "Update school class name." : "Create a new school class."}
                 </p>
               </div>
 
@@ -484,7 +519,7 @@ const [editingClassId, setEditingClassId] = useState<number | null>(null);
                 onClick={handleAddClass}
                 className="rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#1f2a70]"
               >
-                Add Class
+                {editingClassId !== null ? "Update Class" : "Add Class"}
               </button>
             </div>
           </div>

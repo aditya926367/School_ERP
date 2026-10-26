@@ -31,7 +31,7 @@ export default function Pagination({
   const safeTotalPages = Math.max(1, totalPages);
 
   return (
-    <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3  px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
       {/* Left: Showing count and page size */}
       <div className="flex flex-wrap items-center gap-3">
         <span className="whitespace-nowrap text-sm text-gray-600">

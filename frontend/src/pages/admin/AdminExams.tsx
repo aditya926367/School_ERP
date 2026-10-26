@@ -1,5 +1,4 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { FormEvent, ReactNode } from "react";
 import {
   CalendarDays,
@@ -15,6 +14,8 @@ import {
   EditButton,
   DeleteButton,
 } from "../../components/common/ActionButtons";
+import Pagination from "../../components/common/Pagination";
+
 type ExamStatus = "Upcoming" | "Ongoing" | "Completed";
 
 type Exam = {
@@ -147,6 +148,10 @@ export default function AdminExams() {
   const [form, setForm] = useState<Omit<Exam, "id">>(emptyExam);
   const [error, setError] = useState("");
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
   const filteredExams = useMemo(() => {
     const query = search.trim().toLowerCase();
 
@@ -163,6 +168,24 @@ export default function AdminExams() {
       return matchesSearch && matchesStatus;
     });
   }, [exams, search, statusFilter]);
+
+  // Reset page to 1 when search or filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredExams.length / pageSize));
+
+  const paginatedExams = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredExams.slice(start, start + pageSize);
+  }, [filteredExams, currentPage, pageSize]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const stats = {
     total: exams.length,
@@ -353,7 +376,7 @@ export default function AdminExams() {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {filteredExams.map((exam) => (
+              {paginatedExams.map((exam) => (
                 <tr key={exam.id} className="transition hover:bg-gray-50">
                   <td className="px-5 py-4 font-medium text-gray-900">
                     {exam.name}
@@ -410,6 +433,21 @@ export default function AdminExams() {
             </tbody>
           </table>
         </div>
+
+        {filteredExams.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredExams.length}
+            pageSize={pageSize}
+            onPageChange={(page) => setCurrentPage(page)}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            pageSizes={[5, 10, 20, 50]}
+          />
+        )}
       </div>
 
       {/* Add/Edit modal */}

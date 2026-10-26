@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CalendarDays,
   Plus,
@@ -7,6 +6,7 @@ import {
   X,
 } from "lucide-react";
 import ActionButtons from "../../components/common/ActionButtons";
+import Pagination from "../../components/common/Pagination";
 
 interface Term {
   id: number;
@@ -56,6 +56,10 @@ function AcademicYears() {
   const [editingTermId, setEditingTermId] = useState<number | null>(null);
   const [selectedYearId, setSelectedYearId] = useState<number | null>(null);
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(2);
+
   const [academicYears, setAcademicYears] = useState<AcademicYear[]>([
     {
       id: 1,
@@ -103,6 +107,20 @@ function AcademicYears() {
 
   const [yearForm, setYearForm] = useState<YearForm>(emptyYearForm);
   const [termForm, setTermForm] = useState<TermForm>(emptyTermForm);
+
+  // Pagination derived computations
+  const totalPages = Math.max(1, Math.ceil(academicYears.length / pageSize));
+
+  const paginatedAcademicYears = academicYears.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   // Open the form to add an academic year.
   const openAddYearForm = () => {
@@ -342,7 +360,7 @@ function AcademicYears() {
   };
 
   return (
-    <div   className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       {/* Page Header */}
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
@@ -366,7 +384,7 @@ function AcademicYears() {
 
       {/* Academic Year Cards */}
       <div className="space-y-6">
-        {academicYears.map((year) => (
+        {paginatedAcademicYears.map((year) => (
           <div
             key={year.id}
             className="rounded-xl border border-gray-200 bg-white shadow-sm"
@@ -500,6 +518,27 @@ function AcademicYears() {
             </div>
           </div>
         ))}
+
+        {academicYears.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={academicYears.length}
+            pageSize={pageSize}
+            onPageChange={(page) => setCurrentPage(page)}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            pageSizes={[2, 5, 10, 25]}
+          />
+        )}
+
+        {academicYears.length === 0 && (
+          <div className="rounded-xl border border-dashed border-gray-300 bg-white py-10 text-center">
+            <p className="text-sm text-gray-500">No academic years available. Add an academic year to get started.</p>
+          </div>
+        )}
       </div>
 
       {/* Add/Edit Academic Year Modal */}
