@@ -508,11 +508,6 @@ export default function AdminResults() {
           </table>
         </div>
       </div>
-
-      <p className="text-xs text-gray-500">
-        Demo data only. Result calculations and the grading scale should be
-        aligned with your school's official examination policy.
-      </p>
     </div>
   );
 }

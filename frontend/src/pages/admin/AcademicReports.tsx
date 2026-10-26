@@ -1,5 +1,4 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Download,
   Search,
@@ -9,6 +8,7 @@ import {
   Award,
   BookOpen,
 } from "lucide-react";
+import Pagination from "../../components/common/Pagination";
 
 type AcademicRecord = {
   id: number;
@@ -48,6 +48,10 @@ export default function AcademicReports() {
   const [subjectFilter, setSubjectFilter] = useState("All");
   const [sectionFilter, setSectionFilter] = useState("All");
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
   const filteredRecords = useMemo(() => {
     return records.filter((record) => {
       const query = search.toLowerCase();
@@ -61,6 +65,24 @@ export default function AcademicReports() {
       );
     });
   }, [records, search, classFilter, subjectFilter, sectionFilter]);
+
+  // Reset page to 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, classFilter, subjectFilter, sectionFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredRecords.length / pageSize));
+
+  const paginatedRecords = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredRecords.slice(start, start + pageSize);
+  }, [filteredRecords, currentPage, pageSize]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const students = useMemo(() => {
     const map = new Map<string, {
@@ -431,7 +453,7 @@ export default function AcademicReports() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {filteredRecords.length === 0 ? (
+              {paginatedRecords.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -441,7 +463,7 @@ export default function AcademicReports() {
                   </td>
                 </tr>
               ) : (
-                filteredRecords.map((record) => {
+                paginatedRecords.map((record) => {
                   const percentage =
                     (record.marksObtained / record.totalMarks) * 100;
                   const passed = percentage >= 33;
@@ -484,6 +506,21 @@ export default function AcademicReports() {
             </tbody>
           </table>
         </div>
+
+        {filteredRecords.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredRecords.length}
+            pageSize={pageSize}
+            onPageChange={(page) => setCurrentPage(page)}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            pageSizes={[5, 10, 20, 50]}
+          />
+        )}
       </div>
     </div>
   );
