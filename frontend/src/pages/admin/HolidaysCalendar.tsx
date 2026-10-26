@@ -2,6 +2,7 @@
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { CalendarDays, Plus, X } from "lucide-react";
+import Pagination from "../../components/common/Pagination";
 
 import DataTable from "../../components/common/DataTable";
 import type { DataTableColumn } from "../../components/common/DataTable";
@@ -79,6 +80,11 @@ export default function HolidaysCalender() {
     useState<Holiday[]>(INITIAL_HOLIDAYS);
 
   const [search, setSearch] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("All");
+  const [selectedYear, setSelectedYear] = useState("All");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const PAGE_SIZES = [5, 10, 20, 50];
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<HolidayForm>(EMPTY_FORM);
@@ -88,8 +94,8 @@ export default function HolidaysCalender() {
     const query = search.trim().toLowerCase();
 
     return holidays
-      .filter((holiday) =>
-        [
+      .filter((holiday) => {
+        const matchesSearch = [
           holiday.name,
           holiday.date,
           holiday.category,
@@ -97,10 +103,47 @@ export default function HolidaysCalender() {
         ]
           .join(" ")
           .toLowerCase()
-          .includes(query),
-      )
+          .includes(query);
+
+        const [year, month] = holiday.date.split("-");
+        const matchesMonth =
+          selectedMonth === "All" || month === selectedMonth;
+        const matchesYear =
+          selectedYear === "All" || year === selectedYear;
+
+        return matchesSearch && matchesMonth && matchesYear;
+      })
       .sort((a, b) => a.date.localeCompare(b.date));
-  }, [holidays, search]);
+  }, [holidays, search, selectedMonth, selectedYear]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredHolidays.length / pageSize));
+  const currentPage = Math.min(page, totalPages);
+  const paginatedHolidays = filteredHolidays.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize,
+  );
+
+  const availableYears = Array.from(
+    new Set([
+      String(new Date().getFullYear()),
+      ...holidays.map((holiday) => holiday.date.slice(0, 4)),
+    ]),
+  ).sort((a, b) => Number(b) - Number(a));
+
+  const monthOptions = [
+    { value: "01", label: "January" },
+    { value: "02", label: "February" },
+    { value: "03", label: "March" },
+    { value: "04", label: "April" },
+    { value: "05", label: "May" },
+    { value: "06", label: "June" },
+    { value: "07", label: "July" },
+    { value: "08", label: "August" },
+    { value: "09", label: "September" },
+    { value: "10", label: "October" },
+    { value: "11", label: "November" },
+    { value: "12", label: "December" },
+  ];
 
   const openAddForm = () => {
     setEditingId(null);
@@ -260,7 +303,7 @@ export default function HolidaysCalender() {
   ];
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6 pb-8">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       {/* Page header */}
       <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex items-start gap-3">
@@ -305,18 +348,57 @@ export default function HolidaysCalender() {
             </p>
           </div>
 
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search holidays..."
-            aria-label="Search holidays"
-            className={`${inputClass} sm:max-w-xs`}
-          />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(1);
+              }}
+              placeholder="Search holidays..."
+              aria-label="Search holidays"
+              className={inputClass}
+            />
+
+            <select
+              value={selectedMonth}
+              onChange={(event) => {
+                setSelectedMonth(event.target.value);
+                setPage(1);
+              }}
+              aria-label="Filter by month"
+              className={inputClass}
+            >
+              <option value="All">All months</option>
+              {monthOptions.map((month) => (
+                <option key={month.value} value={month.value}>
+                  {month.label}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedYear}
+              onChange={(event) => {
+                setSelectedYear(event.target.value);
+                setPage(1);
+              }}
+              aria-label="Filter by year"
+              className={inputClass}
+            >
+              <option value="All">All years</option>
+              {availableYears.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <DataTable
-          data={filteredHolidays}
+          data={paginatedHolidays}
           columns={columns}
           rowKey={(holiday) => holiday.id}
           emptyState={
@@ -324,6 +406,19 @@ export default function HolidaysCalender() {
               No holidays found. Add a holiday or change your search.
             </p>
           }
+        />
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredHolidays.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
+          pageSizes={PAGE_SIZES}
         />
       </section>
 

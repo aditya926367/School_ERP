@@ -1,8 +1,9 @@
-
 import { useEffect, useState } from "react";
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getDemoUsers, saveDemoUsers } from "../../utils/demoAuth";
+import Pagination from "../../components/common/Pagination";
+import ActionButtons from "../../components/common/ActionButtons";
 import {
   Download,
   Eye,
@@ -292,7 +293,6 @@ type FormProps = {
 function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
   const isEdit = initial !== null;
   const employeeId = initial ? initial.id : nextId(teachers);
-
   const [form, setForm] = useState<FormState>(
     initial ? { ...initial } : { ...emptyForm }
   );
@@ -372,7 +372,6 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
 
   function handleSubmit(ev: FormEvent<HTMLFormElement>) {
     ev.preventDefault();
-
     const found = validate();
     setErrors(found);
 
@@ -393,7 +392,7 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
   const errorCount = Object.keys(errors).length;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+    <form onSubmit={handleSubmit} className="min-h-screen space-y-6 bg-gray-50 p-4 sm:p-6" noValidate>
       {/* Page heading */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
@@ -407,18 +406,17 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
             Fields marked with <span className="text-red-500">*</span> are required.
           </p>
         </div>
-
-        <div className="flex gap-3">
+        <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:flex-row sm:items-center sm:justify-end">
           <button
             type="button"
             onClick={onCancel}
-            className="h-11 rounded-xl border border-gray-200 bg-white px-5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:w-auto"
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="h-11 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-700"
+            className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#27348b] px-5 text-sm font-medium text-white transition hover:bg-[#1f2a70] sm:w-auto"
           >
             {isEdit ? "Save Changes" : "Save Teacher"}
           </button>
@@ -432,9 +430,8 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
       )}
 
       {/* ---------------- Personal information ---------------- */}
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <h2 className="mb-4 text-base font-bold text-gray-900">Personal Information</h2>
-
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-[200px_1fr]">
           {/* Photo */}
           <div className="flex flex-col items-center gap-3">
@@ -445,13 +442,11 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
                 <User size={44} />
               )}
             </div>
-
             <label className="flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-gray-200 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50">
               <Upload size={16} />
               {form.photo ? "Change photo" : "Upload photo"}
               <input type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
             </label>
-
             {form.photo && (
               <button
                 type="button"
@@ -470,11 +465,9 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
             <Field label="First name" required error={errors.firstName}>
               <input value={form.firstName} onChange={(e) => set("firstName", e.target.value)} placeholder="e.g. Rahul" className={inputStyle} />
             </Field>
-
             <Field label="Last name" required error={errors.lastName}>
               <input value={form.lastName} onChange={(e) => set("lastName", e.target.value)} placeholder="e.g. Sharma" className={inputStyle} />
             </Field>
-
             <Field label="Gender" required>
               <select value={form.gender} onChange={(e) => set("gender", e.target.value as Gender)} className={inputStyle}>
                 {GENDERS.map((g) => (
@@ -482,11 +475,9 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
                 ))}
               </select>
             </Field>
-
             <Field label="Date of birth" required error={errors.dob}>
               <input type="date" value={form.dob} max={todayIso()} onChange={(e) => set("dob", e.target.value)} className={inputStyle} />
             </Field>
-
             <Field label="Blood group">
               <select value={form.bloodGroup} onChange={(e) => set("bloodGroup", e.target.value)} className={inputStyle}>
                 <option value="">Select</option>
@@ -500,40 +491,32 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
       </section>
 
       {/* ---------------- Contact details ---------------- */}
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <h2 className="mb-4 text-base font-bold text-gray-900">Contact Details</h2>
-
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <Field label="Phone number" required error={errors.phone}>
             <input value={form.phone} maxLength={10} inputMode="numeric" onChange={(e) => set("phone", e.target.value.replace(/\D/g, ""))} placeholder="10 digit mobile number" className={inputStyle} />
           </Field>
-
           <Field label="Email address" required error={errors.email}>
             <input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="name@yourschool.com" className={inputStyle} />
           </Field>
-
           <div className="sm:col-span-2 xl:col-span-3">
             <Field label="Address">
               <input value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="House no., street, area" className={inputStyle} />
             </Field>
           </div>
-
           <Field label="City">
             <input value={form.city} onChange={(e) => set("city", e.target.value)} className={inputStyle} />
           </Field>
-
           <Field label="State">
             <input value={form.state} onChange={(e) => set("state", e.target.value)} className={inputStyle} />
           </Field>
-
           <Field label="PIN code" error={errors.pincode}>
             <input value={form.pincode} maxLength={6} inputMode="numeric" onChange={(e) => set("pincode", e.target.value.replace(/\D/g, ""))} className={inputStyle} />
           </Field>
-
           <Field label="Emergency contact name">
             <input value={form.emergencyName} onChange={(e) => set("emergencyName", e.target.value)} className={inputStyle} />
           </Field>
-
           <Field label="Emergency contact phone" error={errors.emergencyPhone}>
             <input value={form.emergencyPhone} maxLength={10} inputMode="numeric" onChange={(e) => set("emergencyPhone", e.target.value.replace(/\D/g, ""))} className={inputStyle} />
           </Field>
@@ -541,14 +524,12 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
       </section>
 
       {/* ---------------- Professional details ---------------- */}
-      <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <h2 className="mb-4 text-base font-bold text-gray-900">Professional Details</h2>
-
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <Field label="Employee ID">
             <input value={employeeId} disabled className={`${inputStyle} bg-gray-100 text-gray-500`} />
           </Field>
-
           <Field label="Designation" required error={errors.designation}>
             <select value={form.designation} onChange={(e) => set("designation", e.target.value)} className={inputStyle}>
               <option value="">Select</option>
@@ -557,7 +538,6 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
               ))}
             </select>
           </Field>
-
           <Field label="Department" required error={errors.department}>
             <select value={form.department} onChange={(e) => set("department", e.target.value)} className={inputStyle}>
               <option value="">Select</option>
@@ -566,7 +546,6 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
               ))}
             </select>
           </Field>
-
           <Field label="Highest qualification" required error={errors.qualification}>
             <select value={form.qualification} onChange={(e) => set("qualification", e.target.value)} className={inputStyle}>
               <option value="">Select</option>
@@ -575,15 +554,12 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
               ))}
             </select>
           </Field>
-
           <Field label="Experience (years)" required error={errors.experience}>
             <input type="number" min={0} max={50} value={form.experience} onChange={(e) => set("experience", e.target.value)} className={inputStyle} />
           </Field>
-
           <Field label="Joining date" required error={errors.joiningDate}>
             <input type="date" value={form.joiningDate} max={todayIso()} onChange={(e) => set("joiningDate", e.target.value)} className={inputStyle} />
           </Field>
-
           <Field label="Employment type">
             <select value={form.employmentType} onChange={(e) => set("employmentType", e.target.value)} className={inputStyle}>
               {EMPLOYMENT_TYPES.map((t) => (
@@ -591,7 +567,6 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
               ))}
             </select>
           </Field>
-
           <Field label="Class teacher of">
             <select value={form.classTeacherOf} onChange={(e) => set("classTeacherOf", e.target.value)} className={inputStyle}>
               <option value="">Not a class teacher</option>
@@ -600,7 +575,6 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
               ))}
             </select>
           </Field>
-
           <Field label="Status" required>
             <select value={form.status} onChange={(e) => set("status", e.target.value as Status)} className={inputStyle}>
               {STATUSES.map((s) => (
@@ -616,7 +590,6 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
             <div className="flex flex-wrap gap-2">
               {SUBJECTS.map((s) => {
                 const active = form.subjects.includes(s);
-
                 return (
                   <button
                     key={s}
@@ -624,7 +597,7 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
                     onClick={() => toggleSubject(s)}
                     className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
                       active
-                        ? "border-blue-600 bg-blue-600 text-white"
+                        ? "border-blue-600 bg-[#27348b] text-white"
                         : "border-gray-200 bg-white text-gray-700 hover:border-blue-300 hover:bg-blue-50"
                     }`}
                   >
@@ -638,17 +611,17 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
       </section>
 
       {/* ---------------- Bottom buttons ---------------- */}
-      <div className="flex justify-end gap-3 pb-2">
+      <div className="flex flex-col-reverse justify-end gap-2 pb-2 sm:flex-row sm:gap-3">
         <button
           type="button"
           onClick={onCancel}
-          className="h-11 rounded-xl border border-gray-200 bg-white px-5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+          className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-gray-200 bg-white px-5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:w-auto"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="h-11 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-700"
+          className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#27348b] px-5 text-sm font-medium text-white transition hover:bg-[#1f2a70] sm:w-auto"
         >
           {isEdit ? "Save Changes" : "Save Teacher"}
         </button>
@@ -661,10 +634,6 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
 // Page: teacher list (and the form above when adding or editing)
 // =====================================================================
 const PAGE_SIZES = [5, 10, 25, 50];
-const pageBtn = "h-9 rounded-xl border px-4 text-sm font-semibold";
-const pageBtnNormal = `${pageBtn} border-gray-200 text-gray-700 hover:bg-gray-50`;
-const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-100 text-gray-300`;
-
 const filterStyle =
   "h-11 rounded-xl border border-gray-200 bg-white px-3 text-sm text-gray-800 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10";
 
@@ -672,7 +641,6 @@ export default function Teachers() {
   // ?add=1 in the address opens the Add Teacher form (used by the dashboard quick action)
   const [searchParams, setSearchParams] = useSearchParams();
   const isAdding = searchParams.get("add") === "1";
-
   const [teachers, setTeachers] = useState<Teacher[]>(loadTeachers);
   const [editing, setEditing] = useState<Teacher | null>(null);
   const [viewing, setViewing] = useState<Teacher | null>(null);
@@ -711,53 +679,33 @@ export default function Teachers() {
     setSearchParams({});
   }
 
-  // function handleSave(teacher: Teacher) {
-  //   const exists = teachers.some((t) => t.id === teacher.id);
-
-  //   if (exists) {
-  //     setTeachers(teachers.map((t) => (t.id === teacher.id ? teacher : t)));
-  //     setNotice(`${fullName(teacher)} was updated successfully`);
-  //   } else {
-  //     setTeachers([teacher, ...teachers]);
-  //     setPage(1);
-  //     setNotice(`${fullName(teacher)} was added successfully (Employee ID ${teacher.id})`);
-  //   }
-
-  //   closeForm();
-  //   window.scrollTo({ top: 0, behavior: "smooth" });
-  // }
   function handleSave(teacher: Teacher) {
-  const exists = teachers.some((t) => t.id === teacher.id);
-
-  if (exists) {
-    setTeachers(teachers.map((t) => (t.id === teacher.id ? teacher : t)));
-    setNotice(`${fullName(teacher)} was updated successfully`);
-  } else {
-    setTeachers([teacher, ...teachers]);
-    setPage(1);
-
-    // naya teacher: login account bhi banao
-    const users = getDemoUsers();
-    const tempPassword = teacher.id + "@123"; // jaise T009@123
-
-    saveDemoUsers([
-      ...users,
-      {
-        userId: teacher.id,
-        email: teacher.email,
-        password: tempPassword,
-        role: "teacher",
-      },
-    ]);
-
-    setNotice(
-      `${fullName(teacher)} added. Login: ${teacher.id} / ${tempPassword}`
-    );
+    const exists = teachers.some((t) => t.id === teacher.id);
+    if (exists) {
+      setTeachers(teachers.map((t) => (t.id === teacher.id ? teacher : t)));
+      setNotice(`${fullName(teacher)} was updated successfully`);
+    } else {
+      setTeachers([teacher, ...teachers]);
+      setPage(1);
+      // naya teacher: login account bhi banao
+      const users = getDemoUsers();
+      const tempPassword = teacher.id + "@123"; // jaise T009@123
+      saveDemoUsers([
+        ...users,
+        {
+          userId: teacher.id,
+          email: teacher.email,
+          password: tempPassword,
+          role: "teacher",
+        },
+      ]);
+      setNotice(
+        `${fullName(teacher)} added. Login: ${teacher.id} / ${tempPassword}`
+      );
+    }
+    closeForm();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
-
-  closeForm();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
 
   function handleDelete(t: Teacher) {
     if (!window.confirm(`Delete ${fullName(t)} (${t.id})? This cannot be undone.`)) return;
@@ -789,7 +737,6 @@ export default function Teachers() {
 
   // ---------- List view ----------
   const query = search.trim().toLowerCase();
-
   const filtered = teachers.filter(
     (t) =>
       (query === "" ||
@@ -890,7 +837,7 @@ export default function Teachers() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-gray-50 p-4 sm:p-6">
       {/* ---------------- Page heading ---------------- */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div>
@@ -900,25 +847,52 @@ export default function Teachers() {
             Manage teacher records, qualifications, subjects, classes and attendance in one place.
           </p>
         </div>
-
-        <div className="flex flex-wrap gap-3">
+        {/* Desktop actions: all buttons in one row */}
+        <div className="hidden shrink-0 items-center justify-end gap-3 lg:flex">
           <button
             onClick={handleExport}
-            className="flex h-11 items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-4 text-sm font-semibold text-white transition hover:bg-indigo-900"
           >
             <Download size={18} />
             Export CSV
           </button>
           <button
             onClick={handlePrint}
-            className="flex h-11 items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-4 text-sm font-semibold text-white transition hover:bg-indigo-900"
           >
             <Printer size={18} />
             Print
           </button>
           <button
             onClick={openAdd}
-            className="flex h-11 items-center gap-2 rounded-xl bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-700"
+            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-5 text-sm font-semibold text-white transition hover:bg-indigo-900"
+          >
+            <Plus size={18} />
+            Add Teacher
+          </button>
+        </div>
+
+        {/* Small-screen actions: Export and Print together, Add Teacher below */}
+        <div className="flex w-full flex-col items-end gap-2 lg:hidden">
+          <div className="flex w-full justify-end gap-2 sm:w-auto sm:gap-3">
+            <button
+              onClick={handleExport}
+              className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-3 text-sm font-semibold text-white transition hover:bg-indigo-900 sm:px-4"
+            >
+              <Download size={18} />
+              Export CSV
+            </button>
+            <button
+              onClick={handlePrint}
+              className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-3 text-sm font-semibold text-white transition hover:bg-indigo-900 sm:px-4"
+            >
+              <Printer size={18} />
+              Print
+            </button>
+          </div>
+          <button
+            onClick={openAdd}
+            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-5 text-sm font-semibold text-white transition hover:bg-indigo-900"
           >
             <Plus size={18} />
             Add Teacher
@@ -941,7 +915,7 @@ export default function Teachers() {
         {stats.map(({ label, value, icon: Icon, tile }) => (
           <div
             key={label}
-            className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+            className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
           >
             <div>
               <div className="text-[15px] text-gray-500">{label}</div>
@@ -1037,7 +1011,6 @@ export default function Teachers() {
               {paged.map((t) => (
                 <tr key={t.id} className="border-t border-gray-100 hover:bg-gray-50">
                   <td className="px-5 py-3.5 text-gray-500">{t.id}</td>
-
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       {t.photo ? (
@@ -1053,7 +1026,6 @@ export default function Teachers() {
                       </div>
                     </div>
                   </td>
-
                   <td className="px-5 py-3.5">
                     {t.subjects.slice(0, 2).join(", ")}
                     {t.subjects.length > 2 && (
@@ -1064,47 +1036,27 @@ export default function Teachers() {
                   <td className="px-5 py-3.5">{t.classTeacherOf ? `Class ${t.classTeacherOf}` : "-"}</td>
                   <td className="px-5 py-3.5">{t.phone}</td>
                   <td className="px-5 py-3.5">{formatDate(t.joiningDate)}</td>
-
                   <td className="px-5 py-3.5">
                     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusColor[t.status]}`}>
                       {t.status}
                     </span>
                   </td>
-
                   <td className="px-5 py-3.5">
-                    <div className="flex gap-1.5">
-                      <button
-                        onClick={() => setViewing(t)}
-                        title="View"
-                        aria-label={`View ${fullName(t)}`}
-                        className="rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100"
-                      >
-                        <Eye size={16} />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setNotice("");
-                          setEditing(t);
-                        }}
-                        title="Edit"
-                        aria-label={`Edit ${fullName(t)}`}
-                        className="rounded-lg border border-gray-200 p-2 text-blue-600 hover:bg-blue-50"
-                      >
-                        <Pencil size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(t)}
-                        title="Delete"
-                        aria-label={`Delete ${fullName(t)}`}
-                        className="rounded-lg border border-gray-200 p-2 text-red-600 hover:bg-red-50"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+                    <ActionButtons
+                      onView={() => setViewing(t)}
+                      onEdit={() => {
+                        setNotice("");
+                        setEditing(t);
+                      }}
+                      onDelete={() => handleDelete(t)}
+                      showDelete={true}
+                      viewTitle={`View ${fullName(t)}`}
+                      editTitle={`Edit ${fullName(t)}`}
+                      deleteTitle={`Delete ${fullName(t)}`}
+                    />
                   </td>
                 </tr>
               ))}
-
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={9} className="px-5 py-12 text-center text-gray-500">
@@ -1116,46 +1068,16 @@ export default function Teachers() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-4 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span>
-              Showing <b>{from}</b>-<b>{to}</b> of <b>{filtered.length}</b>
-            </span>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPage(1);
-              }}
-              className="h-9 rounded-xl border border-gray-200 px-2 text-sm outline-none focus:border-blue-600"
-            >
-              {PAGE_SIZES.map((s) => (
-                <option key={s} value={s}>{s} / page</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage(safePage - 1)}
-              disabled={safePage === 1}
-              className={safePage === 1 ? pageBtnDisabled : pageBtnNormal}
-            >
-              Prev
-            </button>
-            <span>
-              Page <b>{safePage}</b> of <b>{totalPages}</b>
-            </span>
-            <button
-              onClick={() => setPage(safePage + 1)}
-              disabled={safePage === totalPages}
-              className={safePage === totalPages ? pageBtnDisabled : pageBtnNormal}
-            >
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          currentPage={safePage}
+          totalPages={totalPages}
+          totalItems={filtered.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          pageSizes={PAGE_SIZES}
+          itemLabel="teachers"
+        />
       </div>
 
       {/* ---------------- View details popup ---------------- */}
@@ -1178,7 +1100,6 @@ export default function Teachers() {
                 <X size={22} />
               </button>
             </div>
-
             <div className="px-6 py-5">
               <div className="mb-5 flex items-center gap-4">
                 {viewing.photo ? (
@@ -1198,7 +1119,6 @@ export default function Teachers() {
                   </span>
                 </div>
               </div>
-
               <dl className="grid grid-cols-1 gap-x-6 gap-y-4 text-sm sm:grid-cols-2">
                 {[
                   ["Gender", viewing.gender],
@@ -1231,7 +1151,6 @@ export default function Teachers() {
                 ))}
               </dl>
             </div>
-
             <div className="flex justify-end gap-3 border-t border-gray-200 px-6 py-4">
               <button
                 onClick={() => setViewing(null)}
@@ -1245,7 +1164,7 @@ export default function Teachers() {
                   setEditing(viewing);
                   setViewing(null);
                 }}
-                className="h-10 rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white hover:bg-blue-700"
+                className="h-10 rounded-xl bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a70]"
               >
                 Edit Teacher
               </button>

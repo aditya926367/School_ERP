@@ -33,7 +33,7 @@ export default function MonthlyPayroll() {
   const locked = run?.status === "Approved";
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <Head
         title="Monthly Payroll"
         sub="Create the month's salary list from attendance, then approve it for payment."

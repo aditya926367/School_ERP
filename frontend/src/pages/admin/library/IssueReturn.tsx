@@ -231,7 +231,7 @@ export default function IssueReturn() {
   ];
 
   return (
-    <div className="space-y-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <PageHeader
         title="Issue / Return"
         description="Record book issues, monitor due dates, and mark books as returned."

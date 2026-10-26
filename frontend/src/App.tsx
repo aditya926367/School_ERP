@@ -122,7 +122,7 @@ import LibrarySetup from "./pages/admin/library/librarySetup.tsx";
 import MyProfile from "./pages/common/myProfile.tsx";
 import ChangePassword from "./pages/common/changePassword.tsx";
 import Settings from "./pages/common/settings.tsx";
-import Teachers from "./pages/admin/teacher.tsx";
+import Teachers from "./pages/admin/addteachers.tsx";
 
 
 //teachher salary 

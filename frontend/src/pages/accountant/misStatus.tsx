@@ -10,7 +10,7 @@ export default function MisStatus() {
   const classes = [...new Set(STUDENTS.map((s) => s.className))].sort();
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <Head title="MIS Status" sub="A quick summary of fee collection for the school." />
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">

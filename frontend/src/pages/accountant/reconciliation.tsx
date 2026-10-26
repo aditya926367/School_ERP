@@ -9,7 +9,7 @@ export default function Reconciliation() {
   const dates = [...new Set(PAYMENTS.map((p) => p.date))];
 
   return (
-    <div className="space-y-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <Head
         title="Reconciliation"
         sub="Compare the payments in our records with the amount shown in the bank statement."

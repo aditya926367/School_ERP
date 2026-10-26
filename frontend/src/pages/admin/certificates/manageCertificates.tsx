@@ -103,7 +103,7 @@ export default function ManageCertificates() {
   }
 
   return (
-    <div className="space-y-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Manage Certificates</h1>
         <p className="text-sm text-gray-500">Edit, update or delete issued certificates</p>
