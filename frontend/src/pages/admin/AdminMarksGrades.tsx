@@ -1,5 +1,4 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import {
   Plus,
@@ -11,6 +10,7 @@ import {
   Award,
 } from "lucide-react";
 import { EditButton, DeleteButton} from "../../components/common/ActionButtons";
+import Pagination from "../../components/common/Pagination";
 
 type MarkStatus = "Draft" | "Published";
 
@@ -160,6 +160,10 @@ export default function AdminMarksGrades() {
   const [form, setForm] = useState<Omit<MarkRecord, "id">>(emptyRecord);
   const [error, setError] = useState("");
 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
   const filteredRecords = useMemo(() => {
     const query = search.trim().toLowerCase();
 
@@ -181,6 +185,24 @@ export default function AdminMarksGrades() {
       return matchesSearch && matchesClass && matchesStatus;
     });
   }, [records, search, classFilter, statusFilter]);
+
+  // Reset page to 1 when search or filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, classFilter, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredRecords.length / pageSize));
+
+  const paginatedRecords = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredRecords.slice(start, start + pageSize);
+  }, [filteredRecords, currentPage, pageSize]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const averagePercentage =
     records.length > 0
@@ -414,7 +436,7 @@ export default function AdminMarksGrades() {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {filteredRecords.map((record) => {
+              {paginatedRecords.map((record) => {
                 const percentage = getPercentage(record);
                 const grade = getGrade(percentage);
 
@@ -502,6 +524,21 @@ export default function AdminMarksGrades() {
             </tbody>
           </table>
         </div>
+
+        {filteredRecords.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredRecords.length}
+            pageSize={pageSize}
+            onPageChange={(page) => setCurrentPage(page)}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            pageSizes={[5, 10, 20, 50]}
+          />
+        )}
       </div>
 
       {showModal && (
@@ -725,7 +762,7 @@ export default function AdminMarksGrades() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+                  className="rounded-lg bg-[#27348b] px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
                 >
                   {editingId !== null ? "Save Changes" : "Save Marks"}
                 </button>

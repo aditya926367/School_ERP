@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   CalendarDays,
   Download,
@@ -15,6 +15,7 @@ import PageHeader from "../../components/common/PageHeader";
 import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import SummaryCard from "../../components/common/SummaryCard";
+import Pagination from "../../components/common/Pagination";
 
 type AttendanceStatus = "Present" | "Absent" | "Late" | "Leave";
 
@@ -51,20 +52,48 @@ export default function StudentAttendance() {
   const [search, setSearch] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
 
-  const classes = [...new Set(students.map((student) => student.className))].sort();
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
+  const classes = [
+    ...new Set(
+      students
+        .map((student) => student.className.trim())
+        .filter(Boolean)
+    ),
+  ].sort((a, b) => a.localeCompare(b));
 
   const filteredStudents = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     return students.filter((student) => {
-      const matchesClass = classFilter === "All" || student.className === classFilter;
-      const matchesSearch = `${student.studentId} ${student.name} ${student.className}`
+      const matchesClass = classFilter === "All" || student.className.trim() === classFilter;
+      const matchesSearch = `${student.studentId} ${student.name} ${student.className.trim()}`
         .toLowerCase()
         .includes(query);
 
       return matchesClass && matchesSearch;
     });
   }, [students, classFilter, search]);
+
+  // Reset page to 1 when filters or search change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [classFilter, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredStudents.length / pageSize));
+
+  const paginatedStudents = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredStudents.slice(start, start + pageSize);
+  }, [filteredStudents, currentPage, pageSize]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
 
   const counts = {
     present: filteredStudents.filter((student) => student.status === "Present").length,
@@ -205,7 +234,6 @@ export default function StudentAttendance() {
               value={classFilter}
               onChange={setClassFilter}
               options={[
-                { label: "All Classes", value: "All" },
                 ...classes.map((name) => ({ label: name, value: name })),
               ]}
               placeholder="All Classes"
@@ -235,7 +263,7 @@ export default function StudentAttendance() {
         </div>
 
         <DataTable<Student>
-          data={filteredStudents}
+          data={paginatedStudents}
           columns={columns}
           rowKey={(student) => student.id}
           tableClassName="min-w-[750px] text-sm text-gray-800"
@@ -247,8 +275,22 @@ export default function StudentAttendance() {
           }
         />
 
+        {filteredStudents.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredStudents.length}
+            pageSize={pageSize}
+            onPageChange={(page) => setCurrentPage(page)}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            pageSizes={[5, 10, 20, 50]}
+          />
+        )}
+
         <div className="flex flex-col justify-end gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center">
-          
           <button
             type="button"
             onClick={() => setSavedMessage(`Attendance changes for ${date} are currently in page memory only.`)}
