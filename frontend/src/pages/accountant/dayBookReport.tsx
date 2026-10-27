@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Head, Stat, card, inputCls, th, td, money, sumAmounts, PAYMENTS } from "./feesShared";
+import { Head, Stat, card, inputCls, th, td } from "./feesShared";
+import { useFees, money, sumAmounts, PAYMENT_MODES, todayISO } from "../../store/feeStore";
 
 export default function DaybookReport() {
-  // Start with the date of the latest payment
-  const [date, setDate] = useState(PAYMENTS[PAYMENTS.length - 1].date);
-  const todays = PAYMENTS.filter((p) => p.date === date);
-  const modes = ["Cash", "UPI", "Bank", "Cheque"];
+  const { payments } = useFees();
+
+  // Start with the date of the latest payment (or today when there are none)
+  const latest = payments.reduce((max, p) => (p.date > max ? p.date : max), "");
+  const [date, setDate] = useState(latest || todayISO());
+  const todays = payments.filter((p) => p.date === date);
 
   return (
     <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
@@ -15,9 +18,9 @@ export default function DaybookReport() {
         right={<input type="date" value={date} onChange={(e) => setDate(e.target.value)} className={inputCls} />}
       />
 
-      <div className="grid grid-cols-2 gap-5 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-5 xl:grid-cols-6">
         <Stat label="Day total" value={money(sumAmounts(todays))} />
-        {modes.map((mode) => (
+        {PAYMENT_MODES.map((mode) => (
           <Stat key={mode} label={mode} value={money(sumAmounts(todays.filter((p) => p.mode === mode)))} />
         ))}
       </div>

@@ -1,8 +1,11 @@
-import { Head, card, th, td, money, outstanding, sumAmounts, STUDENTS, PAYMENTS } from "./feesShared";
+import { Head, card, th, td } from "./feesShared";
+import { useFees, money, outstanding, sumAmounts } from "../../store/feeStore";
 
 export default function MonthlyProjection() {
+  const { students, payments } = useFees();
+
   // Unique months (YYYY-MM) taken from the due dates
-  const months = [...new Set(STUDENTS.map((s) => s.dueDate.slice(0, 7)))].sort();
+  const months = [...new Set(students.map((s) => s.dueDate.slice(0, 7)))].sort();
 
   return (
     <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
@@ -22,10 +25,10 @@ export default function MonthlyProjection() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {months.map((month) => {
-              const expected = STUDENTS
+              const expected = students
                 .filter((s) => s.dueDate.startsWith(month))
                 .reduce((sum, s) => sum + outstanding(s), 0);
-              const collected = sumAmounts(PAYMENTS.filter((p) => p.date.startsWith(month)));
+              const collected = sumAmounts(payments.filter((p) => p.date.startsWith(month)));
               return (
                 <tr key={month}>
                   <td className={td}>{month}</td>

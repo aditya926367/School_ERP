@@ -17,104 +17,21 @@ import Pagination from "../../components/common/Pagination";
 import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import SummaryCard from "../../components/common/SummaryCard";
+import type { FeeStudent } from "../../store/feeStore";
+import { useFees, money, dueStatus } from "../../store/feeStore";
 
-type DueStatus = "Overdue" | "Due Soon" | "Upcoming";
-
-type DueRecord = {
-  id: number;
-  studentId: string;
-  studentName: string;
-  className: string;
-  feeType: string;
-  totalFee: number;
-  paid: number;
-  dueDate: string;
-};
-
-const initialDues: DueRecord[] = [
-  {
-    id: 1,
-    studentId: "STU1001",
-    studentName: "Aarav Sharma",
-    className: "Class 10",
-    feeType: "Tuition Fee",
-    totalFee: 45000,
-    paid: 30000,
-    dueDate: "2026-10-05",
-  },
-  {
-    id: 2,
-    studentId: "STU1003",
-    studentName: "Rahul Kumar",
-    className: "Class 9",
-    feeType: "Tuition Fee",
-    totalFee: 40000,
-    paid: 25000,
-    dueDate: "2026-10-10",
-  },
-  {
-    id: 3,
-    studentId: "STU1004",
-    studentName: "Ananya Singh",
-    className: "Class 8",
-    feeType: "Transport Fee",
-    totalFee: 35000,
-    paid: 20000,
-    dueDate: "2026-10-20",
-  },
-  {
-    id: 4,
-    studentId: "STU1005",
-    studentName: "Rohan Gupta",
-    className: "Class 7",
-    feeType: "Annual Fee",
-    totalFee: 30000,
-    paid: 10000,
-    dueDate: "2026-10-15",
-  },
-  {
-    id: 5,
-    studentId: "STU1006",
-    studentName: "Meera Singh",
-    className: "Class 6",
-    feeType: "Examination Fee",
-    totalFee: 5000,
-    paid: 0,
-    dueDate: "2026-11-05",
-  },
-  {
-    id: 6,
-    studentId: "STU1007",
-    studentName: "Kabir Verma",
-    className: "Class 9",
-    feeType: "Tuition Fee",
-    totalFee: 40000,
-    paid: 20000,
-    dueDate: "2026-10-12",
-  },
-];
-
-const money = (amount: number) =>
-  `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
-
-function getDueStatus(dueDate: string): DueStatus {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const due = new Date(`${dueDate}T00:00:00`);
-
-  const daysUntilDue = Math.round(
-    (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-  );
-
-  if (daysUntilDue < 0) return "Overdue";
-  if (daysUntilDue <= 7) return "Due Soon";
-
-  return "Upcoming";
-}
+type DueRecord = FeeStudent & { id: number };
 
 export default function PendingDues() {
-  const [dues] = useState<DueRecord[]>(initialDues);
+  const { students } = useFees();
+  // Only students who still owe money appear here
+  const dues = useMemo<DueRecord[]>(
+    () =>
+      students
+        .filter((student) => student.totalFee > student.paid)
+        .map((student, index) => ({ ...student, id: index + 1 })),
+    [students],
+  );
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -128,7 +45,7 @@ export default function PendingDues() {
 
     return dues.filter((due) => {
       const outstanding = Math.max(0, due.totalFee - due.paid);
-      const status = getDueStatus(due.dueDate);
+      const status = dueStatus(due);
 
       const matchesSearch = [
         due.studentId,
@@ -152,11 +69,11 @@ export default function PendingDues() {
   );
 
   const overdueCount = filteredDues.filter(
-    (due) => getDueStatus(due.dueDate) === "Overdue",
+    (due) => dueStatus(due) === "Overdue",
   ).length;
 
   const dueSoonCount = filteredDues.filter(
-    (due) => getDueStatus(due.dueDate) === "Due Soon",
+    (due) => dueStatus(due) === "Due Soon",
   ).length;
 
   const totalPages = Math.max(
@@ -193,7 +110,7 @@ export default function PendingDues() {
         due.paid,
         Math.max(0, due.totalFee - due.paid),
         due.dueDate,
-        getDueStatus(due.dueDate),
+        dueStatus(due),
       ]),
     ];
 
@@ -284,7 +201,7 @@ export default function PendingDues() {
       key: "status",
       header: "Status",
       render: (due: DueRecord) => {
-        const status = getDueStatus(due.dueDate);
+        const status = dueStatus(due);
 
         const tone =
           status === "Overdue"

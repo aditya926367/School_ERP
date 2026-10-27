@@ -1,6 +1,7 @@
-
 import { useMemo, useState } from "react";
 import Pagination from "../../components/common/Pagination";
+import { useFees } from "../../store/feeStore";
+import type { FeePayment } from "../../store/feeStore";
 import {
   Banknote,
   Download,
@@ -12,117 +13,12 @@ import {
   CalendarDays,
 } from "lucide-react";
 
-type Payment = {
-  id: number;
-  receiptNo: string;
-  studentName: string;
+// A payment from the shared store plus the extra fields this report shows
+type Payment = FeePayment & {
   admissionNo: string;
-  className: string;
   category: string;
-  amount: number;
-  mode: "Cash" | "UPI" | "Card" | "Bank Transfer";
-  date: string;
   status: "Paid" | "Partial" | "Refunded";
 };
-
-const demoPayments: Payment[] = [
-  {
-    id: 1,
-    receiptNo: "REC-2026-001",
-    studentName: "Aarav Sharma",
-    admissionNo: "ADM001",
-    className: "Class 10",
-    category: "Tuition Fee",
-    amount: 12000,
-    mode: "UPI",
-    date: "2026-10-12",
-    status: "Paid",
-  },
-  {
-    id: 2,
-    receiptNo: "REC-2026-002",
-    studentName: "Ananya Singh",
-    admissionNo: "ADM002",
-    className: "Class 9",
-    category: "Transport Fee",
-    amount: 3500,
-    mode: "Cash",
-    date: "2026-10-12",
-    status: "Paid",
-  },
-  {
-    id: 3,
-    receiptNo: "REC-2026-003",
-    studentName: "Rohan Kumar",
-    admissionNo: "ADM003",
-    className: "Class 10",
-    category: "Tuition Fee",
-    amount: 6000,
-    mode: "Bank Transfer",
-    date: "2026-10-11",
-    status: "Partial",
-  },
-  {
-    id: 4,
-    receiptNo: "REC-2026-004",
-    studentName: "Priya Verma",
-    admissionNo: "ADM004",
-    className: "Class 8",
-    category: "Exam Fee",
-    amount: 1500,
-    mode: "UPI",
-    date: "2026-10-10",
-    status: "Paid",
-  },
-  {
-    id: 5,
-    receiptNo: "REC-2026-005",
-    studentName: "Kabir Gupta",
-    admissionNo: "ADM005",
-    className: "Class 9",
-    category: "Tuition Fee",
-    amount: 8000,
-    mode: "Card",
-    date: "2026-10-09",
-    status: "Refunded",
-  },
-  {
-    id: 6,
-    receiptNo: "REC-2026-006",
-    studentName: "Meera Patel",
-    admissionNo: "ADM006",
-    className: "Class 8",
-    category: "Tuition Fee",
-    amount: 10000,
-    mode: "UPI",
-    date: "2026-10-08",
-    status: "Paid",
-  },
-  {
-    id: 7,
-    receiptNo: "REC-2026-007",
-    studentName: "Dev Raj",
-    admissionNo: "ADM007",
-    className: "Class 10",
-    category: "Transport Fee",
-    amount: 2500,
-    mode: "Cash",
-    date: "2026-10-07",
-    status: "Paid",
-  },
-  {
-    id: 8,
-    receiptNo: "REC-2026-008",
-    studentName: "Ishita Das",
-    admissionNo: "ADM008",
-    className: "Class 9",
-    category: "Exam Fee",
-    amount: 1800,
-    mode: "UPI",
-    date: "2026-10-06",
-    status: "Partial",
-  },
-];
 
 const currency = (amount: number) =>
   new Intl.NumberFormat("en-IN", {
@@ -134,7 +30,23 @@ const currency = (amount: number) =>
 const today = new Date().toISOString().slice(0, 10);
 
 export default function FinanceReports() {
-  const [payments] = useState<Payment[]>(demoPayments);
+  const { payments: feePayments, students } = useFees();
+
+  // "Partial" means the student still has balance left after this payment
+  const payments = useMemo<Payment[]>(
+    () =>
+      feePayments.map((payment) => {
+        const student = students.find((item) => item.studentId === payment.studentId);
+        const stillOwes = student ? student.totalFee > student.paid : false;
+        return {
+          ...payment,
+          admissionNo: payment.studentId,
+          category: student?.feeType ?? "Tuition Fee",
+          status: stillOwes ? "Partial" : "Paid",
+        };
+      }),
+    [feePayments, students],
+  );
   const [search, setSearch] = useState("");
   const [fromDate, setFromDate] = useState("2026-10-01");
   const [toDate, setToDate] = useState(today);
@@ -391,6 +303,7 @@ export default function FinanceReports() {
               <option value="UPI">UPI</option>
               <option value="Card">Card</option>
               <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Cheque">Cheque</option>
             </select>
           </div>
 

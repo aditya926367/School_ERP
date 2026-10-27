@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { Head, card, inputCls, th, td, LOGS } from "./feesShared";
+import { Head, card, inputCls, th, td } from "./feesShared";
+import { useFees } from "../../store/feeStore";
 
 export default function FeeLogs() {
+  const { logs } = useFees();
   const [search, setSearch] = useState("");
 
   // Keep only the logs that contain the search text
-  const shown = LOGS.filter((log) =>
+  const shown = logs.filter((log) =>
     (log.user + log.action + log.detail).toLowerCase().includes(search.toLowerCase())
   );
 
@@ -31,6 +33,9 @@ export default function FeeLogs() {
                 <td className={td}>{log.detail}</td>
               </tr>
             ))}
+            {shown.length === 0 && (
+              <tr><td colSpan={4} className="px-5 py-10 text-center text-sm text-gray-500">No logs found.</td></tr>
+            )}
           </tbody>
         </table>
       </div>
