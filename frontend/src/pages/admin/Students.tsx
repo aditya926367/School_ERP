@@ -613,7 +613,6 @@ export default function Students() {
                       <tbody><tr className="border-t border-gray-100"><td className="px-4 py-3">Previous Session</td><td className="px-4 py-3">{selectedStudent.previousResult}</td><td className="px-4 py-3">{selectedStudent.previousPercentage}%</td></tr></tbody>
                     </table>
                   </div>
-                  <p className="mt-3 text-xs text-gray-500">Sample result data. Connect academic records to your database for a complete history.</p>
                 </SectionCard>
               </div>
             )}
@@ -633,7 +632,6 @@ export default function Students() {
                     <Detail label="Present Days" value={selectedStudent.presentDays} />
                     <Detail label="Absent Days" value={selectedStudent.absentDays} />
                   </div>
-                  <p className="mt-4 text-xs text-gray-500">Attendance history is sample summary data, not a live daily register.</p>
                 </SectionCard>
               </div>
             )}
@@ -652,7 +650,6 @@ export default function Students() {
                     <Detail label="Payment Status" value={selectedStudent.paidFee >= selectedStudent.totalFee ? "Paid in Full" : selectedStudent.paidFee === 0 ? "Unpaid" : "Partially Paid"} />
                     <Detail label="Academic Session" value={selectedStudent.academicYear} />
                   </div>
-                  <p className="mt-4 text-xs text-gray-500">Sample fee summary. Actual invoices and transactions require backend integration.</p>
                 </SectionCard>
               </div>
             )}
@@ -669,7 +666,6 @@ export default function Students() {
                     ))}
                   </div>
                 ) : <p className="text-sm text-gray-500">No documents have been listed.</p>}
-                <p className="mt-4 text-xs text-gray-500">Document names only; uploads and downloads need document storage and backend integration.</p>
               </SectionCard>
             )}
           </div>
