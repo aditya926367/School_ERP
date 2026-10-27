@@ -1,13 +1,20 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Printer } from "lucide-react";
 import { Head, card, inputCls, btn, inr, gross, getStaff, loadRuns, monthLabel, WORKING_DAYS } from "./payrollShared";
 
 export default function Payslips() {
+  // Opened from Salary Payments with a teacher and month already chosen
+  const location = useLocation();
+  const preset = (location.state ?? null) as { month?: string; empId?: string } | null;
+
   const runs = loadRuns();
   const months = Object.keys(runs).sort().reverse();
-  const [month, setMonth] = useState(months[0] ?? "");
+  const [month, setMonth] = useState(
+    preset?.month && runs[preset.month] ? preset.month : months[0] ?? ""
+  );
   const rows = runs[month]?.rows ?? [];
-  const [empId, setEmpId] = useState("");
+  const [empId, setEmpId] = useState(preset?.empId ?? "");
 
   const row = rows.find((r) => r.id === empId) ?? rows[0];
   const staff = row ? getStaff().find((t) => t.id === row.id) : undefined;
@@ -22,7 +29,7 @@ export default function Payslips() {
     ));
 
   return (
-    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6 print:min-h-0 print:bg-white print:p-0">
       <div className="print:hidden">
         <Head
           title="Payslips"

@@ -1,13 +1,16 @@
-import { Head, Stat, card, th, td, money, outstanding, STUDENTS } from "./feesShared";
+import { Head, Stat, card, th, td } from "./feesShared";
+import { useFees, money, outstanding } from "../../store/feeStore";
 
 export default function MisStatus() {
-  const totalFee = STUDENTS.reduce((sum, s) => sum + s.total, 0);
-  const collected = STUDENTS.reduce((sum, s) => sum + s.paid, 0);
+  const { students } = useFees();
+
+  const totalFee = students.reduce((sum, s) => sum + s.totalFee, 0);
+  const collected = students.reduce((sum, s) => sum + s.paid, 0);
   const pending = totalFee - collected;
-  const percent = Math.round((collected / totalFee) * 100);
+  const percent = totalFee ? Math.round((collected / totalFee) * 100) : 0;
 
   // Unique class names, for the class-wise table
-  const classes = [...new Set(STUDENTS.map((s) => s.className))].sort();
+  const classes = [...new Set(students.map((s) => s.className))].sort();
 
   return (
     <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
@@ -28,11 +31,11 @@ export default function MisStatus() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {classes.map((className) => {
-              const list = STUDENTS.filter((s) => s.className === className);
-              const total = list.reduce((sum, s) => sum + s.total, 0);
+              const list = students.filter((s) => s.className === className);
+              const total = list.reduce((sum, s) => sum + s.totalFee, 0);
               const paid = list.reduce((sum, s) => sum + s.paid, 0);
               const due = list.reduce((sum, s) => sum + outstanding(s), 0);
-              const rate = Math.round((paid / total) * 100);
+              const rate = total ? Math.round((paid / total) * 100) : 0;
               return (
                 <tr key={className}>
                   <td className={td}>{className}</td>

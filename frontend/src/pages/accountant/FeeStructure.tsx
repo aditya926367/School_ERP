@@ -1,4 +1,6 @@
 import ActionButtons from "../../components/common/ActionButtons";
+import { useFees } from "../../store/feeStore";
+import type { FeeStructureItem } from "../../store/feeStore";
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
@@ -10,24 +12,6 @@ import {
   IndianRupee,
 } from "lucide-react";
 
-type FeeStructureItem = {
-  id: number;
-  className: string;
-  academicYear: string;
-  feeType: string;
-  amount: number;
-  frequency: "Monthly" | "Quarterly" | "Annually";
-  status: "Active" | "Inactive";
-};
-
-const initialFees: FeeStructureItem[] = [
-  { id: 1, className: "Class 6", academicYear: "2026-2027", feeType: "Tuition Fee", amount: 2500, frequency: "Monthly", status: "Active" },
-  { id: 2, className: "Class 7", academicYear: "2026-2027", feeType: "Tuition Fee", amount: 2800, frequency: "Monthly", status: "Active" },
-  { id: 3, className: "Class 8", academicYear: "2026-2027", feeType: "Transport Fee", amount: 1200, frequency: "Monthly", status: "Active" },
-  { id: 4, className: "Class 9", academicYear: "2026-2027", feeType: "Admission Fee", amount: 5000, frequency: "Annually", status: "Active" },
-  { id: 5, className: "Class 10", academicYear: "2026-2027", feeType: "Examination Fee", amount: 1500, frequency: "Quarterly", status: "Inactive" },
-];
-
 const emptyForm = {
   className: "Class 6",
   academicYear: "2026-2027",
@@ -38,7 +22,7 @@ const emptyForm = {
 };
 
 export default function FeeStructure() {
-  const [fees, setFees] = useState(initialFees);
+  const { structures: fees, addStructure, updateStructure, deleteStructure } = useFees();
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [modalOpen, setModalOpen] = useState(false);
@@ -95,20 +79,9 @@ export default function FeeStructure() {
     }
 
     if (editingId !== null) {
-      setFees((current) =>
-        current.map((fee) =>
-          fee.id === editingId ? { ...fee, ...form, amount } : fee,
-        ),
-      );
+      updateStructure(editingId, { ...form, amount });
     } else {
-      setFees((current) => [
-        ...current,
-        {
-          id: Math.max(0, ...current.map((fee) => fee.id)) + 1,
-          ...form,
-          amount,
-        },
-      ]);
+      addStructure({ ...form, amount });
     }
 
     setModalOpen(false);
@@ -118,7 +91,7 @@ export default function FeeStructure() {
 
   function deleteFee(id: number) {
     if (window.confirm("Are you sure you want to delete this fee structure?")) {
-      setFees((current) => current.filter((fee) => fee.id !== id));
+      deleteStructure(id);
     }
   }
 
@@ -128,7 +101,7 @@ export default function FeeStructure() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Fee Structure</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Manage class-wise fees and payment frequencies.
+            Manage class-wise fees. Active fees set each student's total fee in Fee Collection, Fee-Bill and Challan.
           </p>
         </div>
 

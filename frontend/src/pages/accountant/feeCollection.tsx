@@ -1,6 +1,8 @@
 
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
+import { useFees, money, PAYMENT_MODES } from "../../store/feeStore";
+import type { PaymentMode } from "../../store/feeStore";
 import {
   Plus,
   IndianRupee,
@@ -60,12 +62,13 @@ const emptyForm = {
   date: new Date().toISOString().slice(0, 10),
 };
 
-const money = (amount: number) =>
-  `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+// const money = (amount: number) =>
+//   `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
 
 export default function FeeCollection() {
-  const [students, setStudents] = useState(initialStudents);
-  const [payments, setPayments] = useState(initialPayments);
+  // const [students, setStudents] = useState(initialStudents);
+  // const [payments, setPayments] = useState(initialPayments);
+  const { students, payments, addPayment } = useFees();
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,54 +104,73 @@ export default function FeeCollection() {
     (student) => student.paid >= student.totalFee,
   ).length;
 
+  // function collectFee(event: FormEvent<HTMLFormElement>) {
+  //   event.preventDefault();
+
+  //   const student = students.find((item) => item.studentId === form.studentId);
+  //   const amount = Number(form.amount);
+
+  //   if (!student) {
+  //     alert("Please select a student.");
+  //     return;
+  //   }
+
+  //   if (!Number.isFinite(amount) || amount <= 0) {
+  //     alert("Enter a valid amount.");
+  //     return;
+  //   }
+
+  //   const due = Math.max(0, student.totalFee - student.paid);
+
+  //   if (amount > due) {
+  //     alert(`Payment exceeds the student's outstanding balance of ${money(due)}.`);
+  //     return;
+  //   }
+
+  //   const nextId = Math.max(0, ...payments.map((payment) => payment.id)) + 1;
+  //   const receipt: Payment = {
+  //     id: nextId,
+  //     receiptNo: `REC-2026-${String(nextId).padStart(3, "0")}`,
+  //     studentId: student.studentId,
+  //     studentName: student.studentName,
+  //     className: student.className,
+  //     amount,
+  //     mode: form.mode,
+  //     date: form.date,
+  //   };
+
+  //   setPayments((current) => [receipt, ...current]);
+  //   setStudents((current) =>
+  //     current.map((item) =>
+  //       item.studentId === student.studentId
+  //         ? { ...item, paid: item.paid + amount }
+  //         : item,
+  //     ),
+  //   );
+
+  //   setSelectedReceipt(receipt);
+  //   setModalOpen(false);
+  //   setForm(emptyForm);
+  // }
   function collectFee(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  event.preventDefault();
 
-    const student = students.find((item) => item.studentId === form.studentId);
-    const amount = Number(form.amount);
+  const result = addPayment({
+    studentId: form.studentId,
+    amount: Number(form.amount),
+    mode: form.mode,
+    date: form.date,
+  });
 
-    if (!student) {
-      alert("Please select a student.");
-      return;
-    }
-
-    if (!Number.isFinite(amount) || amount <= 0) {
-      alert("Enter a valid amount.");
-      return;
-    }
-
-    const due = Math.max(0, student.totalFee - student.paid);
-
-    if (amount > due) {
-      alert(`Payment exceeds the student's outstanding balance of ${money(due)}.`);
-      return;
-    }
-
-    const nextId = Math.max(0, ...payments.map((payment) => payment.id)) + 1;
-    const receipt: Payment = {
-      id: nextId,
-      receiptNo: `REC-2026-${String(nextId).padStart(3, "0")}`,
-      studentId: student.studentId,
-      studentName: student.studentName,
-      className: student.className,
-      amount,
-      mode: form.mode,
-      date: form.date,
-    };
-
-    setPayments((current) => [receipt, ...current]);
-    setStudents((current) =>
-      current.map((item) =>
-        item.studentId === student.studentId
-          ? { ...item, paid: item.paid + amount }
-          : item,
-      ),
-    );
-
-    setSelectedReceipt(receipt);
-    setModalOpen(false);
-    setForm(emptyForm);
+  if (!result.ok) {
+    alert(result.error);
+    return;
   }
+
+  setSelectedReceipt(result.payment);
+  setModalOpen(false);
+  setForm(emptyForm);
+}
 
   function printReceipt(receipt: Payment) {
     const printWindow = window.open("", "_blank", "width=700,height=700");

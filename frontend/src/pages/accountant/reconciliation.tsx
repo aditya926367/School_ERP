@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Head, card, inputCls, th, td, money, sumAmounts, PAYMENTS } from "./feesShared";
+import { Head, card, inputCls, th, td } from "./feesShared";
+import { useFees, money, sumAmounts } from "../../store/feeStore";
 
 export default function Reconciliation() {
+  const { payments } = useFees();
+
   // Bank amount typed by the accountant for each date
   const [bankAmounts, setBankAmounts] = useState<Record<string, string>>({});
 
-  // List of unique dates that have payments
-  const dates = [...new Set(PAYMENTS.map((p) => p.date))];
+  // Unique dates that have payments, newest first
+  const dates = [...new Set(payments.map((p) => p.date))].sort().reverse();
 
   return (
     <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
@@ -26,7 +29,7 @@ export default function Reconciliation() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {dates.map((date) => {
-              const recorded = sumAmounts(PAYMENTS.filter((p) => p.date === date));
+              const recorded = sumAmounts(payments.filter((p) => p.date === date));
               const typed = bankAmounts[date] ?? "";
               const difference = Number(typed) - recorded;
               const matched = typed !== "" && difference === 0;
@@ -53,6 +56,9 @@ export default function Reconciliation() {
                 </tr>
               );
             })}
+            {dates.length === 0 && (
+              <tr><td colSpan={5} className="px-5 py-10 text-center text-sm text-gray-500">No payments recorded yet.</td></tr>
+            )}
           </tbody>
         </table>
       </div>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   Download,
+  Printer,
   ReceiptText,
   Search,
   X,
@@ -13,82 +14,11 @@ import Pagination from "../../components/common/Pagination";
 import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import ActionButtons from "../../components/common/ActionButtons";
+import { useFees, money } from "../../store/feeStore";
+import type { FeePayment } from "../../store/feeStore";
 
 
-type PaymentMode = "Cash" | "UPI" | "Card" | "Bank Transfer";
-
-type Receipt = {
-  id: number;
-  receiptNo: string;
-  studentId: string;
-  studentName: string;
-  className: string;
-  amount: number;
-  mode: PaymentMode;
-  date: string;
-  status: "Paid" | "Refunded";
-};
-
-const initialReceipts: Receipt[] = [
-  {
-    id: 1,
-    receiptNo: "REC-2026-001",
-    studentId: "STU1001",
-    studentName: "Aarav Sharma",
-    className: "Class 10",
-    amount: 10000,
-    mode: "UPI",
-    date: "2026-10-12",
-    status: "Paid",
-  },
-  {
-    id: 2,
-    receiptNo: "REC-2026-002",
-    studentId: "STU1002",
-    studentName: "Priya Verma",
-    className: "Class 10",
-    amount: 15000,
-    mode: "Cash",
-    date: "2026-10-12",
-    status: "Paid",
-  },
-  {
-    id: 3,
-    receiptNo: "REC-2026-003",
-    studentId: "STU1003",
-    studentName: "Rahul Kumar",
-    className: "Class 9",
-    amount: 5000,
-    mode: "Card",
-    date: "2026-10-11",
-    status: "Paid",
-  },
-  {
-    id: 4,
-    receiptNo: "REC-2026-004",
-    studentId: "STU1004",
-    studentName: "Ananya Singh",
-    className: "Class 8",
-    amount: 7500,
-    mode: "Bank Transfer",
-    date: "2026-10-09",
-    status: "Paid",
-  },
-  {
-    id: 5,
-    receiptNo: "REC-2026-005",
-    studentId: "STU1005",
-    studentName: "Rohan Gupta",
-    className: "Class 7",
-    amount: 3000,
-    mode: "UPI",
-    date: "2026-10-07",
-    status: "Paid",
-  },
-];
-
-const money = (amount: number) =>
-  `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+type Receipt = FeePayment & { status: "Paid" | "Refunded" };
 
 function printReceipt(receipt: Receipt) {
   const printWindow = window.open("", "_blank", "width=700,height=700");
@@ -210,7 +140,11 @@ function printReceipt(receipt: Receipt) {
 }
 
 export default function Receipts() {
-  const [receipts] = useState<Receipt[]>(initialReceipts);
+  const { payments } = useFees();
+  const receipts = useMemo<Receipt[]>(
+    () => payments.map((payment) => ({ ...payment, status: "Paid" as const })),
+    [payments],
+  );
   const [search, setSearch] = useState("");
   const [modeFilter, setModeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
