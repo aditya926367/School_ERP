@@ -431,7 +431,14 @@ function ClassesSections() {
                           </td>
 
                           <td className="px-4 py-3">
-                            <div className="flex justify-end">
+                            <div className="flex justify-end gap-2">
+                              <EditButton
+                                title="Edit Section"
+                                onClick={() => {
+                                  setEditingSectionId(section.id);
+                                  setShowSectionForm(true);
+                                }}
+                              />
                               <DeleteButton onClick={() => deleteSection(schoolClass.id, section.id)} />
                             </div>
                           </td>
@@ -533,11 +540,11 @@ function ClassesSections() {
             <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
               <div>
                 <h2 className="text-lg font-semibold text-gray-800">
-                  Add Section
+                  {editingSectionId !== null ? "Edit Section" : "Add Section"}
                 </h2>
 
                 <p className="mt-1 text-xs text-gray-500">
-                  Add a section to this class.
+                  {editingSectionId !== null ? "Update section details." : "Add a section to this class."}
                 </p>
               </div>
 
@@ -629,7 +636,7 @@ function ClassesSections() {
                 onClick={handleAddSection}
                 className="rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#1f2a70]"
               >
-                Add Section
+                {editingSectionId !== null ? "Edit Section" : "Add Section"}
               </button>
             </div>
           </div>
