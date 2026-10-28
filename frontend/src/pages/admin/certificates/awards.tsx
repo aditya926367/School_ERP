@@ -14,12 +14,7 @@ type Award = {
   level: Level;
 };
 
-const initialAwards: Award[] = [
-  { id: "AW001", title: "Best Student of the Year", recipient: "Priya Verma (10-B)", category: "Academic", awardDate: "2026-08-15", level: "School" },
-  { id: "AW002", title: "Inter-School Football Champion", recipient: "Aarav Sharma (8-A)", category: "Sports", awardDate: "2026-09-02", level: "District" },
-  { id: "AW003", title: "Science Exhibition Winner", recipient: "Rohit Gupta (6-A)", category: "Science", awardDate: "2026-09-20", level: "State" },
-  { id: "AW004", title: "Painting Competition Gold", recipient: "Diya Patel (7-B)", category: "Arts", awardDate: "2026-10-04", level: "National" },
-];
+const initialAwards: Award[] = [];
 
 const categories = ["Academic", "Sports", "Science", "Arts", "Cultural", "Discipline", "Other"];
 const levels: Level[] = ["School", "District", "State", "National"];
@@ -66,7 +61,7 @@ const pageBtnNormal = `${pageBtn} border-gray-300 text-gray-700 hover:bg-gray-50
 const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-200 text-gray-300`;
 
 export default function Awards() {
-  const [awards, setAwards] = useState<Award[]>(initialAwards);
+  const [awards, setAwards] = usePersistentState<Award[]>('schoolerp:pages_admin_certificates_awards_tsx:awards', []);
   const [search, setSearch] = useState("");
 
   // Pagination state

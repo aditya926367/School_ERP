@@ -23,53 +23,7 @@ type FeeRecord = {
   academicYear: string;
 };
 
-const demoFees: FeeRecord[] = [
-  {
-    id: 1,
-    title: "Tuition Fee",
-    description: "Academic tuition charges",
-    totalAmount: 30000,
-    paidAmount: 20000,
-    dueDate: "2026-10-20",
-    academicYear: "2026-27",
-  },
-  {
-    id: 2,
-    title: "Transport Fee",
-    description: "School bus transportation",
-    totalAmount: 12000,
-    paidAmount: 6000,
-    dueDate: "2026-10-15",
-    academicYear: "2026-27",
-  },
-  {
-    id: 3,
-    title: "Examination Fee",
-    description: "Term examination charges",
-    totalAmount: 3000,
-    paidAmount: 3000,
-    dueDate: "2026-09-15",
-    academicYear: "2026-27",
-  },
-  {
-    id: 4,
-    title: "Annual Fee",
-    description: "Annual school activities and facilities",
-    totalAmount: 5000,
-    paidAmount: 0,
-    dueDate: "2026-11-15",
-    academicYear: "2026-27",
-  },
-  {
-    id: 5,
-    title: "Library Fee",
-    description: "Library and learning resources",
-    totalAmount: 1500,
-    paidAmount: 1500,
-    dueDate: "2026-08-15",
-    academicYear: "2026-27",
-  },
-];
+const demoFees: FeeRecord[] = [];
 
 const currency = (amount: number) =>
   new Intl.NumberFormat("en-IN", {

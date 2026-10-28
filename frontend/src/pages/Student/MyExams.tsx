@@ -39,69 +39,7 @@ function formatDate(date: string) {
   });
 }
 
-const initialExams: Exam[] = [
-  {
-    id: 1,
-    name: "Mathematics Unit Test",
-    subject: "Mathematics",
-    examDate: dateOffset(3),
-    startTime: "09:00 AM",
-    endTime: "10:00 AM",
-    room: "Room 101",
-    totalMarks: 50,
-    status: "Upcoming",
-    resultPublished: false,
-  },
-  {
-    id: 2,
-    name: "Science Unit Test",
-    subject: "Science",
-    examDate: dateOffset(5),
-    startTime: "10:30 AM",
-    endTime: "11:30 AM",
-    room: "Room 102",
-    totalMarks: 50,
-    status: "Upcoming",
-    resultPublished: false,
-  },
-  {
-    id: 3,
-    name: "English Assessment",
-    subject: "English",
-    examDate: dateOffset(8),
-    startTime: "09:00 AM",
-    endTime: "10:00 AM",
-    room: "Room 103",
-    totalMarks: 40,
-    status: "Upcoming",
-    resultPublished: false,
-  },
-  {
-    id: 4,
-    name: "Computer Science Test",
-    subject: "Computer Science",
-    examDate: dateOffset(-7),
-    startTime: "11:00 AM",
-    endTime: "12:00 PM",
-    room: "Computer Lab",
-    totalMarks: 50,
-    status: "Completed",
-    marks: 44,
-    resultPublished: true,
-  },
-  {
-    id: 5,
-    name: "Social Science Assessment",
-    subject: "Social Science",
-    examDate: dateOffset(-4),
-    startTime: "09:00 AM",
-    endTime: "10:00 AM",
-    room: "Room 104",
-    totalMarks: 40,
-    status: "Completed",
-    resultPublished: false,
-  },
-];
+const initialExams: Exam[] = [];
 
 type Filter = "All" | ExamStatus;
 

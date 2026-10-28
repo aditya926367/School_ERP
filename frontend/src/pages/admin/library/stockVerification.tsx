@@ -8,14 +8,7 @@ type StockRow = {
   physical: string; // count entered by the librarian, empty = not counted yet
 };
 
-const initialRows: StockRow[] = [
-  { id: "B001", title: "Wings of Fire", system: 5, physical: "" },
-  { id: "B002", title: "Concept of Physics", system: 8, physical: "" },
-  { id: "B003", title: "Gitanjali", system: 4, physical: "" },
-  { id: "B004", title: "Discovery of India", system: 3, physical: "" },
-  { id: "B005", title: "Rich Dad Poor Dad", system: 6, physical: "" },
-  { id: "B006", title: "The Alchemist", system: 4, physical: "" },
-];
+const initialRows: StockRow[] = [];
 
 // Result for one row
 function getResult(r: StockRow): { label: string; className: string; diff: number } {
@@ -35,7 +28,7 @@ const pageBtnNormal = `${pageBtn} border-gray-300 text-gray-700 hover:bg-gray-50
 const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-200 text-gray-300`;
 
 export default function StockVerification() {
-  const [rows, setRows] = useState<StockRow[]>(initialRows);
+  const [rows, setRows] = usePersistentState<StockRow[]>('schoolerp:pages_admin_library_stockverification_tsx:rows', []);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
 

@@ -25,26 +25,7 @@ type AttendanceRecord = {
   status: AttendanceStatus;
 };
 
-const initialRecords: AttendanceRecord[] = [
-  { id: 1, date: "2026-10-12", className: "Class 8-A", rollNo: 1, admissionNo: "ADM-1001", studentName: "Aarav Sharma", status: "Present" },
-  { id: 2, date: "2026-10-12", className: "Class 8-A", rollNo: 2, admissionNo: "ADM-1002", studentName: "Ananya Verma", status: "Present" },
-  { id: 3, date: "2026-10-12", className: "Class 8-A", rollNo: 3, admissionNo: "ADM-1003", studentName: "Rohan Kumar", status: "Absent" },
-  { id: 4, date: "2026-10-12", className: "Class 8-A", rollNo: 4, admissionNo: "ADM-1004", studentName: "Priya Singh", status: "Late" },
-  { id: 5, date: "2026-10-12", className: "Class 8-A", rollNo: 5, admissionNo: "ADM-1005", studentName: "Arjun Gupta", status: "Present" },
-  { id: 6, date: "2026-10-11", className: "Class 8-A", rollNo: 1, admissionNo: "ADM-1001", studentName: "Aarav Sharma", status: "Present" },
-  { id: 7, date: "2026-10-11", className: "Class 8-A", rollNo: 2, admissionNo: "ADM-1002", studentName: "Ananya Verma", status: "Absent" },
-  { id: 8, date: "2026-10-11", className: "Class 8-A", rollNo: 3, admissionNo: "ADM-1003", studentName: "Rohan Kumar", status: "Present" },
-  { id: 9, date: "2026-10-11", className: "Class 8-A", rollNo: 4, admissionNo: "ADM-1004", studentName: "Priya Singh", status: "Present" },
-  { id: 10, date: "2026-10-11", className: "Class 8-A", rollNo: 5, admissionNo: "ADM-1005", studentName: "Arjun Gupta", status: "Late" },
-  { id: 11, date: "2026-10-10", className: "Class 9-B", rollNo: 1, admissionNo: "ADM-2001", studentName: "Aditya Raj", status: "Present" },
-  { id: 12, date: "2026-10-10", className: "Class 9-B", rollNo: 2, admissionNo: "ADM-2002", studentName: "Neha Singh", status: "Absent" },
-  { id: 13, date: "2026-10-10", className: "Class 9-B", rollNo: 3, admissionNo: "ADM-2003", studentName: "Vivek Kumar", status: "Present" },
-  { id: 14, date: "2026-10-10", className: "Class 9-B", rollNo: 4, admissionNo: "ADM-2004", studentName: "Pooja Kumari", status: "Leave" },
-  { id: 15, date: "2026-10-09", className: "Class 10-A", rollNo: 1, admissionNo: "ADM-3001", studentName: "Karan Verma", status: "Present" },
-  { id: 16, date: "2026-10-09", className: "Class 10-A", rollNo: 2, admissionNo: "ADM-3002", studentName: "Simran Kaur", status: "Present" },
-  { id: 17, date: "2026-10-09", className: "Class 10-A", rollNo: 3, admissionNo: "ADM-3003", studentName: "Mohit Kumar", status: "Absent" },
-  { id: 18, date: "2026-10-09", className: "Class 10-A", rollNo: 4, admissionNo: "ADM-3004", studentName: "Riya Singh", status: "Late" },
-];
+const initialRecords: AttendanceRecord[] = [];
 
 const statusStyles: Record<AttendanceStatus, string> = {
   Present: "bg-emerald-50 text-emerald-700 border-emerald-200",

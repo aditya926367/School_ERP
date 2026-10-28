@@ -16,56 +16,15 @@ import {
   UserRound,
 } from "lucide-react";
 
-const student = {
-  name: "Aarav Sharma",
-  admissionNo: "STU2026001",
-  className: "Class 10",
-  section: "A",
-  rollNo: "12",
-  academicYear: "2026–2027",
-};
+const student = { name: "Student", admissionNo: "", className: "Not assigned", section: "—", rollNo: "—", academicYear: "—" };
 
-const attendance = {
-  percentage: 92,
-  present: 46,
-  absent: 3,
-  total: 50,
-};
+const attendance = { percentage: 0, present: 0, absent: 0, total: 0 };
 
-const subjects = [
-  { name: "Mathematics", marks: 92, grade: "A+" },
-  { name: "Science", marks: 86, grade: "A" },
-  { name: "English", marks: 81, grade: "A" },
-  { name: "Social Science", marks: 88, grade: "A" },
-];
+const subjects: { name: string; marks: number; grade: string }[] = [];
 
-const timetable = [
-  { time: "08:30 AM", subject: "Mathematics", teacher: "Mr. Verma", room: "Room 101" },
-  { time: "09:20 AM", subject: "Science", teacher: "Mrs. Singh", room: "Lab 02" },
-  { time: "10:10 AM", subject: "English", teacher: "Ms. Sharma", room: "Room 104" },
-  { time: "11:30 AM", subject: "Computer Science", teacher: "Mr. Kumar", room: "Lab 01" },
-];
+const timetable: { time: string; subject: string; teacher: string; room: string }[] = [];
 
-const notices = [
-  {
-    title: "Unit Test Schedule Released",
-    description: "Check the examination timetable for the upcoming unit tests.",
-    date: "Today",
-    type: "important",
-  },
-  {
-    title: "Science Project Submission",
-    description: "Submit your science project to your subject teacher.",
-    date: "Tomorrow",
-    type: "assignment",
-  },
-  {
-    title: "Library Book Return",
-    description: "Please return borrowed library books before the due date.",
-    date: "10 Oct",
-    type: "general",
-  },
-];
+const notices: { title: string; description: string; date: string; type: string }[] = [];
 
 const quickLinks = [
   { label: "My Attendance", description: "View attendance history", icon: ClipboardCheck, href: "/student/attendance", color: "text-emerald-600 bg-emerald-50" },
@@ -162,7 +121,7 @@ export default function StudentDashboard() {
 
         <SummaryCard
           title="Average Marks"
-          value="86.8%"
+          value="0%"
           subtitle="Across 4 subjects"
           icon={<TrendingUp size={22} />}
           color="bg-blue-50 text-blue-600"
@@ -245,7 +204,7 @@ export default function StudentDashboard() {
                   color="bg-slate-400"
                 />
                 <p className="border-t border-slate-100 pt-3 text-xs leading-5 text-slate-500">
-                  These sample figures are for UI demonstration only. Actual
+                  No student records are available yet. Actual
                   attendance will come from your school records.
                 </p>
               </div>

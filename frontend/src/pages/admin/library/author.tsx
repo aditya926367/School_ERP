@@ -9,14 +9,7 @@ type Author = {
   books: number;
 };
 
-const initialAuthors: Author[] = [
-  { id: "AU001", name: "A.P.J. Abdul Kalam", country: "India", books: 3 },
-  { id: "AU002", name: "H.C. Verma", country: "India", books: 2 },
-  { id: "AU003", name: "Rabindranath Tagore", country: "India", books: 4 },
-  { id: "AU004", name: "Jawaharlal Nehru", country: "India", books: 2 },
-  { id: "AU005", name: "Robert Kiyosaki", country: "USA", books: 3 },
-  { id: "AU006", name: "J.K. Rowling", country: "UK", books: 7 },
-];
+const initialAuthors: Author[] = [];
 
 // Empty form state
 const emptyForm = { name: "", country: "India", books: "1" };
@@ -31,7 +24,7 @@ const pageBtnNormal = `${pageBtn} border-gray-300 text-gray-700 hover:bg-gray-50
 const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-200 text-gray-300`;
 
 export default function AuthorList() {
-  const [authors, setAuthors] = useState<Author[]>(initialAuthors);
+  const [authors, setAuthors] = usePersistentState<Author[]>('schoolerp:pages_admin_library_author_tsx:authors', []);
   const [search, setSearch] = useState("");
 
   // Pagination state

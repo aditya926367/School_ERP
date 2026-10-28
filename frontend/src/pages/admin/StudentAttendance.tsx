@@ -27,16 +27,7 @@ type Student = {
   status: AttendanceStatus;
 };
 
-const initialStudents: Student[] = [
-  { id: 1, studentId: "STU1001", name: "Aarav Sharma", className: "Class 10", status: "Present" },
-  { id: 2, studentId: "STU1002", name: "Priya Verma", className: "Class 10", status: "Absent" },
-  { id: 3, studentId: "STU1003", name: "Rahul Kumar", className: "Class 9", status: "Present" },
-  { id: 4, studentId: "STU1004", name: "Ananya Singh", className: "Class 8", status: "Late" },
-  { id: 5, studentId: "STU1005", name: "Rohan Gupta", className: "Class 9", status: "Leave" },
-  { id: 6, studentId: "STU1006", name: "Sneha Kumari", className: "Class 10", status: "Present" },
-  { id: 7, studentId: "STU1007", name: "Karan Singh", className: "Class 8", status: "Present" },
-  { id: 8, studentId: "STU1008", name: "Neha Gupta", className: "Class 9", status: "Absent" },
-];
+const initialStudents: Student[] = [];
 
 const statuses: AttendanceStatus[] = ["Present", "Absent", "Late", "Leave"];
 
@@ -46,7 +37,7 @@ function today() {
 }
 
 export default function StudentAttendance() {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [students, setStudents] = usePersistentState<Student[]>('schoolerp:pages_admin_studentattendance_tsx:students', []);
   const [date, setDate] = useState(today());
   const [classFilter, setClassFilter] = useState("All");
   const [search, setSearch] = useState("");

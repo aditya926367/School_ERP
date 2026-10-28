@@ -21,19 +21,14 @@ type Member = {
   active: boolean;
 };
 
-const initialMembers: Member[] = [
-  { id: "M101", name: "Aarav Sharma", type: "Student", className: "8-A", booksIssued: 2, active: true },
-  { id: "M102", name: "Priya Verma", type: "Student", className: "10-B", booksIssued: 1, active: true },
-  { id: "M103", name: "Rohit Gupta", type: "Student", className: "6-C", booksIssued: 0, active: false },
-  { id: "M201", name: "Mrs. Sunita Rao", type: "Staff", className: "-", booksIssued: 3, active: true },
-];
+const initialMembers: Member[] = [];
 
 const PAGE_SIZES = [5, 10, 25, 50];
 const inputStyle = "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-blue-100";
 const emptyForm = { name: "", type: "Student" as MemberType, className: "", active: true };
 
 export default function Members() {
-  const [members, setMembers] = useState<Member[]>(initialMembers);
+  const [members, setMembers] = usePersistentState<Member[]>('schoolerp:pages_admin_library_members_tsx:members', []);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");

@@ -27,63 +27,7 @@ type StudentResult = {
   publishStatus: PublishStatus;
 };
 
-const initialResults: StudentResult[] = [
-  {
-    id: 1,
-    studentId: "STU1001",
-    studentName: "Aarav Sharma",
-    className: "Class 10",
-    exam: "First Term Examination",
-    subjects: 5,
-    totalObtained: 462,
-    totalMarks: 500,
-    publishStatus: "Published",
-  },
-  {
-    id: 2,
-    studentId: "STU1002",
-    studentName: "Priya Verma",
-    className: "Class 10",
-    exam: "First Term Examination",
-    subjects: 5,
-    totalObtained: 421,
-    totalMarks: 500,
-    publishStatus: "Published",
-  },
-  {
-    id: 3,
-    studentId: "STU1003",
-    studentName: "Rahul Kumar",
-    className: "Class 9",
-    exam: "Mid-Term Examination",
-    subjects: 5,
-    totalObtained: 172,
-    totalMarks: 500,
-    publishStatus: "Draft",
-  },
-  {
-    id: 4,
-    studentId: "STU1004",
-    studentName: "Ananya Singh",
-    className: "Class 8",
-    exam: "Unit Test 2",
-    subjects: 5,
-    totalObtained: 386,
-    totalMarks: 500,
-    publishStatus: "Published",
-  },
-  {
-    id: 5,
-    studentId: "STU1005",
-    studentName: "Rohan Gupta",
-    className: "Class 9",
-    exam: "Mid-Term Examination",
-    subjects: 5,
-    totalObtained: 245,
-    totalMarks: 500,
-    publishStatus: "Published",
-  },
-];
+const initialResults: StudentResult[] = [];
 
 function getPercentage(result: StudentResult) {
   return result.totalMarks > 0
@@ -145,7 +89,7 @@ function Badge({
 }
 
 export default function AdminResults() {
-  const [results, setResults] = useState<StudentResult[]>(initialResults);
+  const [results, setResults] = usePersistentState<StudentResult[]>('schoolerp:pages_admin_adminresults_tsx:results', []);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [examFilter, setExamFilter] = useState("All");

@@ -1,18 +1,17 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { ChangeEvent, FormEvent, ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getDemoUsers, saveDemoUsers } from "../../utils/demoAuth";
 import Pagination from "../../components/common/Pagination";
 import ActionButtons from "../../components/common/ActionButtons";
+import { useTeachers } from "../../store/teacherStore";
+import type { Gender, Status, Teacher } from "../../store/teacherStore";
 import {
   Download,
-  Eye,
   Filter,
-  Pencil,
   Plus,
   Printer,
   Search,
-  Trash2,
   Upload,
   User,
   UserCheck,
@@ -24,36 +23,6 @@ import {
 // =====================================================================
 // Types
 // =====================================================================
-type Gender = "Male" | "Female" | "Other";
-type Status = "Active" | "Inactive" | "On Leave";
-
-type Teacher = {
-  id: string; // employee ID, for example T001
-  firstName: string;
-  lastName: string;
-  gender: Gender;
-  dob: string; // yyyy-mm-dd
-  bloodGroup: string;
-  phone: string;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
-  emergencyName: string;
-  emergencyPhone: string;
-  designation: string;
-  department: string;
-  subjects: string[];
-  qualification: string;
-  experience: string; // years
-  joiningDate: string; // yyyy-mm-dd
-  employmentType: string;
-  classTeacherOf: string; // empty means none
-  status: Status;
-  photo: string; // image as data URL, empty if no photo
-};
-
 // The form holds everything except the ID (the ID is generated)
 type FormState = Omit<Teacher, "id">;
 
@@ -117,8 +86,6 @@ const CLASSES = [
 // =====================================================================
 // Fake data (saved in the browser, replace with the backend API later)
 // =====================================================================
-const STORAGE_KEY = "erp_teachers";
-
 const emptyForm: FormState = {
   firstName: "",
   lastName: "",
@@ -144,57 +111,6 @@ const emptyForm: FormState = {
   status: "Active",
   photo: "",
 };
-
-// Builds a full teacher from the few fields that differ
-function makeTeacher(
-  t: Pick<
-    Teacher,
-    | "id"
-    | "firstName"
-    | "lastName"
-    | "gender"
-    | "phone"
-    | "designation"
-    | "department"
-    | "subjects"
-    | "qualification"
-    | "experience"
-    | "joiningDate"
-    | "classTeacherOf"
-    | "status"
-  >
-): Teacher {
-  return {
-    ...emptyForm,
-    ...t,
-    dob: "1986-04-12",
-    email: `${t.firstName}.${t.lastName}@yourschool.com`.toLowerCase(),
-  };
-}
-
-const seedTeachers: Teacher[] = [
-  makeTeacher({ id: "T001", firstName: "Rahul", lastName: "Sharma", gender: "Male", phone: "9876500001", designation: "Post Graduate Teacher (PGT)", department: "Mathematics", subjects: ["Mathematics"], qualification: "M.Sc., B.Ed", experience: "12", joiningDate: "2014-07-01", classTeacherOf: "10-A", status: "Active" }),
-  makeTeacher({ id: "T002", firstName: "Sunita", lastName: "Rao", gender: "Female", phone: "9876500002", designation: "Head of Department", department: "Science", subjects: ["Biology", "Science"], qualification: "Ph.D.", experience: "18", joiningDate: "2009-04-10", classTeacherOf: "", status: "Active" }),
-  makeTeacher({ id: "T003", firstName: "Anil", lastName: "Verma", gender: "Male", phone: "9876500003", designation: "Trained Graduate Teacher (TGT)", department: "Languages", subjects: ["English"], qualification: "M.A., B.Ed", experience: "8", joiningDate: "2018-07-16", classTeacherOf: "8-A", status: "Active" }),
-  makeTeacher({ id: "T004", firstName: "Priya", lastName: "Nair", gender: "Female", phone: "9876500004", designation: "Primary Teacher (PRT)", department: "Languages", subjects: ["Hindi", "Sanskrit"], qualification: "B.A., B.Ed", experience: "5", joiningDate: "2021-04-05", classTeacherOf: "6-B", status: "Active" }),
-  makeTeacher({ id: "T005", firstName: "Vikram", lastName: "Singh", gender: "Male", phone: "9876500005", designation: "Trained Graduate Teacher (TGT)", department: "Arts & Sports", subjects: ["Physical Education"], qualification: "B.Ed", experience: "10", joiningDate: "2016-07-11", classTeacherOf: "", status: "Active" }),
-  makeTeacher({ id: "T006", firstName: "Meena", lastName: "Gupta", gender: "Female", phone: "9876500006", designation: "Post Graduate Teacher (PGT)", department: "Social Studies", subjects: ["Social Science"], qualification: "M.A., B.Ed", experience: "14", joiningDate: "2012-04-02", classTeacherOf: "9-B", status: "On Leave" }),
-  makeTeacher({ id: "T007", firstName: "Amit", lastName: "Chauhan", gender: "Male", phone: "9876500007", designation: "Trained Graduate Teacher (TGT)", department: "Computer", subjects: ["Computer Science"], qualification: "B.Sc., B.Ed", experience: "4", joiningDate: "2022-07-18", classTeacherOf: "", status: "Inactive" }),
-  makeTeacher({ id: "T008", firstName: "Kavita", lastName: "Joshi", gender: "Female", phone: "9876500008", designation: "Primary Teacher (PRT)", department: "Arts & Sports", subjects: ["Art", "Music"], qualification: "B.Ed", experience: "6", joiningDate: "2020-04-06", classTeacherOf: "7-B", status: "Active" }),
-];
-
-function loadTeachers(): Teacher[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Teacher[];
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch {
-    // broken saved data: fall back to the demo list
-  }
-  return seedTeachers;
-}
 
 // =====================================================================
 // Helpers
@@ -641,7 +557,7 @@ export default function Teachers() {
   // ?add=1 in the address opens the Add Teacher form (used by the dashboard quick action)
   const [searchParams, setSearchParams] = useSearchParams();
   const isAdding = searchParams.get("add") === "1";
-  const [teachers, setTeachers] = useState<Teacher[]>(loadTeachers);
+  const [teachers, setTeachers] = useTeachers();
   const [editing, setEditing] = useState<Teacher | null>(null);
   const [viewing, setViewing] = useState<Teacher | null>(null);
   const [notice, setNotice] = useState("");
@@ -656,15 +572,6 @@ export default function Teachers() {
   // Pagination
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
-
-  // Save the list in the browser so it is still there after a refresh
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(teachers));
-    } catch {
-      // storage is full: ignore, the list still works for this visit
-    }
-  }, [teachers]);
 
   const showForm = isAdding || editing !== null;
 
@@ -770,8 +677,6 @@ export default function Teachers() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
   const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
-  const from = filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1;
-  const to = Math.min(safePage * pageSize, filtered.length);
 
   // Downloads the filtered list as a CSV file (opens in Excel)
   function handleExport() {

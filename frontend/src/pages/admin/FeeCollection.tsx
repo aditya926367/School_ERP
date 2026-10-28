@@ -39,19 +39,9 @@ type Payment = {
   date: string;
 };
 
-const initialStudents: StudentFee[] = [
-  { id: 1, studentId: "STU1001", studentName: "Aarav Sharma", className: "Class 10", totalFee: 45000, paid: 30000 },
-  { id: 2, studentId: "STU1002", studentName: "Priya Verma", className: "Class 10", totalFee: 45000, paid: 45000 },
-  { id: 3, studentId: "STU1003", studentName: "Rahul Kumar", className: "Class 9", totalFee: 40000, paid: 25000 },
-  { id: 4, studentId: "STU1004", studentName: "Ananya Singh", className: "Class 8", totalFee: 35000, paid: 20000 },
-  { id: 5, studentId: "STU1005", studentName: "Rohan Gupta", className: "Class 7", totalFee: 30000, paid: 10000 },
-];
+const initialStudents: StudentFee[] = [];
 
-const initialPayments: Payment[] = [
-  { id: 1, receiptNo: "REC-2026-001", studentId: "STU1001", studentName: "Aarav Sharma", className: "Class 10", amount: 10000, mode: "UPI", date: "2026-10-12" },
-  { id: 2, receiptNo: "REC-2026-002", studentId: "STU1002", studentName: "Priya Verma", className: "Class 10", amount: 15000, mode: "Cash", date: "2026-10-12" },
-  { id: 3, receiptNo: "REC-2026-003", studentId: "STU1003", studentName: "Rahul Kumar", className: "Class 9", amount: 5000, mode: "Card", date: "2026-10-11" },
-];
+const initialPayments: Payment[] = [];
 
 const emptyForm = {
   studentId: "",
@@ -64,8 +54,8 @@ const money = (amount: number) =>
   `₹${amount.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
 
 export default function FeeCollection() {
-  const [students, setStudents] = useState(initialStudents);
-  const [payments, setPayments] = useState(initialPayments);
+  const [students, setStudents] = usePersistentState('schoolerp:pages_admin_feecollection_tsx:students', []);
+  const [payments, setPayments] = usePersistentState('schoolerp:pages_admin_feecollection_tsx:payments', []);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);

@@ -23,22 +23,7 @@ type Student = {
   status: AttendanceStatus;
 };
 
-const initialStudents: Student[] = [
-  { id: 1, admissionNo: "ADM-1001", name: "Aarav Sharma", rollNo: 1, className: "Class 8-A", status: "Present" },
-  { id: 2, admissionNo: "ADM-1002", name: "Ananya Verma", rollNo: 2, className: "Class 8-A", status: "Present" },
-  { id: 3, admissionNo: "ADM-1003", name: "Rohan Kumar", rollNo: 3, className: "Class 8-A", status: "Absent" },
-  { id: 4, admissionNo: "ADM-1004", name: "Priya Singh", rollNo: 4, className: "Class 8-A", status: "Present" },
-  { id: 5, admissionNo: "ADM-1005", name: "Arjun Gupta", rollNo: 5, className: "Class 8-A", status: "Late" },
-  { id: 6, admissionNo: "ADM-1006", name: "Sneha Kumari", rollNo: 6, className: "Class 8-A", status: "Present" },
-  { id: 7, admissionNo: "ADM-1007", name: "Rahul Yadav", rollNo: 7, className: "Class 8-A", status: "Leave" },
-  { id: 8, admissionNo: "ADM-1008", name: "Kavya Mishra", rollNo: 8, className: "Class 8-A", status: "Present" },
-  { id: 9, admissionNo: "ADM-2001", name: "Aditya Raj", rollNo: 1, className: "Class 9-B", status: "Present" },
-  { id: 10, admissionNo: "ADM-2002", name: "Neha Singh", rollNo: 2, className: "Class 9-B", status: "Absent" },
-  { id: 11, admissionNo: "ADM-2003", name: "Vivek Kumar", rollNo: 3, className: "Class 9-B", status: "Present" },
-  { id: 12, admissionNo: "ADM-2004", name: "Pooja Kumari", rollNo: 4, className: "Class 9-B", status: "Late" },
-  { id: 13, admissionNo: "ADM-3001", name: "Karan Verma", rollNo: 1, className: "Class 10-A", status: "Present" },
-  { id: 14, admissionNo: "ADM-3002", name: "Simran Kaur", rollNo: 2, className: "Class 10-A", status: "Present" },
-];
+const initialStudents: Student[] = [];
 
 const statusStyles: Record<AttendanceStatus, string> = {
   Present: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -48,7 +33,7 @@ const statusStyles: Record<AttendanceStatus, string> = {
 };
 
 export default function TeacherMarkAttendance() {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [students, setStudents] = usePersistentState<Student[]>('schoolerp:pages_teacher_markattendance_tsx:students', []);
   const [selectedClass, setSelectedClass] = useState("Class 8-A");
   const [attendanceDate, setAttendanceDate] = useState(
     new Date().toISOString().slice(0, 10)

@@ -8,50 +8,9 @@ import {
   Users,
 } from "lucide-react";
 
-const classes = [
-  {
-    className: "Class 8-A",
-    subject: "Mathematics",
-    students: 32,
-    attendance: "94%",
-  },
-  {
-    className: "Class 9-B",
-    subject: "Mathematics",
-    students: 30,
-    attendance: "91%",
-  },
-  {
-    className: "Class 10-A",
-    subject: "Mathematics",
-    students: 28,
-    attendance: "96%",
-  },
-];
+const classes: { className: string; subject: string; students: number; attendance: string }[] = [];
 
-const timetable = [
-  {
-    time: "09:00 AM",
-    subject: "Mathematics",
-    className: "Class 8-A",
-    room: "Room 204",
-    status: "Completed",
-  },
-  {
-    time: "11:00 AM",
-    subject: "Mathematics",
-    className: "Class 9-B",
-    room: "Room 206",
-    status: "Upcoming",
-  },
-  {
-    time: "01:00 PM",
-    subject: "Mathematics",
-    className: "Class 10-A",
-    room: "Room 208",
-    status: "Upcoming",
-  },
-];
+const timetable: { time: string; subject: string; className: string; room: string; status: string }[] = [];
 
 function TeacherDashboard() {
   return (
@@ -59,7 +18,7 @@ function TeacherDashboard() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-800">
-          Good Morning, Rahul
+          Teacher Dashboard
         </h1>
 
         <p className="mt-1 text-sm text-gray-500">
@@ -71,29 +30,29 @@ function TeacherDashboard() {
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="My Classes"
-          value="6"
+          value="0"
           subtitle="Currently assigned"
           icon={BookOpen}
         />
 
         <StatCard
           title="My Students"
-          value="186"
+          value="0"
           subtitle="Across all classes"
           icon={Users}
         />
 
         <StatCard
           title="Today's Attendance"
-          value="92%"
-          subtitle="171 of 186 present"
+          value="0%"
+          subtitle="No attendance recorded"
           icon={ClipboardCheck}
         />
 
         <StatCard
           title="Pending Homework"
-          value="8"
-          subtitle="Waiting for review"
+          value="0"
+          subtitle="No homework pending"
           icon={FileText}
         />
       </div>

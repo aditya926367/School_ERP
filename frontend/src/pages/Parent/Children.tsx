@@ -26,38 +26,7 @@ type Child = {
   status: "Active" | "Inactive";
 };
 
-const demoChildren: Child[] = [
-  {
-    id: 1,
-    name: "Aarav Sharma",
-    admissionNo: "ADM2026001",
-    className: "Class 8",
-    section: "A",
-    rollNo: 24,
-    academicYear: "2026-27",
-    dateOfBirth: "2013-05-14",
-    bloodGroup: "B+",
-    classTeacher: "Neha Singh",
-    email: "aarav@example.com",
-    attendance: 94,
-    status: "Active",
-  },
-  {
-    id: 2,
-    name: "Anaya Sharma",
-    admissionNo: "ADM2026002",
-    className: "Class 5",
-    section: "B",
-    rollNo: 12,
-    academicYear: "2026-27",
-    dateOfBirth: "2016-08-21",
-    bloodGroup: "O+",
-    classTeacher: "Amit Kumar",
-    email: "anaya@example.com",
-    attendance: 96,
-    status: "Active",
-  },
-];
+const demoChildren: Child[] = [];
 
 export default function Children() {
   const [children] = useState<Child[]>(demoChildren);

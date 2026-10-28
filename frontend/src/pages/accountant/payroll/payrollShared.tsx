@@ -100,6 +100,7 @@
 
 
 import type { ReactNode } from "react";
+import { getTeachers } from "../../../store/teacherStore";
 
 export type Structure = {
   basic: number;
@@ -211,47 +212,13 @@ function defaultStructure(designation: string): Structure {
   };
 }
 
-const DEMO = [
-  {
-    id: "T001",
-    firstName: "Rahul",
-    lastName: "Sharma",
-    designation: "Post Graduate Teacher (PGT)",
-  },
-  {
-    id: "T002",
-    firstName: "Sunita",
-    lastName: "Rao",
-    designation: "Head of Department",
-  },
-  {
-    id: "T003",
-    firstName: "Anil",
-    lastName: "Verma",
-    designation: "Trained Graduate Teacher (TGT)",
-  },
-  {
-    id: "T004",
-    firstName: "Priya",
-    lastName: "Nair",
-    designation: "Primary Teacher (PRT)",
-  },
-];
-
 export function getStaff(): Staff[] {
-  const teachers = read<
-    {
-      id: string;
-      firstName: string;
-      lastName: string;
-      designation: string;
-      status?: string;
-    }[]
-  >("erp_teachers", []);
+  // Teachers come from the shared teacher store (Add Teacher page)
+  const teachers = getTeachers();
 
   const saved = read<Record<string, Structure>>("erp_salary", {});
 
-  return (teachers.length ? teachers : DEMO)
+  return teachers
     .filter((teacher) => teacher.status !== "Inactive")
     .map((teacher) => ({
       id: teacher.id,

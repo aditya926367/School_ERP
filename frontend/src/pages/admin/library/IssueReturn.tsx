@@ -35,24 +35,7 @@ type TransactionColumn = {
   render: (transaction: Transaction) => ReactNode;
 };
 
-const initialTransactions: Transaction[] = [
-  {
-    id: 1,
-    memberId: "M101",
-    bookId: "B001",
-    issueDate: "2026-10-01",
-    dueDate: "2026-10-15",
-    returned: false,
-  },
-  {
-    id: 2,
-    memberId: "M102",
-    bookId: "B004",
-    issueDate: "2026-09-20",
-    dueDate: "2026-10-04",
-    returned: true,
-  },
-];
+const initialTransactions: Transaction[] = [];
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
@@ -71,8 +54,7 @@ function getStatus(transaction: Transaction): TransactionStatus {
 }
 
 export default function IssueReturn() {
-  const [transactions, setTransactions] =
-    useState<Transaction[]>(initialTransactions);
+  const [transactions, setTransactions] = usePersistentState<Transaction[]>('schoolerp:pages_admin_library_issuereturn_tsx:transactions', []);
 
   const [memberId, setMemberId] = useState("");
   const [bookId, setBookId] = useState("");

@@ -11,16 +11,7 @@ type BookCopy = {
 
 const statuses: CopyStatus[] = ["Available", "Issued", "Lost", "Damaged", "Under Repair"];
 
-const initialCopies: BookCopy[] = [
-  { id: "B001-01", title: "Wings of Fire", status: "Available" },
-  { id: "B001-02", title: "Wings of Fire", status: "Issued" },
-  { id: "B002-01", title: "Concept of Physics", status: "Damaged" },
-  { id: "B002-02", title: "Concept of Physics", status: "Available" },
-  { id: "B003-01", title: "Gitanjali", status: "Available" },
-  { id: "B004-01", title: "Discovery of India", status: "Lost" },
-  { id: "B004-02", title: "Discovery of India", status: "Under Repair" },
-  { id: "B005-01", title: "Rich Dad Poor Dad", status: "Issued" },
-];
+const initialCopies: BookCopy[] = [];
 
 // Badge color for each status
 const statusColor: Record<CopyStatus, string> = {

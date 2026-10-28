@@ -21,20 +21,7 @@ type AttendanceRecord = {
   remarks: string;
 };
 
-const demoAttendance: AttendanceRecord[] = [
-  { id: 1, date: "2026-10-12", day: "Monday", subject: "Full Day", status: "Present", remarks: "-" },
-  { id: 2, date: "2026-10-09", day: "Friday", subject: "Full Day", status: "Present", remarks: "-" },
-  { id: 3, date: "2026-10-08", day: "Thursday", subject: "Full Day", status: "Late", remarks: "Arrived 10 minutes late" },
-  { id: 4, date: "2026-10-07", day: "Wednesday", subject: "Full Day", status: "Present", remarks: "-" },
-  { id: 5, date: "2026-10-06", day: "Tuesday", subject: "Full Day", status: "Absent", remarks: "Uninformed absence" },
-  { id: 6, date: "2026-10-05", day: "Monday", subject: "Full Day", status: "Present", remarks: "-" },
-  { id: 7, date: "2026-10-02", day: "Friday", subject: "Full Day", status: "Leave", remarks: "Approved leave" },
-  { id: 8, date: "2026-10-01", day: "Thursday", subject: "Full Day", status: "Present", remarks: "-" },
-  { id: 9, date: "2026-09-30", day: "Wednesday", subject: "Full Day", status: "Present", remarks: "-" },
-  { id: 10, date: "2026-09-29", day: "Tuesday", subject: "Full Day", status: "Absent", remarks: "Medical leave not submitted" },
-  { id: 11, date: "2026-09-28", day: "Monday", subject: "Full Day", status: "Present", remarks: "-" },
-  { id: 12, date: "2026-09-25", day: "Friday", subject: "Full Day", status: "Present", remarks: "-" },
-];
+const demoAttendance: AttendanceRecord[] = [];
 
 const statusStyles: Record<AttendanceStatus, string> = {
   Present: "bg-green-100 text-green-700",

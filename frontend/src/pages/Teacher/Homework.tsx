@@ -31,80 +31,7 @@ type HomeworkItem = {
   status: HomeworkStatus;
 };
 
-const initialHomework: HomeworkItem[] = [
-  {
-    id: 1,
-    title: "Algebra Practice Questions",
-    description: "Complete exercise 4.2, questions 1 to 15 in your mathematics notebook.",
-    className: "Class 8-A",
-    subject: "Mathematics",
-    assignedDate: "2026-10-10",
-    dueDate: "2026-10-14",
-    totalStudents: 35,
-    submitted: 24,
-    status: "Active",
-  },
-  {
-    id: 2,
-    title: "Essay on Environmental Protection",
-    description: "Write a 300-word essay on environmental protection.",
-    className: "Class 8-A",
-    subject: "English",
-    assignedDate: "2026-10-08",
-    dueDate: "2026-10-12",
-    totalStudents: 35,
-    submitted: 29,
-    status: "Overdue",
-  },
-  {
-    id: 3,
-    title: "Chemical Reactions Worksheet",
-    description: "Answer the questions on chemical reactions from chapter 3.",
-    className: "Class 9-B",
-    subject: "Science",
-    assignedDate: "2026-10-09",
-    dueDate: "2026-10-15",
-    totalStudents: 32,
-    submitted: 18,
-    status: "Active",
-  },
-  {
-    id: 4,
-    title: "History Chapter Summary",
-    description: "Prepare short notes for chapter 5 and answer all review questions.",
-    className: "Class 9-B",
-    subject: "Social Studies",
-    assignedDate: "2026-10-04",
-    dueDate: "2026-10-09",
-    totalStudents: 32,
-    submitted: 32,
-    status: "Completed",
-  },
-  {
-    id: 5,
-    title: "Trigonometry Exercises",
-    description: "Solve exercise 8.1 and show all working steps.",
-    className: "Class 10-A",
-    subject: "Mathematics",
-    assignedDate: "2026-10-11",
-    dueDate: "2026-10-16",
-    totalStudents: 30,
-    submitted: 12,
-    status: "Active",
-  },
-  {
-    id: 6,
-    title: "Grammar Worksheet",
-    description: "Complete the worksheet on tenses and active/passive voice.",
-    className: "Class 10-A",
-    subject: "English",
-    assignedDate: "2026-10-02",
-    dueDate: "2026-10-07",
-    totalStudents: 30,
-    submitted: 30,
-    status: "Completed",
-  },
-];
+const initialHomework: HomeworkItem[] = [];
 
 const statusStyles: Record<HomeworkStatus, string> = {
   Active: "border-blue-200 bg-blue-50 text-blue-700",
@@ -123,7 +50,7 @@ const emptyForm = {
 };
 
 export default function TeacherHomework() {
-  const [homework, setHomework] = useState<HomeworkItem[]>(initialHomework);
+  const [homework, setHomework] = usePersistentState<HomeworkItem[]>('schoolerp:pages_teacher_homework_tsx:homework', []);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All Classes");
   const [subjectFilter, setSubjectFilter] = useState("All Subjects");

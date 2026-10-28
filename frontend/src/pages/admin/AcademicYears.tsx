@@ -60,50 +60,7 @@ function AcademicYears() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(2);
 
-  const [academicYears, setAcademicYears] = useState<AcademicYear[]>([
-    {
-      id: 1,
-      name: "2026-2027",
-      startDate: "2026-04-01",
-      endDate: "2027-03-31",
-      status: "Current",
-      terms: [
-        {
-          id: 1,
-          name: "Term 1",
-          startDate: "2026-04-01",
-          endDate: "2026-09-30",
-        },
-        {
-          id: 2,
-          name: "Term 2",
-          startDate: "2026-10-01",
-          endDate: "2027-03-31",
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "2025-2026",
-      startDate: "2025-04-01",
-      endDate: "2026-03-31",
-      status: "Inactive",
-      terms: [
-        {
-          id: 3,
-          name: "Term 1",
-          startDate: "2025-04-01",
-          endDate: "2025-09-30",
-        },
-        {
-          id: 4,
-          name: "Term 2",
-          startDate: "2025-10-01",
-          endDate: "2026-03-31",
-        },
-      ],
-    },
-  ]);
+  const [academicYears, setAcademicYears] = useState<AcademicYear[]>([]);
 
   const [yearForm, setYearForm] = useState<YearForm>(emptyYearForm);
   const [termForm, setTermForm] = useState<TermForm>(emptyTermForm);

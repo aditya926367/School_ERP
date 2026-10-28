@@ -20,13 +20,7 @@ type Book = {
   available: number;
 };
 
-const initialBooks: Book[] = [
-  { id: "B001", title: "Wings of Fire", author: "A.P.J. Abdul Kalam", category: "Biography", copies: 5, available: 3 },
-  { id: "B002", title: "Concept of Physics", author: "H.C. Verma", category: "Science", copies: 8, available: 0 },
-  { id: "B003", title: "Gitanjali", author: "Rabindranath Tagore", category: "Poetry", copies: 4, available: 4 },
-  { id: "B004", title: "Discovery of India", author: "Jawaharlal Nehru", category: "History", copies: 3, available: 1 },
-  { id: "B005", title: "Rich Dad Poor Dad", author: "Robert Kiyosaki", category: "Finance", copies: 6, available: 2 },
-];
+const initialBooks: Book[] = [];
 
 const categories = ["Science", "History", "Biography", "Poetry", "Finance", "Fiction", "Other"];
 const PAGE_SIZES = [5, 10, 25, 50];
@@ -34,7 +28,7 @@ const inputStyle = "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm o
 const emptyForm = { title: "", author: "", category: "Science", copies: "1" };
 
 export default function Books() {
-  const [books, setBooks] = useState<Book[]>(initialBooks);
+  const [books, setBooks] = usePersistentState<Book[]>('schoolerp:pages_admin_library_books_tsx:books', []);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [availabilityFilter, setAvailabilityFilter] = useState("All");

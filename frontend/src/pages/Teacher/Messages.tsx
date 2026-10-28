@@ -29,72 +29,10 @@ type TeacherMessage = {
   unread: boolean;
 };
 
-const initialMessages: TeacherMessage[] = [
-  {
-    id: 1,
-    sender: "Priya Singh (Parent)",
-    recipient: "Teacher",
-    subject: "Regarding Aarav's homework",
-    body: "Hello Teacher, could you please clarify question 5 in the mathematics homework? Aarav is having difficulty understanding the method. Thank you.",
-    date: "2026-10-12T09:30:00",
-    folder: "Inbox",
-    unread: true,
-  },
-  {
-    id: 2,
-    sender: "School Administration",
-    recipient: "Teacher",
-    subject: "Staff meeting reminder",
-    body: "This is a reminder that the staff meeting will be held on Friday at 2 PM in the conference room. Please bring your class progress reports.",
-    date: "2026-10-12T08:15:00",
-    folder: "Inbox",
-    unread: true,
-  },
-  {
-    id: 3,
-    sender: "Rahul Sharma (Parent)",
-    recipient: "Teacher",
-    subject: "Attendance clarification",
-    body: "My child was present yesterday, but the attendance portal shows absent. Could you please verify the record?",
-    date: "2026-10-11T14:45:00",
-    folder: "Inbox",
-    unread: false,
-  },
-  {
-    id: 4,
-    sender: "Neha Verma (Parent)",
-    recipient: "Teacher",
-    subject: "Request for extra practice",
-    body: "Please suggest some additional science practice questions before the upcoming examination.",
-    date: "2026-10-10T11:20:00",
-    folder: "Inbox",
-    unread: false,
-  },
-  {
-    id: 5,
-    sender: "Teacher",
-    recipient: "Class 8-A Parents",
-    subject: "Weekly homework update",
-    body: "Dear Parents, please ensure students complete their mathematics and English homework this week. Thank you for your support.",
-    date: "2026-10-11T16:00:00",
-    folder: "Sent",
-    unread: false,
-  },
-  {
-    id: 6,
-    sender: "Teacher",
-    recipient: "School Administration",
-    subject: "Class progress report",
-    body: "Please find the current progress summary for Class 8-A. Most students are on track, with additional support planned for students who need help.",
-    date: "2026-10-09T13:00:00",
-    folder: "Sent",
-    unread: false,
-  },
-];
+const initialMessages: TeacherMessage[] = [];
 
 export default function TeacherMessages() {
-  const [messages, setMessages] =
-    useState<TeacherMessage[]>(initialMessages);
+  const [messages, setMessages] = usePersistentState<TeacherMessage[]>('schoolerp:pages_teacher_messages_tsx:messages', []);
   const [folder, setFolder] = useState<MessageFolder>("Inbox");
   const [search, setSearch] = useState("");
   const [selectedMessageId, setSelectedMessageId] = useState<number | null>(

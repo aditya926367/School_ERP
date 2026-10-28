@@ -26,63 +26,7 @@ type MarkRecord = {
   status: MarkStatus;
 };
 
-const initialRecords: MarkRecord[] = [
-  {
-    id: 1,
-    studentId: "STU1001",
-    studentName: "Aarav Sharma",
-    className: "Class 10",
-    subject: "Mathematics",
-    exam: "First Term Examination",
-    marksObtained: 92,
-    totalMarks: 100,
-    status: "Published",
-  },
-  {
-    id: 2,
-    studentId: "STU1002",
-    studentName: "Priya Verma",
-    className: "Class 10",
-    subject: "Mathematics",
-    exam: "First Term Examination",
-    marksObtained: 84,
-    totalMarks: 100,
-    status: "Published",
-  },
-  {
-    id: 3,
-    studentId: "STU1003",
-    studentName: "Rahul Kumar",
-    className: "Class 9",
-    subject: "Science",
-    exam: "Mid-Term Examination",
-    marksObtained: 36,
-    totalMarks: 80,
-    status: "Draft",
-  },
-  {
-    id: 4,
-    studentId: "STU1004",
-    studentName: "Ananya Singh",
-    className: "Class 8",
-    subject: "English",
-    exam: "Unit Test 2",
-    marksObtained: 28,
-    totalMarks: 50,
-    status: "Published",
-  },
-  {
-    id: 5,
-    studentId: "STU1005",
-    studentName: "Rohan Gupta",
-    className: "Class 9",
-    subject: "Science",
-    exam: "Mid-Term Examination",
-    marksObtained: 18,
-    totalMarks: 80,
-    status: "Draft",
-  },
-];
+const initialRecords: MarkRecord[] = [];
 
 const emptyRecord: Omit<MarkRecord, "id"> = {
   studentId: "",
@@ -151,7 +95,7 @@ function StatCard({
 }
 
 export default function AdminMarksGrades() {
-  const [records, setRecords] = useState<MarkRecord[]>(initialRecords);
+  const [records, setRecords] = usePersistentState<MarkRecord[]>('schoolerp:pages_admin_adminmarksgrades_tsx:records', []);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
