@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
+import Pagination from "../../../components/common/Pagination";
 
 type OrderStatus = "Ordered" | "Received";
 
@@ -27,9 +28,6 @@ const inputStyle =
 
 // ---------- Pagination helpers ----------
 const PAGE_SIZES = [5, 10, 25, 50];
-const pageBtn = "h-8 rounded-lg border px-3 text-sm font-semibold";
-const pageBtnNormal = `${pageBtn} border-gray-300 text-gray-700 hover:bg-gray-50`;
-const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-200 text-gray-300`;
 
 export default function AcquireBook() {
   const [orders, setOrders] = usePersistentState<Acquisition[]>('schoolerp:pages_admin_library_aquirebook_tsx:orders', []);
@@ -55,8 +53,6 @@ export default function AcquireBook() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
   const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
-  const from = filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1;
-  const to = Math.min(safePage * pageSize, filtered.length);
 
   // Summary is calculated on ALL orders
   const pendingCount = orders.filter((o) => o.status === "Ordered").length;
@@ -224,47 +220,21 @@ export default function AcquireBook() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-4 py-3 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span>
-              Showing <b>{from}</b>-<b>{to}</b> of <b>{filtered.length}</b>
-            </span>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPage(1);
-              }}
-              className="h-8 rounded-lg border border-gray-300 px-2 text-sm outline-none focus:border-[#27348b]"
-            >
-              {PAGE_SIZES.map((s) => (
-                <option key={s} value={s}>
-                  {s} / page
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage(safePage - 1)}
-              disabled={safePage === 1}
-              className={safePage === 1 ? pageBtnDisabled : pageBtnNormal}
-            >
-              Prev
-            </button>
-            <span>
-              Page <b>{safePage}</b> of <b>{totalPages}</b>
-            </span>
-            <button
-              onClick={() => setPage(safePage + 1)}
-              disabled={safePage === totalPages}
-              className={safePage === totalPages ? pageBtnDisabled : pageBtnNormal}
-            >
-              Next
-            </button>
-          </div>
+        {/* Shared Pagination component: includes page-size selection */}
+        <div className="border-t border-gray-200 px-5 py-3">
+          <Pagination
+            currentPage={safePage}
+            totalPages={totalPages}
+            totalItems={filtered.length}
+            pageSize={pageSize}
+            onPageChange={(nextPage: number) => setPage(nextPage)}
+            onPageSizeChange={(size: number) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            pageSizes={PAGE_SIZES}
+            itemLabel="orders"
+          />
         </div>
       </div>
 

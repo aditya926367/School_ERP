@@ -1,19 +1,26 @@
-
 import { useState } from "react";
+import Pagination from "../../../components/common/Pagination";
 
 type CopyStatus = "Available" | "Issued" | "Lost" | "Damaged" | "Under Repair";
 
 type BookCopy = {
-  id: string; // copy ID, for example B001-01
+  id: string;
   title: string;
   status: CopyStatus;
 };
 
-const statuses: CopyStatus[] = ["Available", "Issued", "Lost", "Damaged", "Under Repair"];
+const statuses: CopyStatus[] = [
+  "Available",
+  "Issued",
+  "Lost",
+  "Damaged",
+  "Under Repair",
+];
+
+const PAGE_SIZES = [5, 10, 25, 50];
 
 const initialCopies: BookCopy[] = [];
 
-// Badge color for each status
 const statusColor: Record<CopyStatus, string> = {
   Available: "bg-green-100 text-green-700",
   Issued: "bg-yellow-100 text-yellow-700",
@@ -21,12 +28,6 @@ const statusColor: Record<CopyStatus, string> = {
   Damaged: "bg-orange-100 text-orange-700",
   "Under Repair": "bg-blue-100 text-blue-700",
 };
-
-// ---------- Pagination helpers ----------
-const PAGE_SIZES = [5, 10, 25, 50];
-const pageBtn = "h-8 rounded-lg border px-3 text-sm font-semibold";
-const pageBtnNormal = `${pageBtn} border-gray-300 text-gray-700 hover:bg-gray-50`;
-const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-200 text-gray-300`;
 
 export default function ChangeBookStatus() {
   const [copies, setCopies] = useState<BookCopy[]>(initialCopies);
@@ -44,26 +45,37 @@ export default function ChangeBookStatus() {
         c.id.toLowerCase().includes(search.toLowerCase()))
   );
 
-  // Pagination calculation
+  // Pagination calculations
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
-  const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
-  const from = filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1;
-  const to = Math.min(safePage * pageSize, filtered.length);
+
+  const paged = filtered.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
 
   function changeStatus(id: string, status: CopyStatus) {
-    setCopies(copies.map((c) => (c.id === id ? { ...c, status } : c)));
+    setCopies((previousCopies) =>
+      previousCopies.map((copy) =>
+        copy.id === id ? { ...copy, status } : copy
+      )
+    );
   }
 
   return (
-        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+      {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Change Book Status</h1>
-        <p className="text-sm text-gray-500">Mark book copies as available, issued, lost or damaged</p>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Change Book Status
+        </h1>
+        <p className="text-sm text-gray-500">
+          Mark book copies as available, issued, lost or damaged
+        </p>
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        {/* Top bar: search + status filter */}
+        {/* Search and Status Filter */}
         <div className="flex flex-col gap-3 border-b border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between">
           <input
             value={search}
@@ -84,15 +96,16 @@ export default function ChangeBookStatus() {
             className="h-10 rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b]"
           >
             <option value="All">All statuses</option>
-            {statuses.map((s) => (
-              <option key={s} value={s}>
-                {s}
+
+            {statuses.map((status) => (
+              <option key={status} value={status}>
+                {status}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Table */}
+        {/* Book Copies Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-800">
             <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -103,25 +116,41 @@ export default function ChangeBookStatus() {
                 <th className="px-4 py-3">Change To</th>
               </tr>
             </thead>
+
             <tbody>
-              {paged.map((c) => (
-                <tr key={c.id} className="border-t border-gray-200 hover:bg-gray-50">
-                  <td className="px-4 py-3 text-gray-500">{c.id}</td>
-                  <td className="px-4 py-3 font-semibold">{c.title}</td>
+              {paged.map((copy) => (
+                <tr
+                  key={copy.id}
+                  className="border-t border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3 text-gray-500">{copy.id}</td>
+
+                  <td className="px-4 py-3 font-semibold">
+                    {copy.title}
+                  </td>
+
                   <td className="px-4 py-3">
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor[c.status]}`}>
-                      {c.status}
+                    <span
+                      className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor[copy.status]}`}
+                    >
+                      {copy.status}
                     </span>
                   </td>
+
                   <td className="px-4 py-3">
                     <select
-                      value={c.status}
-                      onChange={(e) => changeStatus(c.id, e.target.value as CopyStatus)}
+                      value={copy.status}
+                      onChange={(e) =>
+                        changeStatus(
+                          copy.id,
+                          e.target.value as CopyStatus
+                        )
+                      }
                       className="h-9 rounded-lg border border-gray-300 px-2 text-sm outline-none focus:border-[#27348b]"
                     >
-                      {statuses.map((s) => (
-                        <option key={s} value={s}>
-                          {s}
+                      {statuses.map((status) => (
+                        <option key={status} value={status}>
+                          {status}
                         </option>
                       ))}
                     </select>
@@ -131,7 +160,10 @@ export default function ChangeBookStatus() {
 
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                  <td
+                    colSpan={4}
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
                     No book copies found
                   </td>
                 </tr>
@@ -140,47 +172,21 @@ export default function ChangeBookStatus() {
           </table>
         </div>
 
-        {/* Pagination */}
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-4 py-3 text-sm text-gray-600 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span>
-              Showing <b>{from}</b>-<b>{to}</b> of <b>{filtered.length}</b>
-            </span>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setPage(1);
-              }}
-              className="h-8 rounded-lg border border-gray-300 px-2 text-sm outline-none focus:border-[#27348b]"
-            >
-              {PAGE_SIZES.map((s) => (
-                <option key={s} value={s}>
-                  {s} / page
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setPage(safePage - 1)}
-              disabled={safePage === 1}
-              className={safePage === 1 ? pageBtnDisabled : pageBtnNormal}
-            >
-              Prev
-            </button>
-            <span>
-              Page <b>{safePage}</b> of <b>{totalPages}</b>
-            </span>
-            <button
-              onClick={() => setPage(safePage + 1)}
-              disabled={safePage === totalPages}
-              className={safePage === totalPages ? pageBtnDisabled : pageBtnNormal}
-            >
-              Next
-            </button>
-          </div>
+        {/* Shared Pagination Component */}
+        <div className="border-t border-gray-200 px-4 py-3">
+          <Pagination
+            currentPage={safePage}
+            totalPages={totalPages}
+            totalItems={filtered.length}
+            pageSize={pageSize}
+            onPageChange={(nextPage: number) => setPage(nextPage)}
+            onPageSizeChange={(size: number) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            pageSizes={PAGE_SIZES}
+            itemLabel="book copies"
+          />
         </div>
       </div>
     </div>

@@ -389,31 +389,18 @@ export default function IssueReturn() {
           emptyState="No records match your search or filter."
         />
 
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-5 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <label className="flex items-center gap-2 text-sm text-gray-500">
-            Rows per page
-            <select
-              value={pageSize}
-              onChange={(event) => {
-                setPageSize(Number(event.target.value));
-                setPage(1);
-              }}
-              className="rounded-lg border border-gray-300 px-2 py-1.5 text-sm outline-none focus:border-blue-500"
-            >
-              {PAGE_SIZES.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </label>
-
+        <div className="border-t border-gray-200 px-5 py-3">
           <Pagination
             currentPage={safePage}
             totalPages={totalPages}
             totalItems={filteredTransactions.length}
             pageSize={pageSize}
-            onPageChange={setPage}
+            onPageChange={(nextPage) => setPage(nextPage)}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            pageSizes={PAGE_SIZES}
             itemLabel="records"
           />
         </div>

@@ -1,274 +1,3 @@
-// // 
-
-// // src/pages/accountantDashboard.tsx
-// import type { ReactNode } from "react";
-// import { useNavigate } from "react-router-dom";
-// import {
-//   FaRegListAlt,
-//   FaThList,
-//   FaBars,
-//   FaBook,
-//   FaCalendarAlt,
-//   FaChevronRight,
-// } from "react-icons/fa";
-// import { PAYMENTS, STUDENTS, money, outstanding, sumAmounts } from "./accountant/feesShared";
-// import { loadRuns, inr } from "./accountant/payroll/payrollShared";
-
-// // ---------- Small helpers ----------
-// const panel =
-//   "bg-white border border-[#b9b9e6] rounded-[3px] shadow-[0_12px_14px_-10px_rgba(39,52,139,0.35)]";
-
-// // Local date as YYYY-MM-DD (toISOString would use UTC and can shift the day in India)
-// function localDate(d: Date) {
-//   const m = String(d.getMonth() + 1).padStart(2, "0");
-//   const day = String(d.getDate()).padStart(2, "0");
-//   return `${d.getFullYear()}-${m}-${day}`;
-// }
-
-// const shortDay = (iso: string) =>
-//   new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" });
-
-// // ---------- Clickable stat box (top row) ----------
-// function StatBox({
-//   label,
-//   value,
-//   note,
-//   to,
-//   tone = "text-[#2a2a63]",
-// }: {
-//   label: string;
-//   value: string;
-//   note: string;
-//   to: string;
-//   tone?: string;
-// }) {
-//   const navigate = useNavigate();
-//   return (
-//     <button
-//       onClick={() => navigate(to)}
-//       className={`${panel} px-4 py-4 text-left transition-colors hover:border-[#27348b]`}
-//     >
-//       <p className="text-[13px] font-semibold text-[#2a2a63]">{label}</p>
-//       <p className={`mt-1 text-[24px] font-bold ${tone}`}>{value}</p>
-//       <p className="mt-1 text-[12px] text-gray-500">{note}</p>
-//     </button>
-//   );
-// }
-
-// // ---------- Quick action button ----------
-// function QuickAction({ icon, label, to }: { icon: ReactNode; label: string; to: string }) {
-//   const navigate = useNavigate();
-//   return (
-//     <button
-//       onClick={() => navigate(to)}
-//       className="flex items-center gap-3 rounded-[3px] border border-[#b9b9e6] bg-white px-4 py-3 text-left text-[14px] font-semibold text-[#2a2a63] transition-colors hover:border-[#27348b] hover:bg-[#f4f4fb]"
-//     >
-//       <span className="text-[18px]">{icon}</span>
-//       <span className="flex-1">{label}</span>
-//       <FaChevronRight className="text-[12px]" />
-//     </button>
-//   );
-// }
-
-// // ---------- Panel with a title and an optional "view all" link ----------
-// function Panel({
-//   title,
-//   to,
-//   linkText,
-//   children,
-// }: {
-//   title: string;
-//   to?: string;
-//   linkText?: string;
-//   children: ReactNode;
-// }) {
-//   const navigate = useNavigate();
-//   return (
-//     <div className={`${panel} p-4`}>
-//       <div className="mb-3 flex items-center justify-between">
-//         <h2 className="text-[15px] font-bold text-[#2a2a63]">{title}</h2>
-//         {to && (
-//           <button onClick={() => navigate(to)} className="text-[13px] font-semibold text-[#27348b] hover:underline">
-//             {linkText ?? "View all"}
-//           </button>
-//         )}
-//       </div>
-//       {children}
-//     </div>
-//   );
-// }
-
-// // ---------- Page (DashboardLayout already adds the header and sidebar) ----------
-// export default function AccountantDashboard() {
-//   const now = new Date();
-//   const today = localDate(now);
-//   const month = today.slice(0, 7);
-
-//   // --- Stat numbers ---
-//   const todayPayments = PAYMENTS.filter((p) => p.date === today);
-//   const todayTotal = sumAmounts(todayPayments);
-//   const monthTotal = sumAmounts(PAYMENTS.filter((p) => p.date.startsWith(month)));
-//   const totalPending = STUDENTS.reduce((sum, s) => sum + outstanding(s), 0);
-//   const pendingStudents = STUDENTS.filter((s) => outstanding(s) > 0).length;
-
-//   const run = loadRuns()[month];
-//   const payrollTotal = run ? run.rows.reduce((sum, r) => sum + r.net, 0) : null;
-
-//   // --- Last 7 days chart data (oldest first) ---
-//   const last7 = Array.from({ length: 7 }, (_, i) => {
-//     const d = new Date(now);
-//     d.setDate(now.getDate() - (6 - i));
-//     const date = localDate(d);
-//     return { date, total: sumAmounts(PAYMENTS.filter((p) => p.date === date)) };
-//   });
-//   const maxDay = Math.max(1, ...last7.map((d) => d.total));
-//   const weekTotal = last7.reduce((sum, d) => sum + d.total, 0);
-
-//   // --- Top 5 students with the highest pending amount ---
-//   const defaulters = STUDENTS.filter((s) => outstanding(s) > 0)
-//     .sort((a, b) => outstanding(b) - outstanding(a))
-//     .slice(0, 5);
-
-//   // --- Latest 5 payments ---
-//   const recent = [...PAYMENTS]
-//     .sort((a, b) => b.date.localeCompare(a.date) || b.receiptNo.localeCompare(a.receiptNo))
-//     .slice(0, 5);
-
-//   // --- Class-wise collection progress ---
-//   const classes = [...new Set(STUDENTS.map((s) => s.className))].sort().map((className) => {
-//     const list = STUDENTS.filter((s) => s.className === className);
-//     const total = list.reduce((sum, s) => sum + s.total, 0);
-//     const paid = list.reduce((sum, s) => sum + s.paid, 0);
-//     return { className, total, paid, rate: total ? Math.round((paid / total) * 100) : 0 };
-//   });
-
-//   return (
-//     <div className="bg-white border border-gray-200 rounded-[4px] px-4 pt-6 pb-8">
-//       <h1 className="text-center text-[22px] font-bold text-[#2a2a63]">Welcome, Fees Management</h1>
-
-//       {/* Quick numbers (click a box to open its page) */}
-//       <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-//         <StatBox
-//           label="Today's collection"
-//           value={money(todayTotal)}
-//           note={`${todayPayments.length} payment(s) today`}
-//           to="/daybookReport"
-//           tone="text-green-600"
-//         />
-//         <StatBox
-//           label="Total pending"
-//           value={money(totalPending)}
-//           note={`${pendingStudents} student(s) with dues`}
-//           to="/pendingdues"
-//           tone="text-red-600"
-//         />
-//         <StatBox label="Collected this month" value={money(monthTotal)} note={month} to="/financeReports" />
-//         <StatBox
-//           label="This month's payroll"
-//           value={payrollTotal === null ? "Not generated" : inr(payrollTotal)}
-//           note={run ? `Status: ${run.status}` : "Open Monthly Payroll to create it"}
-//           to="/monthlyPayroll"
-//         />
-//       </div>
-
-//       {/* Quick actions: the jobs an accountant does most often */}
-//       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-//         <QuickAction icon={<FaRegListAlt />} label="Collect fee" to="/feeCollection" />
-//         <QuickAction icon={<FaThList />} label="Pending dues" to="/pendingdues" />
-//         <QuickAction icon={<FaBars />} label="Student fee-bill" to="/studentFeeBill" />
-//         <QuickAction icon={<FaBook />} label="Daybook" to="/daybookReport" />
-//         <QuickAction icon={<FaCalendarAlt />} label="Monthly payroll" to="/monthlyPayroll" />
-//       </div>
-
-//       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-//         {/* Last 7 days chart */}
-//         <Panel title="Collection in the last 7 days" to="/financeReports" linkText="Open reports">
-//           <p className="mb-3 text-[13px] text-gray-500">
-//             Total {money(weekTotal)} across {last7.filter((d) => d.total > 0).length} day(s) with payments
-//           </p>
-//           <div className="flex h-44 items-end gap-3">
-//             {last7.map((d) => (
-//               <div key={d.date} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-//                 <span className="text-[11px] text-gray-500">{d.total ? money(d.total) : ""}</span>
-//                 <div
-//                   className={`w-full rounded-t-[2px] ${d.date === today ? "bg-[#27348b]" : "bg-[#9aa3dc]"}`}
-//                   style={{ height: `${(d.total / maxDay) * 100}%`, minHeight: d.total ? 4 : 0 }}
-//                   title={`${shortDay(d.date)}: ${money(d.total)}`}
-//                 />
-//                 <span className="text-[11px] text-[#2a2a63]">{shortDay(d.date)}</span>
-//               </div>
-//             ))}
-//           </div>
-//         </Panel>
-
-//         {/* Highest pending */}
-//         <Panel title="Highest pending fees" to="/pendingdues">
-//           {defaulters.length === 0 ? (
-//             <p className="py-8 text-center text-sm text-gray-500">No pending fees. Every student has paid in full.</p>
-//           ) : (
-//             <ul className="divide-y divide-gray-100">
-//               {defaulters.map((s) => {
-//                 const overdue = s.dueDate < today;
-//                 return (
-//                   <li key={s.id} className="flex items-center justify-between gap-3 py-2.5">
-//                     <div className="min-w-0">
-//                       <p className="truncate text-[14px] font-semibold text-[#2a2a63]">{s.name}</p>
-//                       <p className="text-[12px] text-gray-500">
-//                         {s.className} · due {shortDay(s.dueDate)}
-//                         {overdue && <span className="ml-2 font-semibold text-red-600">Overdue</span>}
-//                       </p>
-//                     </div>
-//                     <span className="text-[14px] font-bold text-red-600">{money(outstanding(s))}</span>
-//                   </li>
-//                 );
-//               })}
-//             </ul>
-//           )}
-//         </Panel>
-
-//         {/* Latest payments */}
-//         <Panel title="Latest payments" to="/receipts" linkText="All receipts">
-//           <ul className="divide-y divide-gray-100">
-//             {recent.map((p) => (
-//               <li key={p.receiptNo} className="flex items-center justify-between gap-3 py-2.5">
-//                 <div className="min-w-0">
-//                   <p className="truncate text-[14px] font-semibold text-[#2a2a63]">{p.studentName}</p>
-//                   <p className="text-[12px] text-gray-500">
-//                     {p.receiptNo} · {shortDay(p.date)} · {p.mode}
-//                   </p>
-//                 </div>
-//                 <span className="text-[14px] font-bold text-green-600">{money(p.amount)}</span>
-//               </li>
-//             ))}
-//             {recent.length === 0 && (
-//               <li className="py-8 text-center text-sm text-gray-500">No payments yet. Use Collect fee to add one.</li>
-//             )}
-//           </ul>
-//         </Panel>
-
-//         {/* Class-wise progress */}
-//         <Panel title="Class-wise collection" to="/misStatus" linkText="MIS status">
-//           <ul className="space-y-3">
-//             {classes.map((c) => (
-//               <li key={c.className}>
-//                 <div className="flex justify-between text-[13px]">
-//                   <span className="font-semibold text-[#2a2a63]">{c.className}</span>
-//                   <span className="text-gray-500">
-//                     {money(c.paid)} of {money(c.total)} ({c.rate}%)
-//                   </span>
-//                 </div>
-//                 <div className="mt-1 h-2 rounded-full bg-gray-100">
-//                   <div className="h-2 rounded-full bg-[#27348b]" style={{ width: `${c.rate}%` }} />
-//                 </div>
-//               </li>
-//             ))}
-//           </ul>
-//         </Panel>
-//       </div>
-//     </div>
-//   );
-// }
-// src/pages/accountantDashboard.tsx
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -278,60 +7,117 @@ import {
   FaBook,
   FaCalendarAlt,
   FaChevronRight,
+  FaRupeeSign,
+  FaWallet,
+  FaMoneyBillWave,
+  FaUsers,
 } from "react-icons/fa";
-import { useFees, money, outstanding, sumAmounts, todayISO } from "../store/feeStore";
+
+import {
+  useFees,
+  money,
+  outstanding,
+  sumAmounts,
+  todayISO,
+} from "../store/feeStore";
+
 import { loadRuns, inr } from "./accountant/payroll/payrollShared";
 
-// ---------- Small helpers ----------
+// ---------- Shared dashboard styles ----------
 const panel =
-  "bg-white border border-[#b9b9e6] rounded-[3px] shadow-[0_12px_14px_-10px_rgba(39,52,139,0.35)]";
+  "rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md";
 
 const shortDay = (iso: string) =>
-  new Date(iso + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+  new Date(iso + "T00:00:00").toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+  });
 
-// ---------- Clickable stat box (top row) ----------
+// ---------- Summary card ----------
 function StatBox({
   label,
   value,
   note,
   to,
-  tone = "text-[#2a2a63]",
+  icon,
+  iconBg,
+  iconColor,
 }: {
   label: string;
   value: string;
   note: string;
   to: string;
-  tone?: string;
+  icon: ReactNode;
+  iconBg: string;
+  iconColor: string;
 }) {
   const navigate = useNavigate();
+
   return (
     <button
+      type="button"
       onClick={() => navigate(to)}
-      className={`${panel} px-4 py-4 text-left transition-colors hover:border-[#27348b]`}
+      className={`${panel} group flex min-h-[145px] w-full items-start justify-between gap-4 p-5 text-left focus:outline-none focus:ring-2 focus:ring-indigo-500`}
     >
-      <p className="text-[13px] font-semibold text-[#2a2a63]">{label}</p>
-      <p className={`mt-1 text-[24px] font-bold ${tone}`}>{value}</p>
-      <p className="mt-1 text-[12px] text-gray-500">{note}</p>
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-slate-500">{label}</p>
+
+        <p className="mt-3 break-words text-2xl font-bold text-slate-800">
+          {value}
+        </p>
+
+        <p className="mt-2 text-xs text-slate-500">{note}</p>
+      </div>
+
+      <div
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-xl ${iconBg} ${iconColor} transition-transform group-hover:scale-105`}
+      >
+        {icon}
+      </div>
     </button>
   );
 }
 
-// ---------- Quick action button ----------
-function QuickAction({ icon, label, to }: { icon: ReactNode; label: string; to: string }) {
+// ---------- Quick action ----------
+function QuickAction({
+  icon,
+  label,
+  description,
+  to,
+}: {
+  icon: ReactNode;
+  label: string;
+  description: string;
+  to: string;
+}) {
   const navigate = useNavigate();
+
   return (
     <button
+      type="button"
       onClick={() => navigate(to)}
-      className="flex items-center gap-3 rounded-[3px] border border-[#b9b9e6] bg-white px-4 py-3 text-left text-[14px] font-semibold text-[#2a2a63] transition-colors hover:border-[#27348b] hover:bg-[#f4f4fb]"
+      className={`${panel} group flex min-h-[155px] flex-col p-4 text-left focus:outline-none focus:ring-2 focus:ring-indigo-500`}
     >
-      <span className="text-[18px]">{icon}</span>
-      <span className="flex-1">{label}</span>
-      <FaChevronRight className="text-[12px]" />
+      <div className="flex w-full items-center justify-between">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-lg text-indigo-700 transition-colors group-hover:bg-indigo-700 group-hover:text-white">
+          {icon}
+        </span>
+
+        <FaChevronRight className="text-xs text-slate-400 transition-transform group-hover:translate-x-1 group-hover:text-indigo-700" />
+      </div>
+
+      <h3 className="mt-4 text-sm font-bold text-slate-800">
+        {label}
+      </h3>
+
+      <p className="mt-1 text-xs leading-5 text-slate-500">
+        {description}
+      </p>
     </button>
   );
 }
 
-// ---------- Panel with a title and an optional "view all" link ----------
+// ---------- Dashboard panel ----------
 function Panel({
   title,
   to,
@@ -344,189 +130,504 @@ function Panel({
   children: ReactNode;
 }) {
   const navigate = useNavigate();
+
   return (
-    <div className={`${panel} p-4`}>
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-[15px] font-bold text-[#2a2a63]">{title}</h2>
+    <section className={`${panel} min-w-0 overflow-hidden`}>
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+        <h2 className="text-base font-bold text-slate-800">
+          {title}
+        </h2>
+
         {to && (
-          <button onClick={() => navigate(to)} className="text-[13px] font-semibold text-[#27348b] hover:underline">
+          <button
+            type="button"
+            onClick={() => navigate(to)}
+            className="shrink-0 text-xs font-semibold text-indigo-700 hover:text-indigo-900 hover:underline"
+          >
             {linkText ?? "View all"}
           </button>
         )}
       </div>
-      {children}
-    </div>
+
+      <div className="p-5">{children}</div>
+    </section>
   );
 }
 
-// ---------- Page (DashboardLayout already adds the header and sidebar) ----------
+// ---------- Accountant Dashboard ----------
 export default function AccountantDashboard() {
+  const navigate = useNavigate();
   const now = new Date();
   const { students, payments } = useFees();
+
   const today = todayISO(now);
   const month = today.slice(0, 7);
 
-  // --- Stat numbers ---
+  // Summary calculations
   const todayPayments = payments.filter((p) => p.date === today);
   const todayTotal = sumAmounts(todayPayments);
-  const monthTotal = sumAmounts(payments.filter((p) => p.date.startsWith(month)));
-  const totalPending = students.reduce((sum, s) => sum + outstanding(s), 0);
-  const pendingStudents = students.filter((s) => outstanding(s) > 0).length;
+
+  const monthPayments = payments.filter((p) =>
+    p.date.startsWith(month)
+  );
+  const monthTotal = sumAmounts(monthPayments);
+
+  const totalPending = students.reduce(
+    (sum, student) => sum + outstanding(student),
+    0
+  );
+
+  const pendingStudents = students.filter(
+    (student) => outstanding(student) > 0
+  ).length;
 
   const run = loadRuns()[month];
-  const payrollTotal = run ? run.rows.reduce((sum, r) => sum + r.net, 0) : null;
 
-  // --- Last 7 days chart data (oldest first) ---
+  const payrollTotal = run
+    ? run.rows.reduce((sum, row) => sum + row.net, 0)
+    : null;
+
+  // Last seven days
   const last7 = Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(now);
-    d.setDate(now.getDate() - (6 - i));
-    const date = todayISO(d);
-    return { date, total: sumAmounts(payments.filter((p) => p.date === date)) };
-  });
-  const maxDay = Math.max(1, ...last7.map((d) => d.total));
-  const weekTotal = last7.reduce((sum, d) => sum + d.total, 0);
+    const date = new Date(now);
+    date.setDate(now.getDate() - (6 - i));
 
-  // --- Top 5 students with the highest pending amount ---
-  const defaulters = students.filter((s) => outstanding(s) > 0)
-    .sort((a, b) => outstanding(b) - outstanding(a))
+    const isoDate = todayISO(date);
+
+    return {
+      date: isoDate,
+      total: sumAmounts(
+        payments.filter((payment) => payment.date === isoDate)
+      ),
+    };
+  });
+
+  const maxDay = Math.max(1, ...last7.map((day) => day.total));
+
+  const weekTotal = last7.reduce(
+    (sum, day) => sum + day.total,
+    0
+  );
+
+  // Five students with the highest pending fees
+  const defaulters = students
+    .filter((student) => outstanding(student) > 0)
+    .sort(
+      (a, b) => outstanding(b) - outstanding(a)
+    )
     .slice(0, 5);
 
-  // --- Latest 5 payments ---
+  // Latest five payments
   const recent = [...payments]
-    .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id)
+    .sort(
+      (a, b) =>
+        b.date.localeCompare(a.date) || b.id - a.id
+    )
     .slice(0, 5);
 
-  // --- Class-wise collection progress ---
-  const classes = [...new Set(students.map((s) => s.className))].sort().map((className) => {
-    const list = students.filter((s) => s.className === className);
-    const total = list.reduce((sum, s) => sum + s.totalFee, 0);
-    const paid = list.reduce((sum, s) => sum + s.paid, 0);
-    return { className, total, paid, rate: total ? Math.round((paid / total) * 100) : 0 };
-  });
+  // Class-wise collection progress
+  const classes = [
+    ...new Set(students.map((student) => student.className)),
+  ]
+    .sort()
+    .map((className) => {
+      const classStudents = students.filter(
+        (student) => student.className === className
+      );
+
+      const total = classStudents.reduce(
+        (sum, student) => sum + student.totalFee,
+        0
+      );
+
+      const paid = classStudents.reduce(
+        (sum, student) => sum + student.paid,
+        0
+      );
+
+      return {
+        className,
+        total,
+        paid,
+        rate: total
+          ? Math.min(100, Math.round((paid / total) * 100))
+          : 0,
+      };
+    });
 
   return (
-    <div className="bg-white border border-gray-200 rounded-[4px] px-4 pt-6 pb-8">
-      <h1 className="text-center text-[22px] font-bold text-[#2a2a63]">Welcome, Fees Management</h1>
+    <div className="min-h-screen space-y-7 bg-slate-50 p-4 sm:p-6 lg:p-8">
+      {/* Dashboard heading */}
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">
+          Accountant Dashboard
+        </h1>
 
-      {/* Quick numbers (click a box to open its page) */}
-      <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <StatBox
-          label="Today's collection"
-          value={money(todayTotal)}
-          note={`${todayPayments.length} payment(s) today`}
-          to="/daybookReport"
-          tone="text-green-600"
-        />
-        <StatBox
-          label="Total pending"
-          value={money(totalPending)}
-          note={`${pendingStudents} student(s) with dues`}
-          to="/pendingdues"
-          tone="text-red-600"
-        />
-        <StatBox label="Collected this month" value={money(monthTotal)} note={month} to="/financeReports" />
-        <StatBox
-          label="This month's payroll"
-          value={payrollTotal === null ? "Not generated" : inr(payrollTotal)}
-          note={run ? `Status: ${run.status}` : "Open Monthly Payroll to create it"}
-          to="/monthlyPayroll"
-        />
+        <p className="mt-2 text-sm text-slate-500">
+          Manage fee collections, outstanding dues, student bills,
+          daybook, and payroll.
+        </p>
       </div>
 
-      {/* Quick actions: the jobs an accountant does most often */}
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <QuickAction icon={<FaRegListAlt />} label="Collect fee" to="/feeCollection" />
-        <QuickAction icon={<FaThList />} label="Pending dues" to="/pendingdues" />
-        <QuickAction icon={<FaBars />} label="Student fee-bill" to="/studentFeeBill" />
-        <QuickAction icon={<FaBook />} label="Daybook" to="/daybookReport" />
-        <QuickAction icon={<FaCalendarAlt />} label="Monthly payroll" to="/monthlyPayroll" />
-      </div>
+      {/* Summary cards: two per row */}
+      <section>
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-slate-800">
+            Financial Overview
+          </h2>
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Last 7 days chart */}
-        <Panel title="Collection in the last 7 days" to="/financeReports" linkText="Open reports">
-          <p className="mb-3 text-[13px] text-gray-500">
-            Total {money(weekTotal)} across {last7.filter((d) => d.total > 0).length} day(s) with payments
+          <p className="mt-1 text-sm text-slate-500">
+            A summary of your school's fee and payroll activities.
           </p>
-          <div className="flex h-44 items-end gap-3">
-            {last7.map((d) => (
-              <div key={d.date} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
-                <span className="text-[11px] text-gray-500">{d.total ? money(d.total) : ""}</span>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <StatBox
+            label="Total Collection"
+            value={money(todayTotal)}
+            note={`${todayPayments.length} payment(s) collected today`}
+            to="/daybookReport"
+            icon={<FaRupeeSign />}
+            iconBg="bg-emerald-50"
+            iconColor="text-emerald-600"
+          />
+
+          <StatBox
+            label="Total Pending"
+            value={money(totalPending)}
+            note={`${pendingStudents} student(s) with outstanding dues`}
+            to="/pendingdues"
+            icon={<FaWallet />}
+            iconBg="bg-rose-50"
+            iconColor="text-rose-600"
+          />
+
+          <StatBox
+            label="Collected This Month"
+            value={money(monthTotal)}
+            note={`${monthPayments.length} payment(s) this month`}
+            to="/financeReports"
+            icon={<FaMoneyBillWave />}
+            iconBg="bg-blue-50"
+            iconColor="text-blue-600"
+          />
+
+          <StatBox
+            label="This Month's Payroll"
+            value={
+              payrollTotal === null
+                ? "Not generated"
+                : inr(payrollTotal)
+            }
+            note={
+              run
+                ? `Status: ${run.status}`
+                : "Open monthly payroll to generate"
+            }
+            to="/monthlyPayroll"
+            icon={<FaUsers />}
+            iconBg="bg-violet-50"
+            iconColor="text-violet-600"
+          />
+        </div>
+      </section>
+
+{/* Quick Actions */}
+<section>
+  <div className="mb-4">
+    <h2 className="text-xl font-bold text-slate-900">
+      Quick Actions
+    </h2>
+  </div>
+
+  <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+    <button
+      onClick={() => navigate("/feeCollection")}
+      className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 text-left text-base text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50"
+    >
+      <FaRegListAlt className="shrink-0 text-xl text-blue-600" />
+      <span>Collect Fees</span>
+    </button>
+
+    <button
+      onClick={() => navigate("/pendingdues")}
+      className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 text-left text-base text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50"
+    >
+      <FaThList className="shrink-0 text-xl text-blue-600" />
+      <span>Pending Dues</span>
+    </button>
+
+    <button
+      onClick={() => navigate("/studentFeeBill")}
+      className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 text-left text-base text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50"
+    >
+      <FaBars className="shrink-0 text-xl text-blue-600" />
+      <span>Student Fee-Bill</span>
+    </button>
+
+    <button
+      onClick={() => navigate("/daybookReport")}
+      className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 text-left text-base text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50"
+    >
+      <FaBook className="shrink-0 text-xl text-blue-600" />
+      <span>Daybook</span>
+    </button>
+
+    <button
+      onClick={() => navigate("/monthlyPayroll")}
+      className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-4 py-4 text-left text-base text-slate-800 transition-colors hover:border-blue-300 hover:bg-blue-50"
+    >
+      <FaCalendarAlt className="shrink-0 text-xl text-blue-600" />
+      <span>Monthly Payroll</span>
+    </button>
+  </div>
+</section>
+
+
+      {/* Dashboard details */}
+      <section>
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-slate-800">
+            Collection & Reports
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Monitor collection trends, pending fees, and class-wise progress.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+          {/* Collection chart */}
+          <Panel
+            title="Collection in the Last 7 Days"
+            to="/financeReports"
+            linkText="View Reports"
+          >
+            <div className="mb-5 rounded-lg bg-indigo-50 p-4">
+              <p className="text-sm text-slate-500">
+                Total collection over the last seven days
+              </p>
+
+              <p className="mt-1 text-2xl font-bold text-indigo-800">
+                {money(weekTotal)}
+              </p>
+
+              <p className="mt-1 text-xs text-slate-500">
+                {last7.filter((day) => day.total > 0).length} day(s)
+                with payments
+              </p>
+            </div>
+
+            <div className="flex h-48 items-end gap-2 sm:gap-3">
+              {last7.map((day) => (
                 <div
-                  className={`w-full rounded-t-[2px] ${d.date === today ? "bg-[#27348b]" : "bg-[#9aa3dc]"}`}
-                  style={{ height: `${(d.total / maxDay) * 100}%`, minHeight: d.total ? 4 : 0 }}
-                  title={`${shortDay(d.date)}: ${money(d.total)}`}
-                />
-                <span className="text-[11px] text-[#2a2a63]">{shortDay(d.date)}</span>
-              </div>
-            ))}
-          </div>
-        </Panel>
+                  key={day.date}
+                  className="flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2"
+                >
+                  <span className="max-w-full truncate text-[10px] text-slate-500 sm:text-xs">
+                    {day.total ? money(day.total) : "—"}
+                  </span>
 
-        {/* Highest pending */}
-        <Panel title="Highest pending fees" to="/pendingdues">
-          {defaulters.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-500">No pending fees. Every student has paid in full.</p>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {defaulters.map((s) => {
-                const overdue = s.dueDate < today;
-                return (
-                  <li key={s.studentId} className="flex items-center justify-between gap-3 py-2.5">
-                    <div className="min-w-0">
-                      <p className="truncate text-[14px] font-semibold text-[#2a2a63]">{s.studentName}</p>
-                      <p className="text-[12px] text-gray-500">
-                        {s.className} · due {shortDay(s.dueDate)}
-                        {overdue && <span className="ml-2 font-semibold text-red-600">Overdue</span>}
-                      </p>
-                    </div>
-                    <span className="text-[14px] font-bold text-red-600">{money(outstanding(s))}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </Panel>
+                  <div className="flex h-32 w-full items-end">
+                    <div
+                      className={`w-full rounded-t-md transition-all ${
+                        day.date === today
+                          ? "bg-indigo-700"
+                          : "bg-indigo-300"
+                      }`}
+                      style={{
+                        height: day.total
+                          ? `${Math.max(
+                              5,
+                              (day.total / maxDay) * 100
+                            )}%`
+                          : "0%",
+                      }}
+                      title={`${shortDay(day.date)}: ${money(day.total)}`}
+                    />
+                  </div>
 
-        {/* Latest payments */}
-        <Panel title="Latest payments" to="/receipts" linkText="All receipts">
-          <ul className="divide-y divide-gray-100">
-            {recent.map((p) => (
-              <li key={p.receiptNo} className="flex items-center justify-between gap-3 py-2.5">
-                <div className="min-w-0">
-                  <p className="truncate text-[14px] font-semibold text-[#2a2a63]">{p.studentName}</p>
-                  <p className="text-[12px] text-gray-500">
-                    {p.receiptNo} · {shortDay(p.date)} · {p.mode}
-                  </p>
-                </div>
-                <span className="text-[14px] font-bold text-green-600">{money(p.amount)}</span>
-              </li>
-            ))}
-            {recent.length === 0 && (
-              <li className="py-8 text-center text-sm text-gray-500">No payments yet. Use Collect fee to add one.</li>
-            )}
-          </ul>
-        </Panel>
-
-        {/* Class-wise progress */}
-        <Panel title="Class-wise collection" to="/misStatus" linkText="MIS status">
-          <ul className="space-y-3">
-            {classes.map((c) => (
-              <li key={c.className}>
-                <div className="flex justify-between text-[13px]">
-                  <span className="font-semibold text-[#2a2a63]">{c.className}</span>
-                  <span className="text-gray-500">
-                    {money(c.paid)} of {money(c.total)} ({c.rate}%)
+                  <span className="text-[10px] text-slate-500 sm:text-xs">
+                    {shortDay(day.date)}
                   </span>
                 </div>
-                <div className="mt-1 h-2 rounded-full bg-gray-100">
-                  <div className="h-2 rounded-full bg-[#27348b]" style={{ width: `${c.rate}%` }} />
+              ))}
+            </div>
+          </Panel>
+
+          {/* Highest pending fees */}
+          <Panel
+            title="Highest Pending Fees"
+            to="/pendingdues"
+            linkText="View All"
+          >
+            {defaulters.length === 0 ? (
+              <div className="py-10 text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-xl text-emerald-600">
+                  ✓
                 </div>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-      </div>
+
+                <p className="mt-3 text-sm font-semibold text-slate-700">
+                  No pending fees
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  All students have cleared their recorded dues.
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {defaulters.map((student) => {
+                  const overdue = student.dueDate < today;
+
+                  return (
+                    <li
+                      key={student.studentId}
+                      className="flex items-center justify-between gap-3 py-3"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-rose-50 text-sm font-bold text-rose-600">
+                          {student.studentName
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
+
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold text-slate-800">
+                            {student.studentName}
+                          </p>
+
+                          <p className="mt-1 text-xs text-slate-500">
+                            {student.className} · Due{" "}
+                            {shortDay(student.dueDate)}
+                          </p>
+
+                          {overdue && (
+                            <span className="mt-1 inline-block rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-600">
+                              Overdue
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <span className="shrink-0 text-sm font-bold text-rose-600">
+                        {money(outstanding(student))}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </Panel>
+
+          {/* Latest payments */}
+          <Panel
+            title="Latest Payments"
+            to="/receipts"
+            linkText="All Receipts"
+          >
+            {recent.length === 0 ? (
+              <div className="py-10 text-center">
+                <p className="text-sm font-semibold text-slate-700">
+                  No payments yet
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Record a payment to see it here.
+                </p>
+              </div>
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {recent.map((payment) => (
+                  <li
+                    key={payment.receiptNo}
+                    className="flex items-center justify-between gap-3 py-3"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                        <FaMoneyBillWave />
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-slate-800">
+                          {payment.studentName}
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-500">
+                          {payment.receiptNo} · {shortDay(payment.date)}
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-400">
+                          {payment.mode}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="shrink-0 text-sm font-bold text-emerald-600">
+                      +{money(payment.amount)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+
+          {/* Class-wise collection */}
+          <Panel
+            title="Class-Wise Collection"
+            to="/misStatus"
+            linkText="MIS Status"
+          >
+            {classes.length === 0 ? (
+              <p className="py-10 text-center text-sm text-slate-500">
+                No class collection data available.
+              </p>
+            ) : (
+              <ul className="space-y-5">
+                {classes.map((classItem) => (
+                  <li key={classItem.className}>
+                    <div className="mb-2 flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-800">
+                          {classItem.className}
+                        </p>
+
+                        <p className="mt-1 text-xs text-slate-500">
+                          Collected {money(classItem.paid)}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-slate-700">
+                          {classItem.rate}%
+                        </p>
+
+                        <p className="text-xs text-slate-400">
+                          of {money(classItem.total)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div
+                      className="h-2.5 overflow-hidden rounded-full bg-slate-100"
+                      role="progressbar"
+                      aria-label={`${classItem.className} collection progress`}
+                      aria-valuenow={classItem.rate}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    >
+                      <div
+                        className="h-full rounded-full bg-indigo-600 transition-all duration-500"
+                        style={{ width: `${classItem.rate}%` }}
+                      />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Panel>
+        </div>
+      </section>
     </div>
   );
 }
