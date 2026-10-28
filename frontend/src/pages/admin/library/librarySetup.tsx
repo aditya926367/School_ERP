@@ -38,10 +38,10 @@ const defaultSettings: Settings = {
 const defaultCategories = ["Science", "History", "Biography", "Poetry", "Finance", "Fiction"];
 
 const inputStyle =
-  "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b]";
-
-const labelStyle = "mb-1 block text-xs font-semibold uppercase text-gray-500";
-
+  "w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 outline-none transition focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10";
+const labelStyle =
+  "mb-2 block text-sm font-medium text-gray-700";
+  
 // Returns true when the text is a whole number that is at least `min`
 function isWholeNumber(value: string, min: number): boolean {
   const n = Number(value);
@@ -207,15 +207,24 @@ export default function LibrarySetup() {
   }
 
   return (
-    <form onSubmit={handleSave} className="space-y-6">
+    
+    <form
+  onSubmit={handleSave}
+  className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6"
+>
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Library Setup</h1>
-        <p className="text-sm text-gray-500">Configure library rules, fines and book categories</p>
-      </div>
+  <h1 className="text-2xl font-bold text-gray-800">
+    Library Setup
+  </h1>
+
+  <p className="mt-1 text-sm text-gray-500">
+    Configure library rules, fines and book categories.
+  </p>
+</div>
 
       {/* ================= GENERAL ================= */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-4 text-base font-semibold text-gray-900">General</h2>
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">General</h2>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
@@ -259,11 +268,11 @@ export default function LibrarySetup() {
                   key={day}
                   type="button"
                   onClick={() => toggleDay(day)}
-                  className={`h-9 rounded-lg border px-4 text-sm font-semibold ${
-                    active
-                      ? "border-[#27348b] bg-[#27348b] text-white"
-                      : "border-gray-300 text-gray-700 hover:bg-gray-50"
-                  }`}
+                  className={`h-9 rounded-lg border px-4 text-sm font-semibold transition ${
+  active
+    ? "border-[#27348b] bg-[#27348b] text-white"
+    : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+}`}
                 >
                   {day}
                 </button>
@@ -274,9 +283,9 @@ export default function LibrarySetup() {
       </div>
 
       {/* ================= ISSUE RULES ================= */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-1 text-base font-semibold text-gray-900">Issue Rules</h2>
-        <p className="mb-4 text-sm text-gray-500">How many books a member can take and for how long</p>
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="text-lg font-semibold text-gray-900">Issue Rules</h2>
+        <p className="mt-1 mb-4 text-sm text-gray-500">How many books a member can take and for how long</p>
 
         <div className="space-y-4">
           {renderRuleRow("student", "Students")}
@@ -286,8 +295,8 @@ export default function LibrarySetup() {
       </div>
 
       {/* ================= FINE SETTINGS ================= */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-1 text-base font-semibold text-gray-900">Fine Settings</h2>
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-1 text-lg font-semibold text-gray-900">Fine Settings</h2>
         <p className="mb-4 text-sm text-gray-500">Charged when a book is returned after the due date</p>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -327,8 +336,8 @@ export default function LibrarySetup() {
       </div>
 
       {/* ================= BOOK CATEGORIES ================= */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 className="mb-1 text-base font-semibold text-gray-900">Book Categories</h2>
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-1 text-lg font-semibold text-gray-900">Book Categories</h2>
         <p className="mb-4 text-sm text-gray-500">These categories appear when you add a book</p>
 
         <div className="flex flex-col gap-3 sm:flex-row">
@@ -343,12 +352,12 @@ export default function LibrarySetup() {
               }
             }}
             placeholder="e.g. Computer Science"
-            className="h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] sm:w-[320px]"
+            className={`${inputStyle} h-10 sm:w-[320px]`}
           />
           <button
             type="button"
             onClick={addCategory}
-            className="h-10 rounded-lg border border-[#27348b] px-4 text-sm font-semibold text-[#27348b] hover:bg-[#27348b] hover:text-white"
+            className="h-10 rounded-lg border border-[#27348b] px-4 text-sm font-semibold text-[#27348b] transition hover:bg-[#27348b]/5"
           >
             + Add Category
           </button>
@@ -379,7 +388,7 @@ export default function LibrarySetup() {
       </div>
 
       {/* ================= SAVE BAR ================= */}
-      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm">
           {error && <p className="font-semibold text-red-600">{error}</p>}
           {message && <p className="font-semibold text-green-700">{message}</p>}
@@ -389,13 +398,13 @@ export default function LibrarySetup() {
           <button
             type="button"
             onClick={handleReset}
-            className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+className="h-10 rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50"
           >
             Reset to default
           </button>
           <button
             type="submit"
-            className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
+className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white transition hover:bg-[#1f2a70] focus:outline-none focus:ring-2 focus:ring-[#27348b]/20 focus:ring-offset-2"
           >
             Save Settings
           </button>
