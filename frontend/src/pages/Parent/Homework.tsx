@@ -25,74 +25,7 @@ type HomeworkItem = {
   priority: "High" | "Medium" | "Low";
 };
 
-const demoHomework: HomeworkItem[] = [
-  {
-    id: 1,
-    title: "Algebra Exercise",
-    subject: "Mathematics",
-    teacher: "Neha Singh",
-    assignedDate: "2026-10-10",
-    dueDate: "2026-10-16",
-    description: "Complete questions 1-15 from Exercise 4.2 in your notebook.",
-    status: "Pending",
-    priority: "High",
-  },
-  {
-    id: 2,
-    title: "Science Project",
-    subject: "Science",
-    teacher: "Amit Kumar",
-    assignedDate: "2026-10-08",
-    dueDate: "2026-10-18",
-    description: "Prepare a project on the water cycle with a labelled diagram.",
-    status: "Pending",
-    priority: "Medium",
-  },
-  {
-    id: 3,
-    title: "Essay Writing",
-    subject: "English",
-    teacher: "Priya Verma",
-    assignedDate: "2026-10-06",
-    dueDate: "2026-10-12",
-    description: "Write an essay of 250 words on the importance of education.",
-    status: "Overdue",
-    priority: "High",
-  },
-  {
-    id: 4,
-    title: "History Chapter Questions",
-    subject: "Social Science",
-    teacher: "Rahul Gupta",
-    assignedDate: "2026-10-04",
-    dueDate: "2026-10-09",
-    description: "Answer the five questions at the end of Chapter 3.",
-    status: "Submitted",
-    priority: "Low",
-  },
-  {
-    id: 5,
-    title: "Computer Worksheet",
-    subject: "Computer",
-    teacher: "Karan Mehta",
-    assignedDate: "2026-10-11",
-    dueDate: "2026-10-19",
-    description: "Complete the worksheet on computer networks.",
-    status: "Pending",
-    priority: "Medium",
-  },
-  {
-    id: 6,
-    title: "Hindi Grammar",
-    subject: "Hindi",
-    teacher: "Pooja Singh",
-    assignedDate: "2026-10-02",
-    dueDate: "2026-10-07",
-    description: "Complete the grammar exercises in your Hindi notebook.",
-    status: "Submitted",
-    priority: "Low",
-  },
-];
+const demoHomework: HomeworkItem[] = [];
 
 const statusStyles: Record<HomeworkStatus, string> = {
   Pending: "bg-amber-100 text-amber-700",

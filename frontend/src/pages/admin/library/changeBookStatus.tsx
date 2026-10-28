@@ -19,16 +19,7 @@ const statuses: CopyStatus[] = [
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
-const initialCopies: BookCopy[] = [
-  { id: "B001-01", title: "Wings of Fire", status: "Available" },
-  { id: "B001-02", title: "Wings of Fire", status: "Issued" },
-  { id: "B002-01", title: "Concept of Physics", status: "Damaged" },
-  { id: "B002-02", title: "Concept of Physics", status: "Available" },
-  { id: "B003-01", title: "Gitanjali", status: "Available" },
-  { id: "B004-01", title: "Discovery of India", status: "Lost" },
-  { id: "B004-02", title: "Discovery of India", status: "Under Repair" },
-  { id: "B005-01", title: "Rich Dad Poor Dad", status: "Issued" },
-];
+const initialCopies: BookCopy[] = [];
 
 const statusColor: Record<CopyStatus, string> = {
   Available: "bg-green-100 text-green-700",

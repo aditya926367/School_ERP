@@ -8,14 +8,7 @@ type StockRow = {
   physical: string;
 };
 
-const initialRows: StockRow[] = [
-  { id: "B001", title: "Wings of Fire", system: 5, physical: "" },
-  { id: "B002", title: "Concept of Physics", system: 8, physical: "" },
-  { id: "B003", title: "Gitanjali", system: 4, physical: "" },
-  { id: "B004", title: "Discovery of India", system: 3, physical: "" },
-  { id: "B005", title: "Rich Dad Poor Dad", system: 6, physical: "" },
-  { id: "B006", title: "The Alchemist", system: 4, physical: "" },
-];
+const initialRows: StockRow[] = [];
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
@@ -47,7 +40,7 @@ function getResult(r: StockRow): {
 }
 
 export default function StockVerification() {
-  const [rows, setRows] = useState<StockRow[]>(initialRows);
+  const [rows, setRows] = usePersistentState<StockRow[]>('schoolerp:pages_admin_library_stockverification_tsx:rows', []);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);

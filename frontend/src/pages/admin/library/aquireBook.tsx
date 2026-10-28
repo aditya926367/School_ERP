@@ -18,11 +18,7 @@ type Acquisition = {
 
 const today = new Date().toISOString().slice(0, 10);
 
-const initialOrders: Acquisition[] = [
-  { id: "AQ001", title: "Atomic Habits", author: "James Clear", supplier: "Sharma Book Depot", quantity: 5, price: 450, orderDate: "2026-09-20", status: "Received" },
-  { id: "AQ002", title: "The Alchemist", author: "Paulo Coelho", supplier: "Sharma Book Depot", quantity: 4, price: 299, orderDate: "2026-10-02", status: "Ordered" },
-  { id: "AQ003", title: "Ikigai", author: "Hector Garcia", supplier: "Delhi Books Hub", quantity: 3, price: 350, orderDate: "2026-10-08", status: "Ordered" },
-];
+const initialOrders: Acquisition[] = [];
 
 // Empty form state
 const emptyForm = { title: "", author: "", supplier: "", quantity: "1", price: "", orderDate: today };
@@ -34,7 +30,7 @@ const inputStyle =
 const PAGE_SIZES = [5, 10, 25, 50];
 
 export default function AcquireBook() {
-  const [orders, setOrders] = useState<Acquisition[]>(initialOrders);
+  const [orders, setOrders] = usePersistentState<Acquisition[]>('schoolerp:pages_admin_library_aquirebook_tsx:orders', []);
   const [search, setSearch] = useState("");
 
   // Pagination state

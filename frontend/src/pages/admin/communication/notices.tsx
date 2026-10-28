@@ -22,32 +22,7 @@ type NoticeForm = Omit<Notice, "id">;
 
 const today = new Date().toISOString().slice(0, 10);
 
-const initialNotices: Notice[] = [
-  {
-    id: "N001",
-    title: "Diwali Holidays",
-    category: "Holiday",
-    description: "School will remain closed from 9th to 13th November.",
-    issueDate: "2026-10-01",
-    expiryDate: "2026-11-13",
-  },
-  {
-    id: "N002",
-    title: "Fee Submission Last Date",
-    category: "Fee",
-    description: "Second quarter fee must be paid before 15th October.",
-    issueDate: "2026-09-25",
-    expiryDate: "2026-10-15",
-  },
-  {
-    id: "N003",
-    title: "Unit Test Schedule",
-    category: "Exam",
-    description: "Unit test for classes 6 to 8 held in September.",
-    issueDate: "2026-09-01",
-    expiryDate: "2026-09-30",
-  },
-];
+const initialNotices: Notice[] = [];
 
 const categories = ["General", "Exam", "Holiday", "Fee", "Event", "Transport"];
 const pageSizeOptions = [5, 10, 25, 50].map((size) => ({
@@ -83,7 +58,7 @@ function formatDate(date: string): string {
 }
 
 export default function AdminNotices() {
-  const [notices, setNotices] = useState<Notice[]>(initialNotices);
+  const [notices, setNotices] = usePersistentState<Notice[]>('schoolerp:pages_admin_communication_notices_tsx:notices', []);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);

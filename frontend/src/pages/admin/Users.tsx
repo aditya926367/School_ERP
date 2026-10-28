@@ -24,14 +24,7 @@ interface User {
   status: "Active" | "Inactive";
 }
 
-const initialUsers: User[] = [
-  { id: 1, name: "Admin User", userId: "ADM001", email: "admin@school.edu.in", role: "Administrator", status: "Active" },
-  { id: 2, name: "Rahul Sharma", userId: "TCH001", email: "rahul.sharma@school.edu.in", role: "Teacher", status: "Active" },
-  { id: 3, name: "Priya Singh", userId: "TCH002", email: "priya.singh@school.edu.in", role: "Teacher", status: "Active" },
-  { id: 4, name: "Aarav Sharma", userId: "STU001", email: "aarav.sharma@student.school.edu.in", role: "Student", status: "Active" },
-  { id: 5, name: "Rajesh Sharma", userId: "PAR001", email: "rajesh.sharma@gmail.com", role: "Parent", status: "Active" },
-  { id: 6, name: "Former Teacher", userId: "TCH003", email: "former.teacher@school.edu.in", role: "Teacher", status: "Inactive" },
-];
+const initialUsers: User[] = [];
 
 const actionButtonClass =
   "rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-[#27348b]";
@@ -40,7 +33,7 @@ function Users() {
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [users, setUsers] = useState<User[]>(initialUsers);
+  const [users, setUsers] = usePersistentState<User[]>('schoolerp:pages_admin_users_tsx:users', []);
   const [page, setPage] = useState(1);
   const pageSize = 5;
 

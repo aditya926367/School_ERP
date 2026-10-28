@@ -51,28 +51,7 @@ type Template = {
   rightLabel: string;
 };
 
-const initialTemplates: Template[] = [
-  {
-    id: "T001",
-    name: "Standard Bonafide",
-    type: "Bonafide",
-    title: "Bonafide Certificate",
-    body: defaultBodies.Bonafide,
-    accent: "#27348b",
-    leftLabel: "Date",
-    rightLabel: "Principal",
-  },
-  {
-    id: "T002",
-    name: "Merit Award",
-    type: "Merit",
-    title: "Certificate of Merit",
-    body: defaultBodies.Merit,
-    accent: "#b45309",
-    leftLabel: "Date",
-    rightLabel: "Principal",
-  },
-];
+const initialTemplates: Template[] = [];
 
 const PLACEHOLDERS = ["{{name}}", "{{father}}", "{{class}}", "{{admission}}", "{{school}}"];
 
@@ -201,7 +180,7 @@ const inputStyle =
 const labelStyle = "mb-1 block text-xs font-semibold uppercase text-gray-500";
 
 export default function CreateCertificate() {
-  const [templates, setTemplates] = useState<Template[]>(initialTemplates);
+  const [templates, setTemplates] = usePersistentState<Template[]>('schoolerp:pages_admin_certificates_createcertificate_tsx:templates', []);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [error, setError] = useState("");

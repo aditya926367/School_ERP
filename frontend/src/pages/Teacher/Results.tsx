@@ -25,24 +25,7 @@ type ResultRecord = {
   maxMarks: number;
 };
 
-const initialResults: ResultRecord[] = [
-  { id: 1, rollNo: 1, admissionNo: "ADM-1001", studentName: "Aarav Sharma", className: "Class 8-A", subject: "Mathematics", exam: "Unit Test 1", marksObtained: 85, maxMarks: 100 },
-  { id: 2, rollNo: 2, admissionNo: "ADM-1002", studentName: "Ananya Verma", className: "Class 8-A", subject: "Mathematics", exam: "Unit Test 1", marksObtained: 92, maxMarks: 100 },
-  { id: 3, rollNo: 3, admissionNo: "ADM-1003", studentName: "Rohan Kumar", className: "Class 8-A", subject: "Mathematics", exam: "Unit Test 1", marksObtained: 34, maxMarks: 100 },
-  { id: 4, rollNo: 4, admissionNo: "ADM-1004", studentName: "Priya Singh", className: "Class 8-A", subject: "Mathematics", exam: "Unit Test 1", marksObtained: 78, maxMarks: 100 },
-  { id: 5, rollNo: 5, admissionNo: "ADM-1005", studentName: "Arjun Gupta", className: "Class 8-A", subject: "Mathematics", exam: "Unit Test 1", marksObtained: 25, maxMarks: 100 },
-  { id: 6, rollNo: 6, admissionNo: "ADM-1006", studentName: "Sneha Kumari", className: "Class 8-A", subject: "Mathematics", exam: "Unit Test 1", marksObtained: 96, maxMarks: 100 },
-  { id: 7, rollNo: 7, admissionNo: "ADM-1007", studentName: "Rahul Yadav", className: "Class 8-A", subject: "Mathematics", exam: "Unit Test 1", marksObtained: 58, maxMarks: 100 },
-  { id: 8, rollNo: 8, admissionNo: "ADM-1008", studentName: "Kavya Mishra", className: "Class 8-A", subject: "Mathematics", exam: "Unit Test 1", marksObtained: 73, maxMarks: 100 },
-  { id: 9, rollNo: 1, admissionNo: "ADM-2001", studentName: "Aditya Raj", className: "Class 9-B", subject: "Science", exam: "Half-Yearly Examination", marksObtained: 88, maxMarks: 100 },
-  { id: 10, rollNo: 2, admissionNo: "ADM-2002", studentName: "Neha Singh", className: "Class 9-B", subject: "Science", exam: "Half-Yearly Examination", marksObtained: 42, maxMarks: 100 },
-  { id: 11, rollNo: 3, admissionNo: "ADM-2003", studentName: "Vivek Kumar", className: "Class 9-B", subject: "Science", exam: "Half-Yearly Examination", marksObtained: 67, maxMarks: 100 },
-  { id: 12, rollNo: 4, admissionNo: "ADM-2004", studentName: "Pooja Kumari", className: "Class 9-B", subject: "Science", exam: "Half-Yearly Examination", marksObtained: 91, maxMarks: 100 },
-  { id: 13, rollNo: 1, admissionNo: "ADM-3001", studentName: "Karan Verma", className: "Class 10-A", subject: "English", exam: "Unit Test 2", marksObtained: 76, maxMarks: 100 },
-  { id: 14, rollNo: 2, admissionNo: "ADM-3002", studentName: "Simran Kaur", className: "Class 10-A", subject: "English", exam: "Unit Test 2", marksObtained: 95, maxMarks: 100 },
-  { id: 15, rollNo: 3, admissionNo: "ADM-3003", studentName: "Mohit Kumar", className: "Class 10-A", subject: "English", exam: "Unit Test 2", marksObtained: 29, maxMarks: 100 },
-  { id: 16, rollNo: 4, admissionNo: "ADM-3004", studentName: "Riya Singh", className: "Class 10-A", subject: "English", exam: "Unit Test 2", marksObtained: 63, maxMarks: 100 },
-];
+const initialResults: ResultRecord[] = [];
 
 function getGrade(percentage: number) {
   if (percentage >= 90) return "A+";

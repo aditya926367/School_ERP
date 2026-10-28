@@ -30,11 +30,11 @@ function ParentDashboard() {
 
             <div>
               <h2 className="text-lg font-semibold text-gray-800">
-                Aarav Sharma
+                No child linked yet
               </h2>
 
               <p className="mt-1 text-sm text-gray-500">
-                Class 8-A • Roll No. 24
+                Add or link a student to view details
               </p>
             </div>
           </div>
@@ -42,7 +42,7 @@ function ParentDashboard() {
           <div className="rounded-lg bg-gray-50 px-5 py-3">
             <p className="text-xs text-gray-500">Academic Year</p>
             <p className="mt-1 text-sm font-semibold text-gray-800">
-              2026-27
+              —
             </p>
           </div>
         </div>
@@ -55,7 +55,7 @@ function ParentDashboard() {
             <div>
               <p className="text-sm text-gray-500">Attendance</p>
               <p className="mt-2 text-2xl font-bold text-gray-800">
-                94%
+                0%
               </p>
               <p className="mt-1 text-xs text-gray-500">
                 Excellent
@@ -71,7 +71,7 @@ function ParentDashboard() {
             <div>
               <p className="text-sm text-gray-500">Academic Score</p>
               <p className="mt-2 text-2xl font-bold text-gray-800">
-                87%
+                0%
               </p>
               <p className="mt-1 text-xs text-gray-500">
                 Current average
@@ -87,7 +87,7 @@ function ParentDashboard() {
             <div>
               <p className="text-sm text-gray-500">Fee Due</p>
               <p className="mt-2 text-2xl font-bold text-gray-800">
-                ₹12,500
+                ₹0
               </p>
               <p className="mt-1 text-xs text-red-500">
                 Pending payment
@@ -136,7 +136,7 @@ function ParentDashboard() {
 
           <div className="divide-y">
             {[
-              ["09:00 AM", "Mathematics", "Room 204"],
+              
               ["11:00 AM", "Science", "Room 301"],
               ["01:00 PM", "English", "Room 105"],
             ].map((item) => (
@@ -215,7 +215,7 @@ function ParentDashboard() {
 
             <div>
               <p className="text-sm font-semibold text-gray-800">
-                Aarav Sharma
+                No child linked yet
               </p>
 
               <p className="mt-1 text-xs text-gray-500">
@@ -255,7 +255,7 @@ function ParentDashboard() {
             </p>
 
             <p className="mt-1 text-xs text-gray-500">
-              Scheduled for 20 October 2026.
+              No upcoming events available.
             </p>
           </div>
 

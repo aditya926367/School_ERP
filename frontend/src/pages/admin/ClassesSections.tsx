@@ -32,61 +32,7 @@ function ClassesSections() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(2);
 
-  const [classes, setClasses] = useState<SchoolClass[]>([
-    {
-      id: 1,
-      name: "Class 8",
-      sections: [
-        {
-          id: 1,
-          name: "A",
-          capacity: 40,
-          classTeacher: "Rahul Sharma",
-          status: "Active",
-        },
-        {
-          id: 2,
-          name: "B",
-          capacity: 40,
-          classTeacher: "Priya Singh",
-          status: "Active",
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Class 9",
-      sections: [
-        {
-          id: 3,
-          name: "A",
-          capacity: 40,
-          classTeacher: "Amit Kumar",
-          status: "Active",
-        },
-        {
-          id: 4,
-          name: "B",
-          capacity: 40,
-          classTeacher: "Neha Verma",
-          status: "Active",
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: "Class 10",
-      sections: [
-        {
-          id: 5,
-          name: "A",
-          capacity: 40,
-          classTeacher: "Vikas Gupta",
-          status: "Active",
-        },
-      ],
-    },
-  ]);
+  const [classes, setClasses] = useState<SchoolClass[]>([]);
 
   const [className, setClassName] = useState("");
   const [editingClassId, setEditingClassId] = useState<number | null>(null);

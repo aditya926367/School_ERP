@@ -30,52 +30,7 @@ type Announcement = {
   pinned: boolean;
 };
 
-const initialAnnouncements: Announcement[] = [
-  {
-    id: 1,
-    title: "Half-Yearly Examination Schedule",
-    message:
-      "Please review the examination timetable and complete your revision. Contact your subject teacher if you have any questions about the syllabus.",
-    audience: "All Classes",
-    priority: "Urgent",
-    date: "2026-10-12",
-    author: "Teacher",
-    pinned: true,
-  },
-  {
-    id: 2,
-    title: "Mathematics Assignment Due",
-    message:
-      "Students of Class 8-A should submit the algebra assignment by the announced deadline. Make sure all questions are completed.",
-    audience: "Class 8-A",
-    priority: "Important",
-    date: "2026-10-11",
-    author: "Teacher",
-    pinned: false,
-  },
-  {
-    id: 3,
-    title: "Science Project Instructions",
-    message:
-      "Class 9-B students should prepare their science project files. Include the objective, materials, procedure, observations, and conclusion.",
-    audience: "Class 9-B",
-    priority: "Normal",
-    date: "2026-10-10",
-    author: "Teacher",
-    pinned: false,
-  },
-  {
-    id: 4,
-    title: "Classroom Test Reminder",
-    message:
-      "A short English test will be conducted in the next class. Revise the grammar topics covered this week.",
-    audience: "Class 10-A",
-    priority: "Important",
-    date: "2026-10-09",
-    author: "Teacher",
-    pinned: false,
-  },
-];
+const initialAnnouncements: Announcement[] = [];
 
 const priorityStyles: Record<Priority, string> = {
   Normal: "border-slate-200 bg-slate-50 text-slate-700",
@@ -93,8 +48,7 @@ const emptyForm = {
 };
 
 export default function TeacherAnnouncements() {
-  const [announcements, setAnnouncements] =
-    useState<Announcement[]>(initialAnnouncements);
+  const [announcements, setAnnouncements] = usePersistentState<Announcement[]>('schoolerp:pages_teacher_announcements_tsx:announcements', []);
   const [search, setSearch] = useState("");
   const [audienceFilter, setAudienceFilter] = useState("All Audiences");
   const [priorityFilter, setPriorityFilter] = useState("All Priorities");

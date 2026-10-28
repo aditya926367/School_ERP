@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useStudents, type Student } from "../../store/studentStore";
 import DataTable from "../../components/common/DataTable";
 import FilterSelect from "../../components/common/FilterSelect";
 import PageHeader from "../../components/common/PageHeader";
@@ -42,255 +43,7 @@ type Admission = {
   };
 };
 
-const initialAdmissions: Admission[] = [
-  {
-    id: 1,
-    applicationNo: "ADM-2026-001",
-    studentName: "Aarav Sharma",
-    dateOfBirth: "2015-04-12",
-    gender: "Male",
-    classApplied: "Class 6",
-    parentName: "Rajesh Sharma",
-    phone: "9876543210",
-    email: "rajesh@example.com",
-    previousSchool: "Sunrise Public School",
-    appliedDate: "2026-10-05",
-    status: "Pending",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 2,
-    applicationNo: "ADM-2026-002",
-    studentName: "Ananya Singh",
-    dateOfBirth: "2017-08-20",
-    gender: "Female",
-    classApplied: "Class 4",
-    parentName: "Amit Singh",
-    phone: "9876543211",
-    email: "amit@example.com",
-    previousSchool: "Green Valley School",
-    appliedDate: "2026-10-04",
-    status: "Approved",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: true,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-  {
-    id: 3,
-    applicationNo: "ADM-2026-003",
-    studentName: "Rohan Kumar",
-    dateOfBirth: "2013-02-11",
-    gender: "Male",
-    classApplied: "Class 8",
-    parentName: "Suresh Kumar",
-    phone: "9876543212",
-    email: "suresh@example.com",
-    previousSchool: "City Model School",
-    appliedDate: "2026-10-03",
-    status: "Rejected",
-    documents: {
-      birthCertificate: true,
-      transferCertificate: false,
-      photograph: true,
-    },
-  },
-];
+const initialAdmissions: Admission[] = [];
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
@@ -307,7 +60,8 @@ const emptyForm = {
 };
 
 export default function Admissions() {
-  const [admissions, setAdmissions] = useState(initialAdmissions);
+  const [students, setStudents] = useStudents();
+  const [admissions, setAdmissions] = usePersistentState('schoolerp:pages_admin_admissions_tsx:admissions', []);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [showForm, setShowForm] = useState(false);
@@ -418,14 +172,89 @@ export default function Admissions() {
     closeForm();
   }
 
-  function updateStatus(id: number, status: AdmissionStatus) {
-    setAdmissions((previous) =>
-      previous.map((a) => (a.id === id ? { ...a, status } : a))
+  // function updateStatus(id: number, status: AdmissionStatus) {
+  //   setAdmissions((previous) =>
+  //     previous.map((a) => (a.id === id ? { ...a, status } : a))
+  //   );
+  //   setSelected((previous) =>
+  //     previous?.id === id ? { ...previous, status } : previous
+  //   );
+  // }
+
+  
+function updateStatus(id: number, status: AdmissionStatus) {
+  const admission = admissions.find((a) => a.id === id);
+
+  if (!admission) return;
+
+  // Approved hone par hi student record create karo.
+  if (status === "Approved" && admission.status !== "Approved") {
+    const admissionNo = admission.applicationNo.replace(/-/g, "");
+
+    // Duplicate student record mat banao.
+    const alreadyExists = students.some(
+      (student) => student.admissionNo === admissionNo
     );
-    setSelected((previous) =>
-      previous?.id === id ? { ...previous, status } : previous
-    );
+
+    if (!alreadyExists) {
+      const nextStudentId =
+        Math.max(0, ...students.map((student) => student.id)) + 1;
+
+      const newStudent: Student = {
+        id: nextStudentId,
+        admissionNo,
+        name: admission.studentName,
+        className: admission.classApplied,
+        section: "",
+        rollNo: "",
+        parentName: admission.parentName,
+        fatherName: admission.parentName,
+        fatherPhone: admission.phone,
+        fatherOccupation: "",
+        motherName: "",
+        motherPhone: "",
+        motherOccupation: "",
+        guardianEmail: admission.email,
+        phone: admission.phone,
+        email: admission.email,
+        address: "",
+        dateOfBirth: admission.dateOfBirth,
+        gender: admission.gender === "Female" ? "Female" : "Male",
+        bloodGroup: "",
+        admissionDate: new Date().toISOString().slice(0, 10),
+        academicYear: "2026-2027",
+        status: "Active",
+        attendance: 0,
+        presentDays: 0,
+        absentDays: 0,
+        totalFee: 0,
+        paidFee: 0,
+        previousResult: "",
+        previousPercentage: 0,
+        documents: [
+          ...(admission.documents.birthCertificate
+            ? ["Birth Certificate"]
+            : []),
+          ...(admission.documents.transferCertificate
+            ? ["Transfer Certificate"]
+            : []),
+          ...(admission.documents.photograph ? ["Photograph"] : []),
+        ],
+      };
+
+      setStudents((previous) => [...previous, newStudent]);
+    }
   }
+
+  setAdmissions((previous) =>
+    previous.map((a) => (a.id === id ? { ...a, status } : a))
+  );
+
+  setSelected((previous) =>
+    previous?.id === id ? { ...previous, status } : previous
+  );
+}
+
 
 
 

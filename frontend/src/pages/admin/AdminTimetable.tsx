@@ -25,68 +25,7 @@ type TimetableEntry = {
   room: string;
 };
 
-const initialEntries: TimetableEntry[] = [
-  {
-    id: 1,
-    className: "Class 8",
-    section: "A",
-    day: "Monday",
-    period: "Period 1",
-    startTime: "09:00",
-    endTime: "09:45",
-    subject: "Mathematics",
-    teacher: "Mr. Sharma",
-    room: "Room 101",
-  },
-  {
-    id: 2,
-    className: "Class 8",
-    section: "A",
-    day: "Monday",
-    period: "Period 2",
-    startTime: "09:45",
-    endTime: "10:30",
-    subject: "Science",
-    teacher: "Mrs. Verma",
-    room: "Room 101",
-  },
-  {
-    id: 3,
-    className: "Class 8",
-    section: "A",
-    day: "Tuesday",
-    period: "Period 1",
-    startTime: "09:00",
-    endTime: "09:45",
-    subject: "English",
-    teacher: "Mrs. Singh",
-    room: "Room 101",
-  },
-  {
-    id: 4,
-    className: "Class 9",
-    section: "B",
-    day: "Monday",
-    period: "Period 1",
-    startTime: "09:00",
-    endTime: "09:45",
-    subject: "Physics",
-    teacher: "Mr. Kumar",
-    room: "Room 201",
-  },
-  {
-    id: 5,
-    className: "Class 10",
-    section: "A",
-    day: "Wednesday",
-    period: "Period 3",
-    startTime: "10:45",
-    endTime: "11:30",
-    subject: "Computer Science",
-    teacher: "Mr. Gupta",
-    room: "Computer Lab",
-  },
-];
+const initialEntries: TimetableEntry[] = [];
 
 const emptyForm = {
   className: "Class 8",

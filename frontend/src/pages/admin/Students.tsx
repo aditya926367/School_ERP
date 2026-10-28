@@ -8,12 +8,13 @@ import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import SummaryCard from "../../components/common/SummaryCard";
 import ActionButtons from "../../components/common/ActionButtons";
+import { useStudents } from "../../store/studentStore";
+import type { Student, StudentStatus, Gender } from "../../store/studentStore";
 import {
   Plus,
   Users,
   UserCheck,
   UserPlus,
-  Eye,
   Pencil,
   X,
   UserRound,
@@ -29,126 +30,7 @@ import {
   Filter,
 } from "lucide-react";
 
-type StudentStatus = "Active" | "Inactive";
-type Gender = "Male" | "Female";
 type Tab = "Overview" | "Academics" | "Attendance" | "Fees" | "Documents";
-
-type Student = {
-  id: number;
-  admissionNo: string;
-  name: string;
-  className: string;
-  section: string;
-  rollNo: string;
-  parentName: string;
-  fatherName: string;
-  fatherPhone: string;
-  fatherOccupation: string;
-  motherName: string;
-  motherPhone: string;
-  motherOccupation: string;
-  guardianEmail: string;
-  phone: string;
-  email: string;
-  address: string;
-  dateOfBirth: string;
-  gender: Gender;
-  bloodGroup: string;
-  admissionDate: string;
-  academicYear: string;
-  status: StudentStatus;
-  attendance: number;
-  presentDays: number;
-  absentDays: number;
-  totalFee: number;
-  paidFee: number;
-  previousResult: string;
-  previousPercentage: number;
-  documents: string[];
-};
-
-const initialStudents: Student[] = [
-  {
-    id: 1, admissionNo: "ADM2026001", name: "Aarav Sharma", className: "Class 8", section: "A", rollNo: "08",
-    parentName: "Rajesh Sharma", fatherName: "Rajesh Sharma", fatherPhone: "9876543210", fatherOccupation: "Business",
-    motherName: "Priya Sharma", motherPhone: "9876543212", motherOccupation: "Teacher", guardianEmail: "rajesh@example.com",
-    phone: "9876543210", email: "aarav@example.com", address: "Sector 62, Noida, Uttar Pradesh",
-    dateOfBirth: "2014-06-15", gender: "Male", bloodGroup: "B+", admissionDate: "2020-04-10",
-    academicYear: "2026-2027", status: "Active", attendance: 94, presentDays: 188, absentDays: 12,
-    totalFee: 60000, paidFee: 45000, previousResult: "Passed", previousPercentage: 86,
-    documents: ["Birth Certificate", "Previous Marksheet"],
-  },
-  {
-    id: 2, admissionNo: "ADM2026002", name: "Ananya Singh", className: "Class 6", section: "B", rollNo: "12",
-    parentName: "Amit Singh", fatherName: "Amit Singh", fatherPhone: "9876543211", fatherOccupation: "Engineer",
-    motherName: "Neha Singh", motherPhone: "9876543213", motherOccupation: "Doctor", guardianEmail: "amit@example.com",
-    phone: "9876543211", email: "ananya@example.com", address: "Indirapuram, Ghaziabad, Uttar Pradesh",
-    dateOfBirth: "2016-09-20", gender: "Female", bloodGroup: "A+", admissionDate: "2022-04-12",
-    academicYear: "2026-2027", status: "Active", attendance: 96, presentDays: 192, absentDays: 8,
-    totalFee: 52000, paidFee: 52000, previousResult: "Passed", previousPercentage: 91,
-    documents: ["Birth Certificate", "Previous Marksheet"],
-  },
-  {
-    id: 3, admissionNo: "ADM2026003", name: "Rohan Kumar", className: "Class 9", section: "A", rollNo: "05",
-    parentName: "Suresh Kumar", fatherName: "Suresh Kumar", fatherPhone: "9876543212", fatherOccupation: "Accountant",
-    motherName: "Sunita Kumar", motherPhone: "9876543214", motherOccupation: "Homemaker", guardianEmail: "suresh@example.com",
-    phone: "9876543212", email: "rohan@example.com", address: "Vaishali, Ghaziabad, Uttar Pradesh",
-    dateOfBirth: "2013-03-11", gender: "Male", bloodGroup: "O+", admissionDate: "2019-04-15",
-    academicYear: "2026-2027", status: "Active", attendance: 88, presentDays: 176, absentDays: 24,
-    totalFee: 65000, paidFee: 40000, previousResult: "Passed", previousPercentage: 78,
-    documents: ["Birth Certificate", "Transfer Certificate"],
-  },
-  {
-    id: 4, admissionNo: "ADM2026004", name: "Priya Verma", className: "Class 5", section: "C", rollNo: "09",
-    parentName: "Manoj Verma", fatherName: "Manoj Verma", fatherPhone: "9876543213", fatherOccupation: "Manager",
-    motherName: "Poonam Verma", motherPhone: "9876543215", motherOccupation: "Nurse", guardianEmail: "manoj@example.com",
-    phone: "9876543213", email: "priya@example.com", address: "Sector 15, Noida, Uttar Pradesh",
-    dateOfBirth: "2017-12-02", gender: "Female", bloodGroup: "AB+", admissionDate: "2021-04-18",
-    academicYear: "2026-2027", status: "Inactive", attendance: 82, presentDays: 164, absentDays: 36,
-    totalFee: 48000, paidFee: 30000, previousResult: "Passed", previousPercentage: 81,
-    documents: ["Birth Certificate", "Previous Marksheet"],
-  },
-  {
-    id: 5, admissionNo: "ADM2026005", name: "Ishaan Gupta", className: "Class 7", section: "A", rollNo: "03",
-    parentName: "Ravi Gupta", fatherName: "Ravi Gupta", fatherPhone: "9876543214", fatherOccupation: "Teacher",
-    motherName: "Kavita Gupta", motherPhone: "9876543216", motherOccupation: "Homemaker", guardianEmail: "ravi@example.com",
-    phone: "9876543214", email: "ishaan@example.com", address: "Crossings Republik, Ghaziabad",
-    dateOfBirth: "2015-05-08", gender: "Male", bloodGroup: "B-", admissionDate: "2021-04-10",
-    academicYear: "2026-2027", status: "Active", attendance: 90, presentDays: 180, absentDays: 20,
-    totalFee: 56000, paidFee: 50000, previousResult: "Passed", previousPercentage: 84,
-    documents: ["Birth Certificate", "Previous Marksheet"],
-  },
-  {
-    id: 6, admissionNo: "ADM2026006", name: "Diya Patel", className: "Class 4", section: "B", rollNo: "14",
-    parentName: "Karan Patel", fatherName: "Karan Patel", fatherPhone: "9876543215", fatherOccupation: "Consultant",
-    motherName: "Ritu Patel", motherPhone: "9876543217", motherOccupation: "Teacher", guardianEmail: "karan@example.com",
-    phone: "9876543215", email: "diya@example.com", address: "Sector 50, Noida, Uttar Pradesh",
-    dateOfBirth: "2018-08-17", gender: "Female", bloodGroup: "O-", admissionDate: "2022-04-12",
-    academicYear: "2026-2027", status: "Active", attendance: 97, presentDays: 194, absentDays: 6,
-    totalFee: 45000, paidFee: 45000, previousResult: "Passed", previousPercentage: 94,
-    documents: ["Birth Certificate", "Previous Marksheet"],
-  },
-  {
-    id: 7, admissionNo: "ADM2026007", name: "Kabir Das", className: "Class 10", section: "A", rollNo: "18",
-    parentName: "Anil Das", fatherName: "Anil Das", fatherPhone: "9876543216", fatherOccupation: "Business",
-    motherName: "Maya Das", motherPhone: "9876543218", motherOccupation: "Homemaker", guardianEmail: "anil@example.com",
-    phone: "9876543216", email: "kabir@example.com", address: "Sector 12, Noida, Uttar Pradesh",
-    dateOfBirth: "2012-11-21", gender: "Male", bloodGroup: "A-", admissionDate: "2018-04-15",
-    academicYear: "2026-2027", status: "Inactive", attendance: 70, presentDays: 140, absentDays: 60,
-    totalFee: 70000, paidFee: 30000, previousResult: "Passed", previousPercentage: 72,
-    documents: ["Birth Certificate"],
-  },
-  {
-    id: 8, admissionNo: "ADM2026008", name: "Meera Joshi", className: "Class 3", section: "C", rollNo: "11",
-    parentName: "Vijay Joshi", fatherName: "Vijay Joshi", fatherPhone: "9876543217", fatherOccupation: "Developer",
-    motherName: "Sneha Joshi", motherPhone: "9876543219", motherOccupation: "Designer", guardianEmail: "vijay@example.com",
-    phone: "9876543217", email: "meera@example.com", address: "Sector 76, Noida, Uttar Pradesh",
-    dateOfBirth: "2019-02-14", gender: "Female", bloodGroup: "AB-", admissionDate: "2023-04-05",
-    academicYear: "2026-2027", status: "Active", attendance: 95, presentDays: 190, absentDays: 10,
-    totalFee: 42000, paidFee: 42000, previousResult: "Passed", previousPercentage: 88,
-    documents: ["Birth Certificate", "Previous Marksheet"],
-  },
-];
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100";
@@ -189,7 +71,7 @@ function SectionCard({
 }
 
 export default function Students() {
-  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [students, setStudents] = useStudents();
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [sectionFilter, setSectionFilter] = useState("All");
@@ -750,4 +632,3 @@ export default function Students() {
     </div>
   );
 }
-

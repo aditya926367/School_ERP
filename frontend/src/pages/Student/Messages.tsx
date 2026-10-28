@@ -34,67 +34,10 @@ type SchoolMessage = {
   starred: boolean;
 };
 
-const initialMessages: SchoolMessage[] = [
-  {
-    id: 1,
-    sender: "Priya Sharma",
-    recipient: "Aditya Raj",
-    role: "Class Teacher",
-    subject: "Tomorrow's Mathematics Assignment",
-    message:
-      "Dear Aditya,\n\nPlease complete Exercise 5.2 from your Mathematics textbook before tomorrow's class. Focus especially on questions 4 to 10.\n\nIf you have any doubts, please bring them to the next class.\n\nRegards,\nPriya Sharma",
-    date: "October 12, 2026",
-    time: "10:30 AM",
-    status: "Unread",
-    folder: "Inbox",
-    starred: true,
-  },
-  {
-    id: 2,
-    sender: "Examination Department",
-    recipient: "Aditya Raj",
-    role: "School Administration",
-    subject: "Mid-Term Examination Results",
-    message:
-      "Dear Student,\n\nYour mid-term examination results have been published. Please visit the My Results section of the student portal to review your marks.\n\nContact the examination department if you have any questions.",
-    date: "October 10, 2026",
-    time: "09:15 AM",
-    status: "Unread",
-    folder: "Inbox",
-    starred: false,
-  },
-  {
-    id: 3,
-    sender: "Rahul Verma",
-    recipient: "Aditya Raj",
-    role: "Class Teacher",
-    subject: "Science Project Submission",
-    message:
-      "Please submit your science project according to the schedule shared in class. Remember to include your name, class, and project title.",
-    date: "October 9, 2026",
-    time: "01:20 PM",
-    status: "Read",
-    folder: "Inbox",
-    starred: false,
-  },
-  {
-    id: 4,
-    sender: "Aditya Raj",
-    recipient: "Priya Sharma",
-    role: "Sent message",
-    subject: "Doubt Regarding Homework",
-    message:
-      "Dear Ma'am,\n\nI have a doubt regarding question 6 of the Mathematics homework. Could you please explain the steps required to solve it?\n\nThank you.",
-    date: "October 8, 2026",
-    time: "04:10 PM",
-    status: "Read",
-    folder: "Sent",
-    starred: false,
-  },
-];
+const initialMessages: SchoolMessage[] = [];
 
 export default function Messages() {
-  const [messages, setMessages] = useState(initialMessages);
+  const [messages, setMessages] = usePersistentState('schoolerp:pages_student_messages_tsx:messages', []);
   const [folder, setFolder] = useState<MessageFolder>("Inbox");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMessage, setSelectedMessage] =

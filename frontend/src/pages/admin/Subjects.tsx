@@ -24,48 +24,7 @@ function Subjects() {
   
   const [search, setSearch] = useState("");
 
-  const [subjects, setSubjects] = useState<Subject[]>([
-    {
-      id: 1,
-      name: "Mathematics",
-      code: "MATH",
-      type: "Core",
-      description: "Mathematics and problem solving",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Science",
-      code: "SCI",
-      type: "Core",
-      description: "Physics, Chemistry and Biology",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "English",
-      code: "ENG",
-      type: "Core",
-      description: "English language and literature",
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Computer Science",
-      code: "CS",
-      type: "Elective",
-      description: "Computer fundamentals and programming",
-      status: "Active",
-    },
-    {
-      id: 5,
-      name: "French",
-      code: "FRE",
-      type: "Elective",
-      description: "French language",
-      status: "Active",
-    },
-  ]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
 
   const [form, setForm] = useState({
     name: "",

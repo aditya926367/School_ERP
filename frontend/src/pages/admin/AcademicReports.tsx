@@ -21,23 +21,7 @@ type AcademicRecord = {
   totalMarks: number;
 };
 
-const demoRecords: AcademicRecord[] = [
-  { id: 1, studentName: "Aarav Sharma", admissionNo: "ADM001", className: "Class 10", section: "A", subject: "Mathematics", marksObtained: 92, totalMarks: 100 },
-  { id: 2, studentName: "Aarav Sharma", admissionNo: "ADM001", className: "Class 10", section: "A", subject: "Science", marksObtained: 85, totalMarks: 100 },
-  { id: 3, studentName: "Aarav Sharma", admissionNo: "ADM001", className: "Class 10", section: "A", subject: "English", marksObtained: 78, totalMarks: 100 },
-  { id: 4, studentName: "Ananya Singh", admissionNo: "ADM002", className: "Class 10", section: "A", subject: "Mathematics", marksObtained: 88, totalMarks: 100 },
-  { id: 5, studentName: "Ananya Singh", admissionNo: "ADM002", className: "Class 10", section: "A", subject: "Science", marksObtained: 91, totalMarks: 100 },
-  { id: 6, studentName: "Ananya Singh", admissionNo: "ADM002", className: "Class 10", section: "A", subject: "English", marksObtained: 82, totalMarks: 100 },
-  { id: 7, studentName: "Rohan Kumar", admissionNo: "ADM003", className: "Class 9", section: "B", subject: "Mathematics", marksObtained: 65, totalMarks: 100 },
-  { id: 8, studentName: "Rohan Kumar", admissionNo: "ADM003", className: "Class 9", section: "B", subject: "Science", marksObtained: 72, totalMarks: 100 },
-  { id: 9, studentName: "Rohan Kumar", admissionNo: "ADM003", className: "Class 9", section: "B", subject: "English", marksObtained: 58, totalMarks: 100 },
-  { id: 10, studentName: "Priya Verma", admissionNo: "ADM004", className: "Class 9", section: "A", subject: "Mathematics", marksObtained: 95, totalMarks: 100 },
-  { id: 11, studentName: "Priya Verma", admissionNo: "ADM004", className: "Class 9", section: "A", subject: "Science", marksObtained: 89, totalMarks: 100 },
-  { id: 12, studentName: "Priya Verma", admissionNo: "ADM004", className: "Class 9", section: "A", subject: "English", marksObtained: 93, totalMarks: 100 },
-  { id: 13, studentName: "Kabir Gupta", admissionNo: "ADM005", className: "Class 8", section: "A", subject: "Mathematics", marksObtained: 42, totalMarks: 100 },
-  { id: 14, studentName: "Kabir Gupta", admissionNo: "ADM005", className: "Class 8", section: "A", subject: "Science", marksObtained: 51, totalMarks: 100 },
-  { id: 15, studentName: "Kabir Gupta", admissionNo: "ADM005", className: "Class 8", section: "A", subject: "English", marksObtained: 46, totalMarks: 100 },
-];
+const demoRecords: AcademicRecord[] = [];
 
 const currencyPercent = (value: number) => `${value.toFixed(1)}%`;
 

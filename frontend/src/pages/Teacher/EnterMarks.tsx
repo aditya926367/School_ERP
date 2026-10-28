@@ -20,16 +20,7 @@ type StudentMark = {
   marksObtained: string;
 };
 
-const initialStudents: StudentMark[] = [
-  { id: 1, rollNo: 1, admissionNo: "ADM-1001", name: "Aarav Sharma", marksObtained: "85" },
-  { id: 2, rollNo: 2, admissionNo: "ADM-1002", name: "Ananya Verma", marksObtained: "92" },
-  { id: 3, rollNo: 3, admissionNo: "ADM-1003", name: "Rohan Kumar", marksObtained: "67" },
-  { id: 4, rollNo: 4, admissionNo: "ADM-1004", name: "Priya Singh", marksObtained: "78" },
-  { id: 5, rollNo: 5, admissionNo: "ADM-1005", name: "Arjun Gupta", marksObtained: "54" },
-  { id: 6, rollNo: 6, admissionNo: "ADM-1006", name: "Sneha Kumari", marksObtained: "96" },
-  { id: 7, rollNo: 7, admissionNo: "ADM-1007", name: "Rahul Yadav", marksObtained: "" },
-  { id: 8, rollNo: 8, admissionNo: "ADM-1008", name: "Kavya Mishra", marksObtained: "73" },
-];
+const initialStudents: StudentMark[] = [];
 
 const classOptions = [
   { value: "Class 8-A", count: 35 },
@@ -67,7 +58,7 @@ export default function TeacherEnterMarks() {
   const [selectedSubject, setSelectedSubject] = useState("Mathematics");
   const [selectedExam, setSelectedExam] = useState("Unit Test 1");
   const [maxMarks, setMaxMarks] = useState("100");
-  const [students, setStudents] = useState<StudentMark[]>(initialStudents);
+  const [students, setStudents] = usePersistentState<StudentMark[]>('schoolerp:pages_teacher_entermarks_tsx:students', []);
   const [search, setSearch] = useState("");
   const [savedRecords, setSavedRecords] = useState<Record<string, StudentMark[]>>({});
   const [message, setMessage] = useState("");

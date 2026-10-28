@@ -29,92 +29,9 @@ function GradingExamSettings() {
   const [showGradeForm, setShowGradeForm] = useState(false);
   const [showExamForm, setShowExamForm] = useState(false);
 
-  const [grades, setGrades] = useState<Grade[]>([
-    {
-      id: 1,
-      grade: "A+",
-      minPercentage: 90,
-      maxPercentage: 100,
-      description: "Outstanding",
-    },
-    {
-      id: 2,
-      grade: "A",
-      minPercentage: 80,
-      maxPercentage: 89,
-      description: "Excellent",
-    },
-    {
-      id: 3,
-      grade: "B+",
-      minPercentage: 70,
-      maxPercentage: 79,
-      description: "Very Good",
-    },
-    {
-      id: 4,
-      grade: "B",
-      minPercentage: 60,
-      maxPercentage: 69,
-      description: "Good",
-    },
-    {
-      id: 5,
-      grade: "C",
-      minPercentage: 50,
-      maxPercentage: 59,
-      description: "Satisfactory",
-    },
-    {
-      id: 6,
-      grade: "D",
-      minPercentage: 40,
-      maxPercentage: 49,
-      description: "Needs Improvement",
-    },
-    {
-      id: 7,
-      grade: "F",
-      minPercentage: 0,
-      maxPercentage: 39,
-      description: "Fail",
-    },
-  ]);
+  const [grades, setGrades] = useState<Grade[]>([]);
 
-  const [examTypes, setExamTypes] = useState<ExamType[]>([
-    {
-      id: 1,
-      name: "Unit Test 1",
-      weightage: 10,
-      maxMarks: 50,
-      passingMarks: 20,
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Half Yearly Examination",
-      weightage: 30,
-      maxMarks: 100,
-      passingMarks: 40,
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Unit Test 2",
-      weightage: 10,
-      maxMarks: 50,
-      passingMarks: 20,
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Annual Examination",
-      weightage: 50,
-      maxMarks: 100,
-      passingMarks: 40,
-      status: "Active",
-    },
-  ]);
+  const [examTypes, setExamTypes] = useState<ExamType[]>([]);
 
   const [gradeForm, setGradeForm] = useState({
     grade: "",

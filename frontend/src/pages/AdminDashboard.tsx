@@ -13,31 +13,32 @@ import { useNavigate } from "react-router-dom";
 const stats = [
   {
     title: "Total Students",
-    value: "1,248",
+    value: "0",
     icon: Users,
     description: "Active students",
   },
   {
     title: "Total Teachers",
-    value: "86",
+    value: "0",
     icon: GraduationCap,
     description: "Teaching staff",
   },
   {
     title: "Today's Attendance",
-    value: "94%",
+    value: "0%",
     icon: ClipboardCheck,
     description: "Student attendance",
   },
   {
     title: "Fee Collection",
-    value: "₹8.4L",
+    value: "₹0",
     icon: IndianRupee,
     description: "This academic year",
   },
 ];
 
-const recentAdmissions = [
+const recentAdmissions = [] as { name: string; className: string; section: string; date: string }[];
+/* const recentAdmissions = [
   {
     name: "Aarav Sharma",
     className: "Class 8",
@@ -62,7 +63,7 @@ const recentAdmissions = [
     section: "C",
     date: "02 Oct 2026",
   },
-];
+]; */
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -134,13 +135,13 @@ export default function AdminDashboard() {
           <div className="mt-6">
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">Present</span>
-              <span className="font-semibold text-gray-900">94%</span>
+              <span className="font-semibold text-gray-900">0%</span>
             </div>
 
             <div className="mt-2 h-3 overflow-hidden rounded-full bg-gray-100">
               <div
                 className="h-full rounded-full bg-blue-600"
-                style={{ width: "94%" }}
+                style={{ width: "0%" }}
               />
             </div>
 
@@ -148,21 +149,21 @@ export default function AdminDashboard() {
               <div className="rounded-lg bg-gray-50 p-4">
                 <p className="text-xs text-gray-500">Present</p>
                 <p className="mt-1 text-lg font-semibold text-gray-900">
-                  1,173
+                  0
                 </p>
               </div>
 
               <div className="rounded-lg bg-gray-50 p-4">
                 <p className="text-xs text-gray-500">Absent</p>
                 <p className="mt-1 text-lg font-semibold text-gray-900">
-                  55
+                  0
                 </p>
               </div>
 
               <div className="rounded-lg bg-gray-50 p-4">
                 <p className="text-xs text-gray-500">Leave</p>
                 <p className="mt-1 text-lg font-semibold text-gray-900">
-                  20
+                  0
                 </p>
               </div>
             </div>

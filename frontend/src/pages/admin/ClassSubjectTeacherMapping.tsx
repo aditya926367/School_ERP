@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { usePersistentState } from "../../utils/usePersistentState";
 import { Plus, X, BookOpen, Users, GraduationCap } from "lucide-react";
 import DataTable from "../../components/common/DataTable";
 import SearchBar from "../../components/common/SearchBar";
@@ -29,13 +30,7 @@ interface MappingForm {
   teacher: string;
 }
 
-const initialMappings: Mapping[] = [
-  { id: 1, className: "Class 8", section: "A", subject: "Mathematics", subjectCode: "MATH", teacher: "Rahul Sharma", type: "Core" },
-  { id: 2, className: "Class 8", section: "A", subject: "Science", subjectCode: "SCI", teacher: "Priya Singh", type: "Core" },
-  { id: 3, className: "Class 8", section: "A", subject: "English", subjectCode: "ENG", teacher: "Neha Verma", type: "Core" },
-  { id: 4, className: "Class 8", section: "B", subject: "Mathematics", subjectCode: "MATH", teacher: "Rahul Sharma", type: "Core" },
-  { id: 5, className: "Class 9", section: "A", subject: "Science", subjectCode: "SCI", teacher: "Amit Kumar", type: "Core" },
-];
+const initialMappings: Mapping[] = [];
 
 const subjects = [
   { name: "Mathematics", code: "MATH", type: "Core" as const },
@@ -59,7 +54,7 @@ export default function ClassSubjectTeacherMapping() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const PAGE_SIZES = [5, 10, 20, 50];
-  const [mappings, setMappings] = useState<Mapping[]>(initialMappings);
+  const [mappings, setMappings] = usePersistentState<Mapping[]>('schoolerp:pages_admin_classsubjectteachermapping_tsx:mappings', []);
   const [form, setForm] = useState<MappingForm>({
     className: "",
     section: "",

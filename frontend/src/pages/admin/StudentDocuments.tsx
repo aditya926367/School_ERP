@@ -26,58 +26,7 @@ type StudentDocument = {
   status: DocumentStatus;
 };
 
-const initialDocuments: StudentDocument[] = [
-  {
-    id: 1,
-    studentName: "Aarav Sharma",
-    admissionNo: "ADM-2026-001",
-    className: "Class 10-A",
-    documentType: "Birth Certificate",
-    fileName: "aarav_birth_certificate.pdf",
-    uploadDate: "2026-04-10",
-    status: "Verified",
-  },
-  {
-    id: 2,
-    studentName: "Ananya Verma",
-    admissionNo: "ADM-2026-002",
-    className: "Class 9-B",
-    documentType: "Transfer Certificate",
-    fileName: "ananya_transfer_certificate.pdf",
-    uploadDate: "2026-04-12",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    studentName: "Rohan Kumar",
-    admissionNo: "ADM-2026-003",
-    className: "Class 8-A",
-    documentType: "Previous Marksheet",
-    fileName: "rohan_marksheet.pdf",
-    uploadDate: "2026-04-14",
-    status: "Rejected",
-  },
-  {
-    id: 4,
-    studentName: "Priya Singh",
-    admissionNo: "ADM-2026-004",
-    className: "Class 7-C",
-    documentType: "Aadhaar Card",
-    fileName: "priya_identity.pdf",
-    uploadDate: "2026-04-16",
-    status: "Verified",
-  },
-  {
-    id: 5,
-    studentName: "Rahul Gupta",
-    admissionNo: "ADM-2026-005",
-    className: "Class 10-B",
-    documentType: "Passport Photograph",
-    fileName: "rahul_photo.jpg",
-    uploadDate: "2026-04-18",
-    status: "Pending",
-  },
-];
+const initialDocuments: StudentDocument[] = [];
 
 const documentTypes = [
   "Birth Certificate",
@@ -90,7 +39,7 @@ const documentTypes = [
 
 
 export default function StudentDocuments() {
-  const [documents, setDocuments] = useState(initialDocuments);
+  const [documents, setDocuments] = usePersistentState('schoolerp:pages_admin_studentdocuments_tsx:documents', []);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");

@@ -30,52 +30,7 @@ type Exam = {
   status: ExamStatus;
 };
 
-const initialExams: Exam[] = [
-  {
-    id: 1,
-    name: "First Term Examination",
-    className: "Class 10",
-    subject: "Mathematics",
-    examDate: "2026-10-20",
-    startTime: "09:00",
-    duration: 120,
-    totalMarks: 100,
-    status: "Upcoming",
-  },
-  {
-    id: 2,
-    name: "Unit Test 2",
-    className: "Class 8",
-    subject: "Science",
-    examDate: "2026-10-14",
-    startTime: "10:00",
-    duration: 60,
-    totalMarks: 50,
-    status: "Upcoming",
-  },
-  {
-    id: 3,
-    name: "Mid-Term Examination",
-    className: "Class 9",
-    subject: "English",
-    examDate: "2026-10-12",
-    startTime: "09:00",
-    duration: 90,
-    totalMarks: 80,
-    status: "Ongoing",
-  },
-  {
-    id: 4,
-    name: "Monthly Assessment",
-    className: "Class 6",
-    subject: "Hindi",
-    examDate: "2026-10-05",
-    startTime: "11:00",
-    duration: 60,
-    totalMarks: 50,
-    status: "Completed",
-  },
-];
+const initialExams: Exam[] = [];
 
 const emptyExam: Omit<Exam, "id"> = {
   name: "",
@@ -140,7 +95,7 @@ function StatCard({
 }
 
 export default function AdminExams() {
-  const [exams, setExams] = useState<Exam[]>(initialExams);
+  const [exams, setExams] = usePersistentState<Exam[]>('schoolerp:pages_admin_adminexams_tsx:exams', []);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);

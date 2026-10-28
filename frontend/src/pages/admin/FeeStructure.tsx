@@ -20,13 +20,7 @@ type FeeStructureItem = {
   status: "Active" | "Inactive";
 };
 
-const initialFees: FeeStructureItem[] = [
-  { id: 1, className: "Class 6", academicYear: "2026-2027", feeType: "Tuition Fee", amount: 2500, frequency: "Monthly", status: "Active" },
-  { id: 2, className: "Class 7", academicYear: "2026-2027", feeType: "Tuition Fee", amount: 2800, frequency: "Monthly", status: "Active" },
-  { id: 3, className: "Class 8", academicYear: "2026-2027", feeType: "Transport Fee", amount: 1200, frequency: "Monthly", status: "Active" },
-  { id: 4, className: "Class 9", academicYear: "2026-2027", feeType: "Admission Fee", amount: 5000, frequency: "Annually", status: "Active" },
-  { id: 5, className: "Class 10", academicYear: "2026-2027", feeType: "Examination Fee", amount: 1500, frequency: "Quarterly", status: "Inactive" },
-];
+const initialFees: FeeStructureItem[] = [];
 
 const emptyForm = {
   className: "Class 6",
@@ -38,7 +32,7 @@ const emptyForm = {
 };
 
 export default function FeeStructure() {
-  const [fees, setFees] = useState(initialFees);
+  const [fees, setFees] = usePersistentState('schoolerp:pages_admin_feestructure_tsx:fees', []);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [modalOpen, setModalOpen] = useState(false);

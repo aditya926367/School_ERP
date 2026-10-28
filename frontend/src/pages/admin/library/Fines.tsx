@@ -38,11 +38,7 @@ const pageBtnActive = `${pageBtn} border-[#27348b] bg-[#27348b] text-white`;
 const pageBtnDisabled = `${pageBtn} cursor-not-allowed border-gray-200 text-gray-300`;
 
 export default function Fines() {
-  const [fines, setFines] = useState<Fine[]>([
-    { id: 1, member: "Aarav Sharma (M101)", book: "Wings of Fire", daysLate: 6, paid: false },
-    { id: 2, member: "Priya Verma (M102)", book: "Discovery of India", daysLate: 3, paid: true },
-    { id: 3, member: "Mrs. Sunita Rao (M201)", book: "Gitanjali", daysLate: 10, paid: false },
-  ]);
+  const [fines, setFines] = useState<Fine[]>([]);
 
   // Pagination state
   const [page, setPage] = useState(1);

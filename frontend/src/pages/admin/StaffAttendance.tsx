@@ -27,15 +27,7 @@ type Staff = {
   status: Status;
 };
 
-const initialStaff: Staff[] = [
-  { id: 1, employeeId: "EMP1001", name: "Amit Kumar", role: "Mathematics Teacher", department: "Teaching", status: "Present" },
-  { id: 2, employeeId: "EMP1002", name: "Neha Singh", role: "English Teacher", department: "Teaching", status: "Present" },
-  { id: 3, employeeId: "EMP1003", name: "Rajesh Verma", role: "Accountant", department: "Administration", status: "Late" },
-  { id: 4, employeeId: "EMP1004", name: "Pooja Kumari", role: "Office Assistant", department: "Administration", status: "Leave" },
-  { id: 5, employeeId: "EMP1005", name: "Sanjay Yadav", role: "Lab Assistant", department: "Support", status: "Absent" },
-  { id: 6, employeeId: "EMP1006", name: "Kavita Sharma", role: "Science Teacher", department: "Teaching", status: "Present" },
-  { id: 7, employeeId: "EMP1007", name: "Manoj Das", role: "Security", department: "Support", status: "Present" },
-];
+const initialStaff: Staff[] = [];
 
 const statuses: Status[] = ["Present", "Absent", "Late", "Leave"];
 
@@ -45,7 +37,7 @@ function getToday() {
 }
 
 export default function StaffAttendance() {
-  const [staff, setStaff] = useState<Staff[]>(initialStaff);
+  const [staff, setStaff] = usePersistentState<Staff[]>('schoolerp:pages_admin_staffattendance_tsx:staff', []);
   const [date, setDate] = useState(getToday());
   const [department, setDepartment] = useState("All");
   const [search, setSearch] = useState("");

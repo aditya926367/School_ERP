@@ -37,7 +37,7 @@ function parseCsv(text: string): ImportRow[] {
 }
 
 export default function ImportBookMaster() {
-  const [rows, setRows] = useState<ImportRow[]>([]);
+  const [rows, setRows] = usePersistentState<ImportRow[]>('schoolerp:pages_admin_library_importbookmaster_tsx:rows', []);
   const [fileName, setFileName] = useState("");
   const [message, setMessage] = useState("");
 

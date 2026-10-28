@@ -32,79 +32,7 @@ type Announcement = {
   read: boolean;
 };
 
-const initialAnnouncements: Announcement[] = [
-  {
-    id: 1,
-    title: "Mid-Term Examination Results Published",
-    description:
-      "The mid-term examination results are now available in the My Results section. Please review your marks and contact your class teacher if you notice any discrepancy.",
-    category: "Exams",
-    priority: "Urgent",
-    date: "October 5, 2026",
-    author: "Examination Department",
-    pinned: true,
-    attachment: "Examination Guidelines.pdf",
-    read: false,
-  },
-  {
-    id: 2,
-    title: "Annual Sports Day Registration",
-    description:
-      "Students interested in participating in the Annual Sports Day can register with their sports teacher. Events include athletics, football, badminton, and indoor games.",
-    category: "Events",
-    priority: "Important",
-    date: "October 10, 2026",
-    author: "Sports Department",
-    pinned: true,
-    read: false,
-  },
-  {
-    id: 3,
-    title: "Homework Submission Reminder",
-    description:
-      "Please submit all pending homework before the deadlines displayed on your My Homework page. Late submissions may require approval from the subject teacher.",
-    category: "Academic",
-    priority: "Important",
-    date: "October 11, 2026",
-    author: "Academic Coordinator",
-    read: true,
-  },
-  {
-    id: 4,
-    title: "School Holiday Notice",
-    description:
-      "The school will remain closed on the notified holiday. Regular classes will resume according to the published timetable. Please check the school calendar for updates.",
-    category: "General",
-    priority: "Normal",
-    date: "October 8, 2026",
-    author: "School Administration",
-    attachment: "Holiday Notice.pdf",
-    read: true,
-  },
-  {
-    id: 5,
-    title: "Science Project Exhibition",
-    description:
-      "Students are invited to present their science projects at the upcoming exhibition. Interested students should contact their science teacher for participation details.",
-    category: "Events",
-    priority: "Normal",
-    date: "October 7, 2026",
-    author: "Science Department",
-    read: false,
-  },
-  {
-    id: 6,
-    title: "Updated Class Timetable",
-    description:
-      "Please review the latest class timetable in the My Timetable section. Check the subject, room number, and period timings before attending classes.",
-    category: "Academic",
-    priority: "Normal",
-    date: "October 3, 2026",
-    author: "Academic Coordinator",
-    attachment: "Class Timetable.pdf",
-    read: true,
-  },
-];
+const initialAnnouncements: Announcement[] = [];
 
 const categories: Category[] = [
   "All",
@@ -115,7 +43,7 @@ const categories: Category[] = [
 ];
 
 export default function Announcements() {
-  const [announcements, setAnnouncements] = useState(initialAnnouncements);
+  const [announcements, setAnnouncements] = usePersistentState('schoolerp:pages_student_announcements_tsx:announcements', []);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<Category>("All");
   const [statusFilter, setStatusFilter] = useState<

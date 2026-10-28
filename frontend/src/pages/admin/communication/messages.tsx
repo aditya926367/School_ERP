@@ -24,18 +24,13 @@ type ComposeForm = { to: string; subject: string; body: string };
 
 const today = new Date().toISOString().slice(0, 10);
 
-const initialMessages: Message[] = [
-  { id: "MS001", box: "Inbox", person: "Mrs. Sunita Rao (Teacher)", subject: "Lab equipment request", body: "We need 10 new microscopes for the Class 9 science lab.", date: "2026-10-11", read: false },
-  { id: "MS002", box: "Inbox", person: "Mr. Verma (Parent of Priya, 10-B)", subject: "Fee receipt not received", body: "I paid the second quarter fee on 5th October but have not received the receipt.", date: "2026-10-10", read: false },
-  { id: "MS003", box: "Inbox", person: "Rohit Gupta (Student, 6-C)", subject: "Request for bonafide certificate", body: "Please issue a bonafide certificate for my scholarship form.", date: "2026-10-08", read: true },
-  { id: "MS004", box: "Sent", person: "All Teachers", subject: "Staff meeting on Friday", body: "Kindly attend the staff meeting at 3 PM in the main hall.", date: "2026-10-09", read: true },
-];
+const initialMessages: Message[] = [];
 
 const emptyForm: ComposeForm = { to: "", subject: "", body: "" };
 const PAGE_SIZES = [5, 10, 25, 50];
 
 export default function AdminMessages() {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = usePersistentState<Message[]>('schoolerp:pages_admin_communication_messages_tsx:messages', []);
   const [activeBox, setActiveBox] = useState<Box>("Inbox");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);

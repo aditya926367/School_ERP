@@ -30,11 +30,7 @@ type AnnouncementForm = {
 };
 
 const today = new Date().toISOString().slice(0, 10);
-const initialAnnouncements: Announcement[] = [
-  { id: "AN001", title: "Annual Day Celebration", message: "Annual Day will be held on 20th December.", audience: "All", priority: "Important", date: "2026-10-05", status: "Published" },
-  { id: "AN002", title: "Mid-term Exam Schedule", message: "Mid-term exams start from 3rd November.", audience: "Students", priority: "Urgent", date: "2026-10-08", status: "Published" },
-  { id: "AN003", title: "Staff Meeting", message: "Staff meeting on Friday at 3 PM in the main hall.", audience: "Teachers", priority: "Normal", date: "2026-10-10", status: "Draft" },
-];
+const initialAnnouncements: Announcement[] = [];
 
 const audiences: Audience[] = ["All", "Students", "Teachers", "Parents"];
 const priorities: Priority[] = ["Normal", "Important", "Urgent"];
@@ -54,7 +50,7 @@ const priorityColor: Record<Priority, string> = {
 };
 
 export default function AdminAnnouncements() {
-  const [announcements, setAnnouncements] = useState<Announcement[]>(initialAnnouncements);
+  const [announcements, setAnnouncements] = usePersistentState<Announcement[]>('schoolerp:pages_admin_communication_announcements_tsx:announcements', []);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);

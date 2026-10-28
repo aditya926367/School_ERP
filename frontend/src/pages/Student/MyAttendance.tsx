@@ -81,7 +81,7 @@ function createDemoRecords(): AttendanceRecord[] {
   return records;
 }
 
-const initialRecords = createDemoRecords();
+const initialRecords: AttendanceRecord[] = [];
 
 function formatDate(dateString: string) {
   return new Date(`${dateString}T00:00:00`).toLocaleDateString("en-IN", {

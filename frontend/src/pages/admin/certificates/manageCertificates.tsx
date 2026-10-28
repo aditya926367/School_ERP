@@ -13,15 +13,7 @@ type IssuedCertificate = {
   locked: boolean;
 };
 
-const initialIssued: IssuedCertificate[] = [
-  { id: "CE001", studentName: "Aarav Sharma", className: "8-A", type: "Bonafide", issueDate: "2026-10-01", locked: true },
-  { id: "CE002", studentName: "Priya Verma", className: "10-B", type: "Character", issueDate: "2026-10-05", locked: true },
-  { id: "CE003", studentName: "Rohit Gupta", className: "6-A", type: "Transfer", issueDate: "2026-10-09", locked: false },
-  { id: "CE004", studentName: "Ananya Singh", className: "8-A", type: "Merit", issueDate: "2026-10-10", locked: false },
-  { id: "CE005", studentName: "Karan Mehta", className: "8-A", type: "Sports", issueDate: "2026-10-11", locked: false },
-  { id: "CE006", studentName: "Sneha Rao", className: "10-B", type: "Participation", issueDate: "2026-10-12", locked: true },
-  { id: "CE007", studentName: "Diya Patel", className: "7-B", type: "Bonafide", issueDate: "2026-10-13", locked: false },
-];
+const initialIssued: IssuedCertificate[] = [];
 
 const certTypes = ["Bonafide", "Character", "Transfer", "Merit", "Participation", "Sports", "Other"];
 
