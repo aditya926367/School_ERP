@@ -1,280 +1,55 @@
-import { useMemo, useState } from "react";
-import {
-  Plus,
-  Pencil,
-  KeyRound,
-  UserX,
-  UserCheck,
-  Users as UsersIcon,
-} from "lucide-react";
-import DataTable from "../../components/common/DataTable";
-import FilterSelect from "../../components/common/FilterSelect";
-import PageHeader from "../../components/common/PageHeader";
-import Pagination from "../../components/common/Pagination";
-import SearchBar from "../../components/common/SearchBar";
-import StatusBadge from "../../components/common/StatusBadge";
-import SummaryCard from "../../components/common/SummaryCard";
+import { useMemo, useState, type ReactNode, type FormEvent } from "react";
+import { Plus, Search, Pencil, Trash2, UserRound, UsersRound, UserCheck, UserX, X, Save, Mail, ShieldCheck } from "lucide-react";
 
-interface User {
-  id: number;
-  name: string;
-  userId: string;
-  email: string;
-  role: string;
-  status: "Active" | "Inactive";
-}
+type Role = "Administrator" | "Teacher" | "Student" | "Parent";
+type Status = "Active" | "Inactive";
+type UserRecord = { id: number; name: string; userId: string; email: string; role: Role; status: Status };
+type FormState = Omit<UserRecord, "id">;
+const KEY = "schoolerp:admin:users:v2";
+const ROLES: Role[] = ["Administrator", "Teacher", "Student", "Parent"];
+const initialUsers: UserRecord[] = [
+  
+];
+const blank: FormState = { name: "", userId: "", email: "", role: "Student", status: "Active" };
+function loadUsers(): UserRecord[] { try { const v = localStorage.getItem(KEY); return v ? JSON.parse(v) as UserRecord[] : initialUsers; } catch { return initialUsers; } }
+const roleStyle: Record<Role, string> = { Administrator: "bg-violet-50 text-violet-700 ring-violet-200", Teacher: "bg-blue-50 text-blue-700 ring-blue-200", Student: "bg-emerald-50 text-emerald-700 ring-emerald-200", Parent: "bg-amber-50 text-amber-700 ring-amber-200" };
 
-const initialUsers: User[] = [];
+export default function Users() {
+  const [users, setUsers] = useState<UserRecord[]>(loadUsers);
+  const [query, setQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("All roles");
+  const [statusFilter, setStatusFilter] = useState("All statuses");
+  const [modal, setModal] = useState(false);
+  const [editing, setEditing] = useState<number | null>(null);
+  const [form, setForm] = useState<FormState>(blank);
+  const [error, setError] = useState("");
+  const persist = (next: UserRecord[]) => { setUsers(next); try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* storage may be disabled */ } };
+  const filtered = useMemo(() => users.filter(u => `${u.name} ${u.userId} ${u.email}`.toLowerCase().includes(query.toLowerCase()) && (roleFilter === "All roles" || u.role === roleFilter) && (statusFilter === "All statuses" || u.status === statusFilter)), [users, query, roleFilter, statusFilter]);
+  const active = users.filter(u => u.status === "Active").length;
+  const openCreate = () => { setEditing(null); setForm({ ...blank, userId: `USR-${String(Date.now()).slice(-4)}` }); setError(""); setModal(true); };
+  const openEdit = (u: UserRecord) => { setEditing(u.id); setForm({ name: u.name, userId: u.userId, email: u.email, role: u.role, status: u.status }); setError(""); setModal(true); };
+  const save = (e: FormEvent) => { e.preventDefault(); if (!form.name.trim() || !form.userId.trim() || !form.email.trim()) { setError("Please complete all required fields."); return; } if (users.some(u => u.userId.toLowerCase() === form.userId.toLowerCase() && u.id !== editing)) { setError("This user ID is already in use."); return; } if (users.some(u => u.email.toLowerCase() === form.email.toLowerCase() && u.id !== editing)) { setError("This email is already in use."); return; } if (editing !== null) persist(users.map(u => u.id === editing ? { ...form, id: editing } : u)); else persist([{ ...form, id: Date.now() }, ...users]); setModal(false); };
+  const remove = (id: number) => { const u = users.find(x => x.id === id); if (u && window.confirm(`Delete the account for ${u.name}?`)) persist(users.filter(x => x.id !== id)); };
+  const toggleStatus = (u: UserRecord) => persist(users.map(x => x.id === u.id ? { ...x, status: x.status === "Active" ? "Inactive" : "Active" } : x));
 
-const actionButtonClass =
-  "rounded-lg p-2 text-gray-400 transition hover:bg-gray-100 hover:text-[#27348b]";
-
-function Users() {
-  const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState("All");
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [users, setUsers] = usePersistentState<User[]>('schoolerp:pages_admin_users_tsx:users', []);
-  const [page, setPage] = useState(1);
-  const pageSize = 5;
-
-  const filteredUsers = useMemo(() => {
-    const searchValue = search.trim().toLowerCase();
-
-    return users.filter((user) => {
-      const matchesSearch =
-        !searchValue ||
-        user.name.toLowerCase().includes(searchValue) ||
-        user.userId.toLowerCase().includes(searchValue) ||
-        user.email.toLowerCase().includes(searchValue);
-
-      const matchesRole = roleFilter === "All" || user.role === roleFilter;
-      const matchesStatus = statusFilter === "All" || user.status === statusFilter;
-
-      return matchesSearch && matchesRole && matchesStatus;
-    });
-  }, [users, search, roleFilter, statusFilter]);
-
-  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
-  const currentPage = Math.min(page, totalPages);
-  const visibleUsers = filteredUsers.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const activeUsers = users.filter((user) => user.status === "Active").length;
-  const inactiveUsers = users.filter((user) => user.status === "Inactive").length;
-
-  const toggleStatus = (id: number) => {
-    setUsers((previousUsers) =>
-      previousUsers.map((user) =>
-        user.id === id
-          ? { ...user, status: user.status === "Active" ? "Inactive" : "Active" }
-          : user
-      )
-    );
-  };
-
-  const resetFilters = () => {
-    setSearch("");
-    setRoleFilter("All");
-    setStatusFilter("All");
-    setPage(1);
-  };
-
-  const columns = [
-    {
-      key: "user",
-      header: "User",
-      render: (user: User) => (
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#27348b]/10 text-sm font-semibold text-[#27348b]">
-            {user.name.charAt(0).toUpperCase()}
-          </div>
-          <span className="text-sm font-medium text-gray-800">{user.name}</span>
-        </div>
-      ),
-    },
-    {
-      key: "userId",
-      header: "User ID",
-      render: (user: User) => (
-        <span className="text-sm font-medium text-gray-600">{user.userId}</span>
-      ),
-    },
-    {
-      key: "email",
-      header: "Email",
-      render: (user: User) => (
-        <span className="text-sm text-gray-600">{user.email}</span>
-      ),
-    },
-    {
-      key: "role",
-      header: "Role",
-      render: (user: User) => (
-        <span className="inline-flex rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700">
-          {user.role}
-        </span>
-      ),
-    },
-    {
-      key: "status",
-      header: "Status",
-      render: (user: User) => <StatusBadge status={user.status} />,
-    },
-    {
-      key: "actions",
-      header: "Actions",
-      className: "text-right",
-      render: (user: User) => (
-        <div className="flex justify-end gap-1">
-          <button
-            type="button"
-            title="Edit User"
-            aria-label={`Edit ${user.name}`}
-            onClick={() => window.alert("Edit User form will be connected here.")}
-            className={actionButtonClass}
-          >
-            <Pencil size={16} />
-          </button>
-          <button
-            type="button"
-            title="Reset Password"
-            aria-label={`Reset password for ${user.name}`}
-            onClick={() => window.alert(`Password reset for ${user.name} requires backend integration.`)}
-            className="rounded-lg p-2 text-gray-400 transition hover:bg-orange-50 hover:text-orange-600"
-          >
-            <KeyRound size={16} />
-          </button>
-          <button
-            type="button"
-            title={user.status === "Active" ? "Deactivate User" : "Activate User"}
-            aria-label={`${user.status === "Active" ? "Deactivate" : "Activate"} ${user.name}`}
-            onClick={() => toggleStatus(user.id)}
-            className={`rounded-lg p-2 transition ${
-              user.status === "Active"
-                ? "text-gray-400 hover:bg-red-50 hover:text-red-600"
-                : "text-gray-400 hover:bg-green-50 hover:text-green-600"
-            }`}
-          >
-            {user.status === "Active" ? <UserX size={16} /> : <UserCheck size={16} />}
-          </button>
-        </div>
-      ),
-    },
-  ];
-
-  return (
-    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
-      <PageHeader
-        breadcrumb="User Management"
-        title="Users"
-        description="Manage school user accounts, roles and account status."
-        actions={
-          <button
-            type="button"
-            onClick={() => window.alert("Add User form will be connected here.")}
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-medium text-white transition hover:bg-[#1f2a70]"
-          >
-            <Plus size={18} /> Add User
-          </button>
-        }
-      />
-
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <SummaryCard
-          label="Total Users"
-          value={users.length}
-          icon={<UsersIcon size={22} />}
-          iconClassName="text-[#27348b]"
-          iconBackgroundClassName="bg-[#27348b]/10"
-        />
-        <SummaryCard
-          label="Active Users"
-          value={activeUsers}
-          icon={<UserCheck size={22} />}
-          iconClassName="text-green-600"
-          iconBackgroundClassName="bg-green-50"
-        />
-        <SummaryCard
-          label="Inactive Users"
-          value={inactiveUsers}
-          icon={<UserX size={22} />}
-          iconClassName="text-red-600"
-          iconBackgroundClassName="bg-red-50"
-        />
-      </div>
-
-      <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="flex flex-col gap-4 border-b border-gray-200 p-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-gray-800">User List</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              View and manage all registered users ({filteredUsers.length} results).
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:min-w-[620px]">
-            <SearchBar
-              value={search}
-              onChange={(value) => {
-                setSearch(value);
-                setPage(1);
-              }}
-              placeholder="Search users..."
-            />
-            <FilterSelect
-              value={roleFilter}
-              onChange={(value) => {
-                setRoleFilter(value);
-                setPage(1);
-              }}
-              placeholder="All Roles"
-              options={["Administrator", "Teacher", "Student", "Parent"]}
-            />
-            <FilterSelect
-              value={statusFilter}
-              onChange={(value) => {
-                setStatusFilter(value);
-                setPage(1);
-              }}
-              placeholder="All Status"
-              options={["Active", "Inactive"]}
-            />
-          </div>
-        </div>
-
-        {(search || roleFilter !== "All" || statusFilter !== "All") && (
-          <div className="flex justify-end border-b border-gray-100 px-5 py-3">
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="text-sm font-medium text-[#27348b] hover:underline"
-            >
-              Clear filters
-            </button>
-          </div>
-        )}
-
-        <DataTable<User>
-          data={visibleUsers}
-          rowKey={(user) => user.id}
-          tableClassName="min-w-[950px]"
-          columns={columns}
-          emptyState={<p className="text-sm text-gray-500">No users found. Try changing your search or filters.</p>}
-        />
-
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          totalItems={filteredUsers.length}
-          pageSize={pageSize}
-          onPageChange={setPage}
-          itemLabel="users"
-        />
+  return <main className="min-h-screen bg-slate-50 p-4 text-slate-800 sm:p-6 lg:p-8">
+    <div className="mx-auto max-w-7xl space-y-6">
+      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><div className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-500"><UsersRound size={16}/> Administration <span>/</span> User accounts</div><h1 className="text-3xl font-bold tracking-tight text-slate-900">Users Management</h1><p className="mt-1 text-slate-500">Create accounts, update user details, and assign a role to each person.</p></div><button onClick={openCreate} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-4 py-3 text-sm font-semibold text-white shadow-sm transition "><Plus size={18}/> Add user</button></header>
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <Stat label="Total accounts" value={users.length} note="All registered accounts" icon={<UsersRound size={20}/>} tone="indigo" />
+        <Stat label="Active users" value={active} note={`${users.length ? Math.round(active / users.length * 100) : 0}% of accounts`} icon={<UserCheck size={20}/>} tone="emerald" />
+        <Stat label="Inactive users" value={users.length-active} note="Accounts currently disabled" icon={<UserX size={20}/>} tone="amber" />
+        <Stat label="Role types" value={new Set(users.map(u => u.role)).size} note="Roles assigned to users" icon={<ShieldCheck size={20}/>} tone="violet" />
+      </section>
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-3 border-b border-slate-100 p-4 lg:flex-row lg:items-center lg:justify-between"><div><h2 className="font-semibold text-slate-900">Account directory</h2><p className="mt-1 text-sm text-slate-500">Manage people and their account status.</p></div><div className="flex flex-col gap-2 sm:flex-row"><label className="relative block"><Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search name, ID, email..." className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 sm:w-64"/></label><select value={roleFilter} onChange={e=>setRoleFilter(e.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-400">{["All roles", ...ROLES].map(r=><option key={r}>{r}</option>)}</select><select value={statusFilter} onChange={e=>setStatusFilter(e.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-indigo-400">{["All statuses", "Active", "Inactive"].map(s=><option key={s}>{s}</option>)}</select></div></div>
+        <div className="overflow-x-auto"><table className="w-full min-w-[850px] text-left text-sm"><thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-4 font-semibold">User</th><th className="px-5 py-4 font-semibold">User ID</th><th className="px-5 py-4 font-semibold">Role</th><th className="px-5 py-4 font-semibold">Status</th><th className="px-5 py-4 text-right font-semibold">Actions</th></tr></thead><tbody className="divide-y divide-slate-100">{filtered.map(u=><tr key={u.id} className="transition hover:bg-slate-50/80"><td className="px-5 py-4"><div className="flex items-center gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-indigo-50 font-bold text-indigo-700">{u.name.split(/\s+/).map(s=>s[0]).slice(0,2).join("").toUpperCase()}</div><div><p className="font-semibold text-slate-800">{u.name}</p><p className="mt-1 flex items-center gap-1.5 text-xs text-slate-500"><Mail size={12}/>{u.email}</p></div></div></td><td className="px-5 py-4 font-mono text-xs text-slate-600">{u.userId}</td><td className="px-5 py-4"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${roleStyle[u.role]}`}>{u.role}</span></td><td className="px-5 py-4"><span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${u.status === "Active" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}><span className={`h-1.5 w-1.5 rounded-full ${u.status === "Active" ? "bg-emerald-500" : "bg-slate-400"}`}/>{u.status}</span></td><td className="px-5 py-4"><div className="flex justify-end gap-1"><button title="Edit user" onClick={()=>openEdit(u)} className="rounded-lg p-2 text-slate-500 hover:bg-indigo-50 hover:text-indigo-700"><Pencil size={16}/></button><button title={u.status === "Active" ? "Deactivate account" : "Activate account"} onClick={()=>toggleStatus(u)} className="rounded-lg p-2 text-slate-500 hover:bg-amber-50 hover:text-amber-700">{u.status === "Active" ? <UserX size={16}/> : <UserCheck size={16}/>}</button><button title="Delete user" onClick={()=>remove(u.id)} className="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-700"><Trash2 size={16}/></button></div></td></tr>)}{filtered.length===0&&<tr><td colSpan={5} className="px-5 py-14 text-center"><div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400"><UserRound size={22}/></div><p className="font-semibold text-slate-700">No users found</p><p className="mt-1 text-sm text-slate-500">Try changing the search or filters.</p></td></tr>}</tbody></table></div>
+        <div className="flex items-center justify-between border-t border-slate-100 px-5 py-3 text-xs text-slate-500"><span>Showing {filtered.length} of {users.length} accounts</span><span>Account directory</span></div>
       </section>
     </div>
-  );
+    {modal&&<div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4" onMouseDown={e=>{if(e.target===e.currentTarget)setModal(false)}}><form onSubmit={save} className="w-full max-w-lg rounded-2xl bg-white shadow-2xl"><div className="flex items-start justify-between border-b border-slate-100 p-5"><div><h2 className="text-xl font-bold text-slate-900">{editing===null?"Create user account":"Edit user account"}</h2><p className="mt-1 text-sm text-slate-500">Account details and assigned role.</p></div><button type="button" onClick={()=>setModal(false)} className="rounded-lg p-2 text-slate-400 hover:bg-slate-100"><X size={18}/></button></div><div className="grid gap-4 p-5 sm:grid-cols-2"><Field label="Full name"><input autoFocus value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className={inputClass} placeholder="Enter full name"/></Field><Field label="User ID"><input value={form.userId} onChange={e=>setForm({...form,userId:e.target.value})} className={inputClass} placeholder="USR-1001"/></Field><Field label="Email address" wide><input type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className={inputClass} placeholder="name@school.edu"/></Field><Field label="Assign role"><select value={form.role} onChange={e=>setForm({...form,role:e.target.value as Role})} className={inputClass}>{ROLES.map(r=><option key={r}>{r}</option>)}</select></Field><Field label="Account status"><select value={form.status} onChange={e=>setForm({...form,status:e.target.value as Status})} className={inputClass}><option>Active</option><option>Inactive</option></select></Field>{error&&<p className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 sm:col-span-2">{error}</p>}</div><div className="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 p-4"><button type="button" onClick={()=>setModal(false)} className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">Cancel</button><button type="submit" className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"><Save size={16}/>{editing===null?"Create account":"Save changes"}</button></div></form></div>}
+  </main>;
 }
-
-export default Users;
+function Field({label,children,wide=false}:{label:string;children:ReactNode;wide?:boolean}) { return <label className={`block text-sm font-medium text-slate-700 ${wide?"sm:col-span-2":""}`}><span className="mb-1.5 block">{label}</span>{children}</label>; }
+const inputClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-normal outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100";
+function Stat({label,value,note,icon,tone}:{label:string;value:number;note:string;icon:ReactNode;tone:string}) { const tones:Record<string,string>={indigo:"bg-indigo-50 text-indigo-700",emerald:"bg-emerald-50 text-emerald-700",amber:"bg-amber-50 text-amber-700",violet:"bg-violet-50 text-violet-700"}; return <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-center justify-between"><span className="text-sm font-medium text-slate-500">{label}</span><span className={`flex h-10 w-10 items-center justify-center rounded-xl ${tones[tone]}`}>{icon}</span></div><div className="mt-4 text-3xl font-bold tracking-tight text-slate-900">{value}</div><p className="mt-1 text-xs text-slate-500">{note}</p></div>; }

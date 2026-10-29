@@ -28,27 +28,7 @@ interface Holiday {
 type HolidayForm = Omit<Holiday, "id">;
 
 const INITIAL_HOLIDAYS: Holiday[] = [
-  {
-    id: 1,
-    name: "Diwali",
-    date: "2026-11-08",
-    category: "Public Holiday",
-    description: "Festival of lights",
-  },
-  {
-    id: 2,
-    name: "Children's Day",
-    date: "2026-11-14",
-    category: "School Holiday",
-    description: "School celebration",
-  },
-  {
-    id: 3,
-    name: "Winter Break Begins",
-    date: "2026-12-24",
-    category: "School Holiday",
-    description: "Winter vacation",
-  },
+ 
 ];
 
 const EMPTY_FORM: HolidayForm = {

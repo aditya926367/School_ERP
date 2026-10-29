@@ -27,6 +27,32 @@ type Student = {
   status: AttendanceStatus;
 };
 
+function usePersistentState<T>(
+  storageKey: string,
+  initialValue: T,
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(() => {
+    if (typeof window === "undefined") return initialValue;
+
+    try {
+      const storedValue = window.localStorage.getItem(storageKey);
+      return storedValue === null ? initialValue : (JSON.parse(storedValue) as T);
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Unable to save "${storageKey}" to local storage.`, error);
+    }
+  }, [storageKey, value]);
+
+  return [value, setValue];
+}
+
 const initialStudents: Student[] = [];
 
 const statuses: AttendanceStatus[] = ["Present", "Absent", "Late", "Leave"];
@@ -37,7 +63,7 @@ function today() {
 }
 
 export default function StudentAttendance() {
-  const [students, setStudents] = usePersistentState<Student[]>('schoolerp:pages_admin_studentattendance_tsx:students', []);
+  const [students, setStudents] = usePersistentState<Student[]>("schoolerp:pages_admin_studentattendance_tsx:students", initialStudents);
   const [date, setDate] = useState(today());
   const [classFilter, setClassFilter] = useState("All");
   const [search, setSearch] = useState("");
@@ -284,7 +310,7 @@ export default function StudentAttendance() {
         <div className="flex flex-col justify-end gap-3 border-t border-gray-200 px-5 py-4 sm:flex-row sm:items-center">
           <button
             type="button"
-            onClick={() => setSavedMessage(`Attendance changes for ${date} are currently in page memory only.`)}
+            onClick={() => setSavedMessage(`Attendance changes for ${date} are saved in this browser's local storage.`)}
             className="rounded-lg bg-[#27348b] px-5 py-2.5 text-sm font-semibold text-white "
           >
             Save Attendance

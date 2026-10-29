@@ -724,7 +724,15 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
     {
       title: "Certificates & Awards",
       items: [
-        { label: "Certificates", path: "/certificateDashboard", icon: Award },
+        { label: "Certificate Dashboard", path: "/certificateDashboard", icon: LayoutDashboard },
+        { label: "Create Certificate", path: "/createCertificate", icon: Award },
+        { label: "Manage Certificates", path: "/manageCertificates", icon: FileText },
+        { label: "Bulk Certificate", path: "/bulkCertificate", icon: ClipboardList },
+        { label: "Individual Certificate", path: "/individualCertificate", icon: UserRound },
+        { label: "Awards", path: "/awards", icon: Award },
+        { label: "Transfer Certificate", path: "/transferCertificate", icon: FileText },
+        { label: "Character Certificate", path: "/characterCertificate", icon: ShieldCheck },
+        { label: "Lock/Unlock Certificate", path: "/lockUnlockCertificate", icon: Settings },
       ],
     },
     {
@@ -740,28 +748,28 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       items: [
         { label: "Users", path: "/admin/users", icon: Users },
         { label: "Roles & Permissions", path: "/admin/roles-permissions", icon: ShieldCheck },
-        { label: "Notification Templates", path: "/admin/notification-templates", icon: Bell },
+        { label: "Notification Templates", path: "/admin/notifications", icon: Bell },
         { label: "System Settings", path: "/admin/settings", icon: Settings },
         { label: "Audit Log", path: "/admin/audit-log", icon: ClipboardList },
       ],
     },
   ],
 
-  certificate: [
-    {
-      title: "Certificate Management",
-      items: [
-        { label: "Create Certificate", path: "/createCertificate", icon: Award },
-        { label: "Manage Certificates", path: "/manageCertificates", icon: FileText },
-        { label: "Bulk Certificate", path: "/bulkCertificate", icon: ClipboardList },
-        { label: "Individual Certificate", path: "/individualCertificate", icon: UserRound },
-        { label: "Awards", path: "/awards", icon: Award },
-        { label: "Transfer Certificate", path: "/transferCertificate", icon: FileText },
-        { label: "Character Certificate", path: "/characterCertificate", icon: ShieldCheck },
-        { label: "Lock/Unlock Certificate", path: "/lockUnlockCertificate", icon: Settings },
-      ],
-    },
-  ],
+  // certificate: [
+  //   {
+  //     title: "Certificate Management",
+  //     items: [
+  //       { label: "Create Certificate", path: "/createCertificate", icon: Award },
+  //       { label: "Manage Certificates", path: "/manageCertificates", icon: FileText },
+  //       { label: "Bulk Certificate", path: "/bulkCertificate", icon: ClipboardList },
+  //       { label: "Individual Certificate", path: "/individualCertificate", icon: UserRound },
+  //       { label: "Awards", path: "/awards", icon: Award },
+  //       { label: "Transfer Certificate", path: "/transferCertificate", icon: FileText },
+  //       { label: "Character Certificate", path: "/characterCertificate", icon: ShieldCheck },
+  //       { label: "Lock/Unlock Certificate", path: "/lockUnlockCertificate", icon: Settings },
+  //     ],
+  //   },
+  // ],
 
   teacher: [
     {
@@ -1040,8 +1048,37 @@ export default function DashboardLayout() {
     if (path === "/admindashboard" || path.startsWith("/admin/")) {
       return "admin";
     }
-    if (certificatePaths.includes(path)) return "certificate";
-    if (libraryPaths.includes(path) || path.startsWith("/library/")) {
+
+    // Admins keep the Admin sidebar while opening certificate pages.
+    // Certificate users still get their dedicated certificate sidebar.
+    if (storedRole === "admin" && certificatePaths.includes(path)) {
+      return "admin";
+    }
+// Keep certificate pages inside the Admin Panel
+// when the logged-in user is an admin.
+if (
+  storedRole === "admin" &&
+  (
+    path === "/certificateDashboard" ||
+    path.startsWith("/admin/certificateDashboard") ||
+    path === "/createCertificate" ||
+    path === "/manageCertificates" ||
+    path === "/bulkCertificate" ||
+    path === "/individualCertificate" ||
+    path === "/awards" ||
+    path === "/transferCertificate" ||
+    path === "/characterCertificate" ||
+    path === "/lockUnlockCertificate" ||
+    path === "/admindashboard" ||
+    path.startsWith("/admin/")
+  )
+) {
+  return "admin";
+}
+
+if (certificatePaths.includes(path)) {
+  return "certificate";
+}    if (libraryPaths.includes(path) || path.startsWith("/library/")) {
       return "library";
     }
 
