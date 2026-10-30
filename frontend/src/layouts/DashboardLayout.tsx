@@ -749,7 +749,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
         { label: "Users", path: "/admin/users", icon: Users },
         { label: "Roles & Permissions", path: "/admin/roles-permissions", icon: ShieldCheck },
         { label: "Notification Templates", path: "/admin/notifications", icon: Bell },
-        { label: "System Settings", path: "/admin/settings", icon: Settings },
+        { label: "System Settings", path: "/admin/systemSetting", icon: Settings },
         { label: "Audit Log", path: "/admin/audit-log", icon: ClipboardList },
       ],
     },
