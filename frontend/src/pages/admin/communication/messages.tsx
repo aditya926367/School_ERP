@@ -4,7 +4,6 @@ import DataTable from "../../../components/common/DataTable";
 import type { DataTableColumn } from "../../../components/common/DataTable";
 import PageHeader from "../../../components/common/PageHeader";
 import SearchBar from "../../../components/common/SearchBar";
-import FilterSelect from "../../../components/common/FilterSelect";
 import Pagination from "../../../components/common/Pagination";
 import StatusBadge from "../../../components/common/StatusBadge";
 
@@ -285,6 +284,23 @@ export default function AdminMessages() {
                 placeholder="Search by name, subject, ID or message..."
               />
             </div>
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="whitespace-nowrap">Rows per page</span>
+              <select
+                value={pageSize}
+                onChange={(event) => {
+                  setPageSize(Number(event.target.value));
+                  setPage(1);
+                }}
+                className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none focus:border-[#27348b]"
+              >
+                {PAGE_SIZES.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </label>
             <button
               type="button"
               onClick={openForm}
@@ -315,41 +331,14 @@ export default function AdminMessages() {
           rowClassName={(message) => (!message.read ? "bg-blue-50/40" : "")}
         />
 
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-            <span>
-              Showing{" "}
-              <strong>
-                {filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1}
-              </strong>
-              {"–"}
-              <strong>{Math.min(safePage * pageSize, filtered.length)}</strong>{" "}
-              of <strong>{filtered.length}</strong>
-            </span>
-            <div className="w-36">
-              <FilterSelect
-                value={String(pageSize)}
-                onChange={(value: string) => {
-                  setPageSize(Number(value));
-                  setPage(1);
-                }}
-                options={PAGE_SIZES.map((size) => ({
-                  label: `${size} / page`,
-                  value: String(size),
-                }))}
-                placeholder="Page size"
-              />
-            </div>
-          </div>
-          <Pagination
-            currentPage={safePage}
-            totalPages={totalPages}
-            totalItems={filtered.length}
-            pageSize={pageSize}
-            onPageChange={setPage}
-            itemLabel="messages"
-          />
-        </div>
+        <Pagination
+          currentPage={safePage}
+          totalPages={totalPages}
+          totalItems={filtered.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          itemLabel="messages"
+        />
       </section>
 
       {showForm && (

@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import type { FormEvent, ReactNode } from "react";
+import type { FormEvent } from "react";
 import DataTable from "../../../components/common/DataTable";
 import type { DataTableColumn } from "../../../components/common/DataTable";
 import PageHeader from "../../../components/common/PageHeader";
 import SearchBar from "../../../components/common/SearchBar";
-import FilterSelect from "../../../components/common/FilterSelect";
 import Pagination from "../../../components/common/Pagination";
 import StatusBadge from "../../../components/common/StatusBadge";
 
@@ -23,16 +22,14 @@ const STORAGE_KEY =
   "schoolerp:pages_admin_communication_notices_tsx:notices";
 
 const categories = ["General", "Exam", "Holiday", "Fee", "Event", "Transport"];
-const pageSizeOptions = [5, 10, 25, 50].map((size) => ({
-  label: `${size}`,
-  value: String(size),
-}));
+const pageSizes = [5, 10, 25, 50];
 
 function getToday(): string {
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const day = String(now.getDate()).padStart(2, "0");
+
   return `${year}-${month}-${day}`;
 }
 
@@ -78,6 +75,7 @@ function formatDate(date: string): string {
   if (!date) return "—";
 
   const parsed = new Date(`${date}T00:00:00`);
+
   return Number.isNaN(parsed.getTime())
     ? date
     : parsed.toLocaleDateString("en-IN", {
@@ -88,16 +86,22 @@ function formatDate(date: string): string {
 }
 
 export default function AdminNotices() {
-  const [notices, setNotices] = usePersistentState<Notice[]>(STORAGE_KEY, []);
+  const [notices, setNotices] = usePersistentState<Notice[]>(
+    STORAGE_KEY,
+    [],
+  );
+
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState<NoticeForm>({ ...emptyForm });
   const [error, setError] = useState("");
 
   const filteredNotices = useMemo(() => {
     const query = search.trim().toLowerCase();
+
     if (!query) return notices;
 
     return notices.filter((notice) =>
@@ -112,8 +116,19 @@ export default function AdminNotices() {
     );
   }, [notices, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredNotices.length / pageSize));
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredNotices.length / pageSize),
+  );
+
   const safePage = Math.min(page, totalPages);
+
+  // Keep the current page valid when search results change.
+  useEffect(() => {
+    if (page !== safePage) {
+      setPage(safePage);
+    }
+  }, [page, safePage]);
 
   const pagedNotices = useMemo(
     () =>
@@ -127,6 +142,7 @@ export default function AdminNotices() {
   function nextId(): string {
     const max = notices.reduce((highest, notice) => {
       const numericPart = Number(notice.id.replace(/^N/i, ""));
+
       return Number.isFinite(numericPart)
         ? Math.max(highest, numericPart)
         : highest;
@@ -252,6 +268,7 @@ export default function AdminNotices() {
       />
 
       <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        {/* Search and Rows per page — same layout as Announcements */}
         <div className="flex flex-col gap-3 border-b border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between">
           <SearchBar
             value={search}
@@ -260,25 +277,40 @@ export default function AdminNotices() {
               setPage(1);
             }}
             placeholder="Search by title, category, ID, or description..."
-            className="sm:max-w-[420px]"
+            className="sm:max-w-[360px]"
           />
-          <FilterSelect
-            value={String(pageSize)}
-            onChange={(value) => {
-              setPageSize(Number(value));
-              setPage(1);
-            }}
-            options={pageSizeOptions}
-          />
+
+          <label className="flex items-center gap-2 text-sm text-gray-600">
+            <span className="whitespace-nowrap">Rows per page</span>
+
+            <select
+              value={pageSize}
+              onChange={(event) => {
+                setPageSize(Number(event.target.value));
+                setPage(1);
+              }}
+              className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none focus:border-[#27348b]"
+            >
+              {pageSizes.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
 
+        {/* Notices table */}
         <DataTable
           data={pagedNotices}
           columns={columns}
           rowKey={(notice) => notice.id}
           emptyState={
             <div>
-              <p className="font-medium text-gray-700">No notices found.</p>
+              <p className="font-medium text-gray-700">
+                No notices found
+              </p>
+
               <p className="mt-1 text-xs text-gray-500">
                 {search.trim()
                   ? "Try changing your search."
@@ -286,30 +318,28 @@ export default function AdminNotices() {
               </p>
             </div>
           }
-          tableClassName="min-w-[850px]"
+          tableClassName="text-sm text-gray-800"
         />
 
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-gray-500">
-            {filteredNotices.length}{" "}
-            {filteredNotices.length === 1 ? "notice" : "notices"} found
-          </p>
-          <Pagination
-            currentPage={safePage}
-            totalPages={totalPages}
-            totalItems={filteredNotices.length}
-            pageSize={pageSize}
-            onPageChange={setPage}
-            itemLabel="notices"
-          />
-        </div>
+        {/* Same shared Pagination component as Announcements */}
+        <Pagination
+          currentPage={safePage}
+          totalPages={totalPages}
+          totalItems={filteredNotices.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          itemLabel="notices"
+        />
       </section>
 
+      {/* Add Notice Modal */}
       {showForm && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/40 p-4"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeForm();
+            if (event.target === event.currentTarget) {
+              closeForm();
+            }
           }}
           role="presentation"
         >
@@ -326,6 +356,7 @@ export default function AdminNotices() {
               >
                 Add Notice
               </h2>
+
               <button
                 type="button"
                 onClick={closeForm}
@@ -337,6 +368,7 @@ export default function AdminNotices() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
+              {/* Title */}
               <div>
                 <label
                   htmlFor="notice-title"
@@ -344,6 +376,7 @@ export default function AdminNotices() {
                 >
                   Title
                 </label>
+
                 <input
                   id="notice-title"
                   value={form.title}
@@ -360,6 +393,7 @@ export default function AdminNotices() {
                 />
               </div>
 
+              {/* Category */}
               <div>
                 <label
                   htmlFor="notice-category"
@@ -367,6 +401,7 @@ export default function AdminNotices() {
                 >
                   Category
                 </label>
+
                 <select
                   id="notice-category"
                   value={form.category}
@@ -386,6 +421,7 @@ export default function AdminNotices() {
                 </select>
               </div>
 
+              {/* Description */}
               <div>
                 <label
                   htmlFor="notice-description"
@@ -393,6 +429,7 @@ export default function AdminNotices() {
                 >
                   Description
                 </label>
+
                 <textarea
                   id="notice-description"
                   value={form.description}
@@ -408,11 +445,13 @@ export default function AdminNotices() {
                   maxLength={5000}
                   required
                 />
+
                 <p className="mt-1 text-right text-xs text-gray-400">
                   {form.description.length}/5000
                 </p>
               </div>
 
+              {/* Issue Date and Expiry Date */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label
@@ -421,6 +460,7 @@ export default function AdminNotices() {
                   >
                     Issue Date
                   </label>
+
                   <input
                     id="notice-issue-date"
                     type="date"
@@ -448,6 +488,7 @@ export default function AdminNotices() {
                   >
                     Expiry Date
                   </label>
+
                   <input
                     id="notice-expiry-date"
                     type="date"
@@ -465,12 +506,14 @@ export default function AdminNotices() {
                 </div>
               </div>
 
+              {/* Validation Error */}
               {error && (
                 <p role="alert" className="text-sm text-red-600">
                   {error}
                 </p>
               )}
 
+              {/* Form Actions */}
               <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
                 <button
                   type="button"
@@ -479,6 +522,7 @@ export default function AdminNotices() {
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white transition hover:bg-[#1f2a73]"
