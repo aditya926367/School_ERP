@@ -1,5 +1,6 @@
 import ActionButtons from "../../components/common/ActionButtons";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import type { FormEvent, Dispatch, SetStateAction } from "react";
 import {
   Search,
   Upload,
@@ -13,6 +14,34 @@ import {
   Filter,
 } from "lucide-react";
 import Pagination from "../../components/common/Pagination";
+
+
+function usePersistentState<T>(
+  storageKey: string,
+  initialValue: T,
+): [T, Dispatch<SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(() => {
+    if (typeof window === "undefined") return initialValue;
+
+    try {
+      const storedValue = window.localStorage.getItem(storageKey);
+      return storedValue === null ? initialValue : (JSON.parse(storedValue) as T);
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Unable to save ${storageKey} to localStorage.`, error);
+    }
+  }, [storageKey, value]);
+
+  return [value, setValue];
+}
+
 type DocumentStatus = "Pending" | "Verified" | "Rejected";
 
 type StudentDocument = {
@@ -39,7 +68,10 @@ const documentTypes = [
 
 
 export default function StudentDocuments() {
-  const [documents, setDocuments] = usePersistentState('schoolerp:pages_admin_studentdocuments_tsx:documents', []);
+  const [documents, setDocuments] = usePersistentState<StudentDocument[]>(
+    "schoolerp:pages_admin_studentdocuments_tsx:documents",
+    initialDocuments,
+  );
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
@@ -53,7 +85,9 @@ export default function StudentDocuments() {
   const [documentType, setDocumentType] = useState(documentTypes[0]);
   const [file, setFile] = useState<File | null>(null);
 
-const [page, setPage] = useState(1); 
+const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const PAGE_SIZES = [5, 10, 20, 50];
 
   const filteredDocuments = useMemo(() => {
     return documents.filter((doc) => {
@@ -74,7 +108,6 @@ const [page, setPage] = useState(1);
     });
   }, [documents, search, statusFilter, typeFilter]);
 
-  const pageSize = 100;
   const totalPages = Math.max(1, Math.ceil(filteredDocuments.length / pageSize));
   const currentPage = Math.min(page, totalPages);
 
@@ -118,7 +151,7 @@ const [page, setPage] = useState(1);
     setFile(null);
   }
 
-  function handleUpload(event: React.FormEvent<HTMLFormElement>) {
+  function handleUpload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!file) {
@@ -215,7 +248,10 @@ const [page, setPage] = useState(1);
               />
               <input
                 value={search}
-                onChange={(event) => setSearch(event.target.value)}
+                onChange={(event) => {
+                  setSearch(event.target.value);
+                  setPage(1);
+                }}
                 placeholder="Search student, admission number, or filename..."
                 className="w-full rounded-lg border border-slate-200 py-2.5 pl-10 pr-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               />
@@ -225,7 +261,10 @@ const [page, setPage] = useState(1);
               <Filter size={18} className="text-slate-400" />
               <select
                 value={statusFilter}
-                onChange={(event) => setStatusFilter(event.target.value)}
+                onChange={(event) => {
+                  setStatusFilter(event.target.value);
+                  setPage(1);
+                }}
                 className="rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
               >
                 <option value="All">All statuses</option>
@@ -236,7 +275,10 @@ const [page, setPage] = useState(1);
 
               <select
                 value={typeFilter}
-                onChange={(event) => setTypeFilter(event.target.value)}
+                onChange={(event) => {
+                  setTypeFilter(event.target.value);
+                  setPage(1);
+                }}
                 className="max-w-48 rounded-lg border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-blue-500"
               >
                 <option value="All">All types</option>
@@ -339,13 +381,18 @@ const [page, setPage] = useState(1);
             </table>
           </div>
           <Pagination
-  currentPage={currentPage}
-  totalPages={totalPages}
-  totalItems={filteredDocuments.length}
-  pageSize={pageSize}
-  onPageChange={setPage}
-  itemLabel="documents"
-/>
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredDocuments.length}
+            pageSize={pageSize}
+            onPageChange={setPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+            pageSizes={PAGE_SIZES}
+            itemLabel="documents"
+          />
         </div>
       </div>
 

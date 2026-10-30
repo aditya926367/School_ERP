@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import type { FormEvent, ReactNode } from "react";
+import type { FormEvent, ReactNode, SetStateAction } from "react";
 import {
   CalendarDays,
   Plus,
@@ -15,6 +15,33 @@ import {
   DeleteButton,
 } from "../../components/common/ActionButtons";
 import Pagination from "../../components/common/Pagination";
+
+// Persist component state in localStorage and restore it on reload.
+function usePersistentState<T>(
+  storageKey: string,
+  initialValue: T,
+): [T, React.Dispatch<SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(() => {
+    if (typeof window === "undefined") return initialValue;
+
+    try {
+      const storedValue = window.localStorage.getItem(storageKey);
+      return storedValue === null ? initialValue : (JSON.parse(storedValue) as T);
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(value));
+    } catch {
+      // Keep the component usable if browser storage is unavailable.
+    }
+  }, [storageKey, value]);
+
+  return [value, setValue];
+}
 
 type ExamStatus = "Upcoming" | "Ongoing" | "Completed";
 
@@ -389,20 +416,18 @@ export default function AdminExams() {
           </table>
         </div>
 
-        {filteredExams.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={filteredExams.length}
-            pageSize={pageSize}
-            onPageChange={(page) => setCurrentPage(page)}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setCurrentPage(1);
-            }}
-            pageSizes={[5, 10, 20, 50]}
-          />
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredExams.length}
+          pageSize={pageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
+          pageSizes={[5, 10, 20, 50]}
+        />
       </div>
 
       {/* Add/Edit modal */}

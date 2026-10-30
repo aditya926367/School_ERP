@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import type { FormEvent } from "react";
+import type { FormEvent, ReactNode } from "react";
 import {
   Plus,
   Search,
@@ -11,6 +11,35 @@ import {
 } from "lucide-react";
 import { EditButton, DeleteButton} from "../../components/common/ActionButtons";
 import Pagination from "../../components/common/Pagination";
+
+// Persist component state in localStorage while safely handling unavailable storage
+// or invalid JSON. The state initializer also supports functional updates.
+function usePersistentState<T>(
+  storageKey: string,
+  initialValue: T
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(() => {
+    try {
+      const storedValue = localStorage.getItem(storageKey);
+
+      return storedValue !== null
+        ? (JSON.parse(storedValue) as T)
+        : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(value));
+    } catch {
+      console.error("Unable to save data to localStorage.");
+    }
+  }, [storageKey, value]);
+
+  return [value, setValue];
+}
 
 type MarkStatus = "Draft" | "Published";
 
@@ -80,7 +109,7 @@ function StatCard({
 }: {
   title: string;
   value: string | number;
-  icon: React.ReactNode;
+  icon: ReactNode;
   color: string;
 }) {
   return (
@@ -469,20 +498,18 @@ export default function AdminMarksGrades() {
           </table>
         </div>
 
-        {filteredRecords.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={filteredRecords.length}
-            pageSize={pageSize}
-            onPageChange={(page) => setCurrentPage(page)}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setCurrentPage(1);
-            }}
-            pageSizes={[5, 10, 20, 50]}
-          />
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredRecords.length}
+          pageSize={pageSize}
+          onPageChange={(page) => setCurrentPage(page)}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
+          pageSizes={[5, 10, 20, 50]}
+        />
       </div>
 
       {showModal && (
