@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import Pagination from "../../components/common/Pagination";
-import { useFees } from "../../store/feeStore";
+import { useFees, todayISO } from "../../store/feeStore";
 import type { FeePayment } from "../../store/feeStore";
 import {
   Banknote,
@@ -27,10 +27,19 @@ const currency = (amount: number) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
-const today = new Date().toISOString().slice(0, 10);
+const today = todayISO();
 
 export default function FinanceReports() {
   const { payments: feePayments, students } = useFees();
+
+  // Class names for the filter come from the real students and payments
+  const classOptions = useMemo(
+    () =>
+      [...new Set([...students.map((s) => s.className), ...feePayments.map((p) => p.className)])].sort((a, b) =>
+        a.localeCompare(b, undefined, { numeric: true }),
+      ),
+    [students, feePayments],
+  );
 
   // "Partial" means the student still has balance left after this payment
   const payments = useMemo<Payment[]>(
@@ -93,7 +102,7 @@ export default function FinanceReports() {
     statusFilter,
   ]);
 
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
   const totalPages = Math.max(1, Math.ceil(filteredPayments.length / pageSize));
   const currentPage = Math.min(page, totalPages);
   const visiblePayments = filteredPayments.slice(
@@ -282,9 +291,11 @@ export default function FinanceReports() {
               className={inputClass}
             >
               <option value="All">All Classes</option>
-              <option value="Class 8">Class 8</option>
-              <option value="Class 9">Class 9</option>
-              <option value="Class 10">Class 10</option>
+              {classOptions.map((className) => (
+                <option key={className} value={className}>
+                  {className}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -568,6 +579,10 @@ export default function FinanceReports() {
           totalItems={filteredPayments.length}
           pageSize={pageSize}
           onPageChange={setPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+          }}
           itemLabel="transactions"
         />
       </div>

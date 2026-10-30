@@ -14,6 +14,7 @@ export const PAYMENT_MODES: PaymentMode[] = ["Cash", "UPI", "Card", "Bank Transf
 
 // One student as the fee pages see him (built from the student list + structures + payments)
 export type FeeStudent = {
+  id: number; // internal student ID
   studentId: string; // the admission number
   studentName: string;
   className: string;
@@ -126,6 +127,7 @@ function deriveStudents(admin: Student[], fee: FeeState): FeeStudent[] {
     .map((student) => {
       const items = fee.structures.filter((i) => i.status === "Active" && i.className === student.className);
       return {
+        id: student.id,
         studentId: student.admissionNo,
         studentName: student.name,
         className: student.className,
@@ -161,7 +163,9 @@ export function addPayment(input: AddPaymentInput): AddPaymentResult {
   if (!Number.isFinite(input.amount) || input.amount <= 0) return { ok: false, error: "Enter a valid amount." };
 
   const due = outstanding(student);
-  if (input.amount > due) {
+  // If no fee structure exists yet, allow recording the received payment.
+  // When a fee structure exists, prevent collecting more than the outstanding balance.
+  if (student.totalFee > 0 && input.amount > due) {
     return { ok: false, error: `Payment exceeds the student's outstanding balance of ${money(due)}.` };
   }
 

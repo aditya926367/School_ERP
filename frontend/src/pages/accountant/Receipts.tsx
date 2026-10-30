@@ -152,7 +152,7 @@ export default function Receipts() {
   const [selectedReceipt, setSelectedReceipt] =
     useState<Receipt | null>(null);
 
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
 
   const filteredReceipts = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -449,6 +449,10 @@ export default function Receipts() {
             totalItems={filteredReceipts.length}
             pageSize={pageSize}
             onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
             itemLabel="receipts"
           />
         </div>

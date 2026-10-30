@@ -1,8 +1,8 @@
 
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { useFees, money, PAYMENT_MODES } from "../../store/feeStore";
-import type { PaymentMode } from "../../store/feeStore";
+import { useFees, money, PAYMENT_MODES, todayISO } from "../../store/feeStore";
+import type { PaymentMode, FeePayment, FeeStudent } from "../../store/feeStore";
 import {
   Plus,
   IndianRupee,
@@ -19,37 +19,12 @@ import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import SummaryCard from "../../components/common/SummaryCard";
 import ActionButtons from "../../components/common/ActionButtons";
-type PaymentMode = "Cash" | "UPI" | "Card" | "Bank Transfer";
-
-type StudentFee = {
-  id: number;
-  studentId: string;
-  studentName: string;
-  className: string;
-  totalFee: number;
-  paid: number;
-};
-
-type Payment = {
-  id: number;
-  receiptNo: string;
-  studentId: string;
-  studentName: string;
-  className: string;
-  amount: number;
-  mode: PaymentMode;
-  date: string;
-};
-
-const initialStudents: StudentFee[] = [];
-
-const initialPayments: Payment[] = [];
 
 const emptyForm = {
   studentId: "",
   amount: "",
   mode: "UPI" as PaymentMode,
-  date: new Date().toISOString().slice(0, 10),
+  date: todayISO(),
 };
 
 // const money = (amount: number) =>
@@ -62,9 +37,9 @@ export default function FeeCollection() {
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedReceipt, setSelectedReceipt] = useState<Payment | null>(null);
+  const [selectedReceipt, setSelectedReceipt] = useState<FeePayment | null>(null);
   const [form, setForm] = useState(emptyForm);
 
   const filteredStudents = useMemo(() => {
@@ -162,7 +137,7 @@ export default function FeeCollection() {
   setForm(emptyForm);
 }
 
-  function printReceipt(receipt: Payment) {
+  function printReceipt(receipt: FeePayment) {
     const printWindow = window.open("", "_blank", "width=700,height=700");
 
     if (!printWindow) {
@@ -231,7 +206,6 @@ export default function FeeCollection() {
             value={search}
             onChange={(value) => { setSearch(value); setCurrentPage(1); }}
             placeholder="Search student name or ID..."
-            className="flex-1"
           />
           <div className="w-full sm:w-48">
             <FilterSelect
@@ -243,9 +217,9 @@ export default function FeeCollection() {
           </div>
         </div>
 
-        <DataTable<StudentFee>
+        <DataTable<FeeStudent>
           data={paginatedStudents}
-          rowKey={(student) => student.id}
+          rowKey={(student) => student.studentId}
           tableClassName="min-w-[850px] text-sm"
           columns={[
             {
@@ -268,7 +242,7 @@ export default function FeeCollection() {
               header: "Action",
               className: "text-right",
               render: (student) => {
-                const fullyPaid = student.paid >= student.totalFee;
+                const fullyPaid = student.totalFee > 0 && student.paid >= student.totalFee;
                 return (
                   <button
                     disabled={fullyPaid}
@@ -292,6 +266,10 @@ export default function FeeCollection() {
           totalItems={filteredStudents.length}
           pageSize={pageSize}
           onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
           itemLabel="students"
         />
       </div>
@@ -302,7 +280,7 @@ export default function FeeCollection() {
           <h2 className="font-semibold text-gray-900">Recent Payments</h2>
           <p className="mt-1 text-sm text-gray-500">Latest recorded transactions</p>
         </div>
-        <DataTable<Payment>
+        <DataTable<FeePayment>
           data={payments}
           rowKey={(payment) => payment.id}
           tableClassName="min-w-[700px] text-sm"
@@ -370,7 +348,7 @@ export default function FeeCollection() {
                 >
                   <option value="">Select student</option>
                   {students.map((student) => (
-                    <option key={student.id} value={student.studentId}>
+                    <option key={student.studentId} value={student.studentId}>
                       {student.studentName} — {student.studentId} ({money(Math.max(0, student.totalFee - student.paid))} due)
                     </option>
                   ))}
