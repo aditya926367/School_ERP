@@ -1,11 +1,15 @@
 import { useState } from "react";
-import { Head, Stat, Badge, card, inputCls, btn, th, td, inr, netOf, getStaff, loadRuns, saveRuns, monthLabel, WORKING_DAYS } from "./payrollShared";
+import { Head, Stat, Badge, card, inputCls, btn, th, td, inr, netOf, getStaff, loadRuns, saveRuns, monthLabel, WORKING_DAYS, daysOf } from "./payrollShared";
 import type { Row, Run } from "./payrollShared";
+import { todayISO } from "../../../store/feeStore";
 
 export default function MonthlyPayroll() {
-  const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));
+  const [month, setMonth] = useState(todayISO().slice(0, 7));
   const [runs, setRuns] = useState<Record<string, Run>>(loadRuns);
   const run = runs[month];
+  // Working days for a new payroll (an existing run keeps its own value)
+  const [newDays, setNewDays] = useState(WORKING_DAYS);
+  const workingDays = run ? daysOf(run) : newDays;
 
   function update(next: Record<string, Run>) {
     setRuns(next);
@@ -15,17 +19,32 @@ export default function MonthlyPayroll() {
   function generate() {
     const rows: Row[] = getStaff().map((t) => {
       const base = netOf(t.s);
-      return { id: t.id, name: t.name, designation: t.designation, present: WORKING_DAYS, base, net: base, paid: false };
+      return { id: t.id, name: t.name, designation: t.designation, present: newDays, base, net: base, paid: false };
     });
-    update({ ...runs, [month]: { status: "Draft", rows } });
+    update({ ...runs, [month]: { status: "Draft", rows, workingDays: newDays } });
   }
 
   function setPresent(id: string, value: string) {
-    const days = Math.min(WORKING_DAYS, Math.max(0, Number(value) || 0));
+    const days = Math.min(workingDays, Math.max(0, Number(value) || 0));
     const rows = run.rows.map((r) =>
-      r.id === id ? { ...r, present: days, net: Math.round((r.base * days) / WORKING_DAYS) } : r
+      r.id === id ? { ...r, present: days, net: Math.round((r.base * days) / workingDays) } : r
     );
     update({ ...runs, [month]: { ...run, rows } });
+  }
+
+  // Change the working days of this month (a draft run is recalculated, an approved one is locked)
+  function changeWorkingDays(value: string) {
+    const days = Math.min(31, Math.max(1, Number(value) || 1));
+    if (!run) {
+      setNewDays(days);
+      return;
+    }
+    const rows = run.rows.map((r) => {
+      // Teachers with full attendance stay at full attendance for the new month length
+      const present = r.present >= workingDays ? days : Math.min(r.present, days);
+      return { ...r, present, net: Math.round((r.base * present) / days) };
+    });
+    update({ ...runs, [month]: { ...run, rows, workingDays: days } });
   }
 
   const approve = () => update({ ...runs, [month]: { ...run, status: "Approved" } });
@@ -40,6 +59,18 @@ export default function MonthlyPayroll() {
         right={
           <div className="flex flex-wrap items-center gap-3">
             <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} className={inputCls} />
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              Working days
+              <input
+                type="number"
+                min={1}
+                max={31}
+                value={workingDays}
+                disabled={locked}
+                onChange={(e) => changeWorkingDays(e.target.value)}
+                className={`${inputCls} w-20`}
+              />
+            </label>
             <button onClick={generate} disabled={locked} className={btn}>{run ? "Regenerate payroll" : "Generate payroll"}</button>
             {run && !locked && (
               <button onClick={approve} className="h-10 rounded-lg bg-green-600 px-4 text-sm font-semibold text-white hover:bg-green-700">Approve payroll</button>
@@ -64,7 +95,7 @@ export default function MonthlyPayroll() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50">
-                <tr>{["Teacher", "Designation", "Monthly net", `Days present (of ${WORKING_DAYS})`, "Payable"].map((h) => <th key={h} className={th}>{h}</th>)}</tr>
+                <tr>{["Teacher", "Designation", "Monthly net", `Days present (of ${workingDays})`, "Payable"].map((h) => <th key={h} className={th}>{h}</th>)}</tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {run.rows.map((r) => (
@@ -73,7 +104,7 @@ export default function MonthlyPayroll() {
                     <td className={td}>{r.designation}</td>
                     <td className={td}>{inr(r.base)}</td>
                     <td className={td}>
-                      <input type="number" min={0} max={WORKING_DAYS} value={r.present} disabled={locked} onChange={(e) => setPresent(r.id, e.target.value)} className={`${inputCls} w-24 disabled:bg-gray-100`} />
+                      <input type="number" min={0} max={workingDays} value={r.present} disabled={locked} onChange={(e) => setPresent(r.id, e.target.value)} className={`${inputCls} w-24 disabled:bg-gray-100`} />
                     </td>
                     <td className={`${td} font-semibold text-gray-900`}>{inr(r.net)}</td>
                   </tr>

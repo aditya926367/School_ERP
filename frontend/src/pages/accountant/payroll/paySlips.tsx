@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Printer } from "lucide-react";
-import { Head, card, inputCls, btn, inr, gross, getStaff, loadRuns, monthLabel, WORKING_DAYS } from "./payrollShared";
+import { Head, card, inputCls, btn, inr, gross, getStaff, loadRuns, monthLabel, daysOf } from "./payrollShared";
+import { useSchool, SCHOOL_NAME_MISSING } from "../../../store/schoolStore";
 
 export default function Payslips() {
+  const school = useSchool();
   // Opened from Salary Payments with a teacher and month already chosen
   const location = useLocation();
   const preset = (location.state ?? null) as { month?: string; empId?: string } | null;
@@ -57,7 +59,7 @@ export default function Payslips() {
       ) : (
         <div className={`${card} mx-auto max-w-2xl p-8`}>
           <div className="border-b border-gray-200 pb-5">
-            <p className="text-lg font-bold text-[#27348b]">Your School Name</p>
+            <p className="text-lg font-bold text-[#27348b]">{school.schoolName || SCHOOL_NAME_MISSING}</p>
             <p className="text-sm text-gray-500">Payslip for {monthLabel(month)}</p>
           </div>
 
@@ -65,7 +67,7 @@ export default function Payslips() {
             <div><p className="text-gray-500">Employee</p><p className="font-semibold text-gray-900">{row.name}</p></div>
             <div><p className="text-gray-500">Employee ID</p><p className="font-semibold text-gray-900">{row.id}</p></div>
             <div><p className="text-gray-500">Designation</p><p className="font-semibold text-gray-900">{row.designation}</p></div>
-            <div><p className="text-gray-500">Days present</p><p className="font-semibold text-gray-900">{row.present} of {WORKING_DAYS}</p></div>
+            <div><p className="text-gray-500">Days present</p><p className="font-semibold text-gray-900">{row.present} of {daysOf(runs[month])}</p></div>
           </div>
 
           <div className="grid grid-cols-1 gap-8 py-5 sm:grid-cols-2">

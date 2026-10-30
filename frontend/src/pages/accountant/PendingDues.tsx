@@ -38,7 +38,7 @@ export default function PendingDues() {
   const [message, setMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
-  const pageSize = 5;
+  const [pageSize, setPageSize] = useState(5);
 
   const filteredDues = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -382,6 +382,10 @@ export default function PendingDues() {
           totalItems={filteredDues.length}
           pageSize={pageSize}
           onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
           itemLabel="records"
         />
 

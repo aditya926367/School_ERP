@@ -3,9 +3,12 @@ import { Printer, Search } from "lucide-react";
 import { Head, card, inputCls, btn } from "./feesShared";
 import { useFees, money, outstanding } from "../../store/feeStore";
 import Pagination from "../../components/common/Pagination";
+import { useBankDetails, useSchool, SCHOOL_NAME_MISSING } from "../../store/schoolStore";
 
 export default function FeeChallan() {
   const { students } = useFees();
+  const school = useSchool();
+  const [bank, setBank] = useBankDetails();
 
   const [search, setSearch] = useState("");
   const [selectedClass, setSelectedClass] = useState("All Classes");
@@ -262,6 +265,15 @@ export default function FeeChallan() {
         </div>
       </div>
 
+      {/* Bank details printed on the challan (saved in the browser, not printed) */}
+      <div className={`${card} mx-auto grid max-w-2xl gap-3 p-5 sm:grid-cols-2 print:hidden`}>
+        <p className="text-sm font-semibold text-gray-700 sm:col-span-2">Bank details shown on the challan</p>
+        <input className={inputCls} placeholder="Bank name" value={bank.bankName} onChange={(e) => setBank({ ...bank, bankName: e.target.value })} />
+        <input className={inputCls} placeholder="Account name" value={bank.accountName} onChange={(e) => setBank({ ...bank, accountName: e.target.value })} />
+        <input className={inputCls} placeholder="Account number" value={bank.accountNo} onChange={(e) => setBank({ ...bank, accountNo: e.target.value })} />
+        <input className={inputCls} placeholder="IFSC code" value={bank.ifsc} onChange={(e) => setBank({ ...bank, ifsc: e.target.value })} />
+      </div>
+
       {/* Selected student's challan */}
       {selectedStudent ? (
         <div
@@ -271,9 +283,10 @@ export default function FeeChallan() {
           <div className="flex justify-between border-b border-gray-200 pb-4">
             <div>
               <p className="text-lg font-bold text-[#27348b]">
-                Your School Name
+                {school.schoolName || SCHOOL_NAME_MISSING}
               </p>
-              <p className="text-sm text-gray-500">Fee challan</p>
+              {school.address && <p className="text-xs text-gray-500">{school.address}</p>}
+              <p className="pt-1 text-sm text-gray-500">Fee challan</p>
             </div>
 
             <p className="text-sm font-semibold">
@@ -328,8 +341,7 @@ export default function FeeChallan() {
           </div>
 
           <p className="mt-4 text-xs text-gray-500">
-            Bank: Your Bank Name | Account no: XXXXXXXXXX | IFSC:
-            XXXX0000000
+            Bank: {bank.bankName || "-"} | Account name: {bank.accountName || "-"} | Account no: {bank.accountNo || "-"} | IFSC: {bank.ifsc || "-"}
           </p>
         </div>
       ) : (

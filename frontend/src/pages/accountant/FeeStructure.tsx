@@ -12,9 +12,15 @@ import {
   IndianRupee,
 } from "lucide-react";
 
+// Academic year runs April to March: 2026-2027 starts in April 2026
+function academicYearOf(date: Date, shift = 0) {
+  const start = (date.getMonth() >= 3 ? date.getFullYear() : date.getFullYear() - 1) + shift;
+  return `${start}-${start + 1}`;
+}
+
 const emptyForm = {
-  className: "Class 6",
-  academicYear: "2026-2027",
+  className: "Class 1",
+  academicYear: academicYearOf(new Date()),
   feeType: "Tuition Fee",
   amount: "",
   frequency: "Monthly" as FeeStructureItem["frequency"],
@@ -28,6 +34,13 @@ export default function FeeStructure() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState(emptyForm);
+
+  // Last year, this year, next year, plus any year already used by a saved fee
+  const academicYears = useMemo(() => {
+    const now = new Date();
+    const years = [academicYearOf(now, -1), academicYearOf(now), academicYearOf(now, 1), ...fees.map((fee) => fee.academicYear)];
+    return [...new Set(years)].sort();
+  }, [fees]);
 
   const filteredFees = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -294,9 +307,9 @@ className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm
                     }
                     className="w-full rounded-lg border bg-white px-3 py-2.5 text-sm"
                   >
-                    <option>2026-2027</option>
-                    <option>2027-2028</option>
-                    <option>2025-2026</option>
+                    {academicYears.map((year) => (
+                      <option key={year}>{year}</option>
+                    ))}
                   </select>
                 </label>
 

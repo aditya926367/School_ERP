@@ -32,9 +32,15 @@ export type Row = {
 export type Run = {
   status: "Draft" | "Approved";
   rows: Row[];
+  // Working days of this month (saved with the run, so old payslips never change)
+  workingDays?: number;
 };
 
+// Default working days for a month. A run can override it with its own workingDays.
 export const WORKING_DAYS = 26;
+
+// Working days to use for a run
+export const daysOf = (run?: Run) => run?.workingDays ?? WORKING_DAYS;
 
 export const card =
   "rounded-xl border border-gray-200 bg-white shadow-sm";

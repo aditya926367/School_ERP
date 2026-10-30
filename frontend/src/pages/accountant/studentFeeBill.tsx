@@ -4,11 +4,19 @@ import { ArrowLeft, Printer, Search } from "lucide-react";
 import { Head, card, inputCls, btn } from "./feesShared";
 import { useFees, money, outstanding } from "../../store/feeStore";
 import Pagination from "../../components/common/Pagination";
+import { useSchool, SCHOOL_NAME_MISSING } from "../../store/schoolStore";
+import { useStudents } from "../../store/studentStore";
 
 
 
 export default function StudentFeeBill() {
   const { students } = useFees();
+  const school = useSchool();
+
+  // The section lives in the admin student record, so look it up by admission number
+  const [adminStudents] = useStudents();
+  const sectionOf = (studentId: string) =>
+    adminStudents.find((item) => item.admissionNo === studentId)?.section || "—";
 
   // Filters
   const [search, setSearch] = useState("");
@@ -152,8 +160,9 @@ const totalPages = Math.max(
           {/* School header */}
           <div className="border-b border-gray-200 pb-4 text-center">
             <h2 className="text-2xl font-bold text-[#27348b]">
-              Your School Name
+              {school.schoolName || SCHOOL_NAME_MISSING}
             </h2>
+            {school.address && <p className="text-xs text-gray-500">{school.address}</p>}
 
             <p className="mt-1 text-sm text-gray-500">
               Student Fee Bill
@@ -186,7 +195,7 @@ const totalPages = Math.max(
             <div>
               <p className="text-gray-500">Section</p>
               <p className="mt-1 font-semibold text-gray-900">
-                {selectedStudent.section ?? "—"}
+                {sectionOf(selectedStudent.studentId)}
               </p>
             </div>
 
@@ -402,7 +411,7 @@ const totalPages = Math.max(
                     </td>
 
                     <td className="px-6 py-4 text-gray-600">
-                      {student.section ?? "—"}
+                      {sectionOf(student.studentId)}
                     </td>
 
                     <td className="px-6 py-4 text-right">
