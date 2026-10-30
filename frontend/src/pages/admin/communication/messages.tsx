@@ -1,10 +1,9 @@
-// src/pages/admin/communication/AdminMessages.tsx
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import DataTable from "../../../components/common/DataTable";
+import type { DataTableColumn } from "../../../components/common/DataTable";
 import PageHeader from "../../../components/common/PageHeader";
 import SearchBar from "../../../components/common/SearchBar";
-import FilterSelect from "../../../components/common/FilterSelect";
 import Pagination from "../../../components/common/Pagination";
 import StatusBadge from "../../../components/common/StatusBadge";
 
@@ -22,36 +21,70 @@ type Message = {
 
 type ComposeForm = { to: string; subject: string; body: string };
 
-const today = new Date().toISOString().slice(0, 10);
-
-const initialMessages: Message[] = [];
-
-const emptyForm: ComposeForm = { to: "", subject: "", body: "" };
+const STORAGE_KEY =
+  "schoolerp:pages_admin_communication_messages_tsx:messages";
 const PAGE_SIZES = [5, 10, 25, 50];
 
+const emptyForm: ComposeForm = { to: "", subject: "", body: "" };
+
+function getToday(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function usePersistentState<T>(key: string, initialValue: T) {
+  const [value, setValue] = useState<T>(() => {
+    if (typeof window === "undefined") return initialValue;
+
+    try {
+      const saved = window.localStorage.getItem(key);
+      return saved === null ? initialValue : (JSON.parse(saved) as T);
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Unable to save "${key}" to localStorage.`, error);
+    }
+  }, [key, value]);
+
+  return [value, setValue] as const;
+}
+
 export default function AdminMessages() {
-  const [messages, setMessages] = usePersistentState<Message[]>('schoolerp:pages_admin_communication_messages_tsx:messages', []);
+  const [messages, setMessages] = usePersistentState<Message[]>(STORAGE_KEY, []);
   const [activeBox, setActiveBox] = useState<Box>("Inbox");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState<ComposeForm>(emptyForm);
+  const [form, setForm] = useState<ComposeForm>({ ...emptyForm });
   const [error, setError] = useState("");
   const [viewing, setViewing] = useState<Message | null>(null);
 
-  const unreadCount = messages.filter((m) => m.box === "Inbox" && !m.read).length;
+  const unreadCount = messages.filter(
+    (message) => message.box === "Inbox" && !message.read,
+  ).length;
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
+
     return messages.filter(
-      (m) =>
-        m.box === activeBox &&
+      (message) =>
+        message.box === activeBox &&
         (!query ||
-          m.person.toLowerCase().includes(query) ||
-          m.subject.toLowerCase().includes(query) ||
-          m.id.toLowerCase().includes(query) ||
-          m.body.toLowerCase().includes(query))
+          message.person.toLowerCase().includes(query) ||
+          message.subject.toLowerCase().includes(query) ||
+          message.id.toLowerCase().includes(query) ||
+          message.body.toLowerCase().includes(query) ||
+          message.date.toLowerCase().includes(query)),
     );
   }, [messages, activeBox, search]);
 
@@ -59,11 +92,12 @@ export default function AdminMessages() {
   const safePage = Math.min(page, totalPages);
   const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
-  function nextId() {
+  function nextId(): string {
     const max = messages.reduce((currentMax, message) => {
-      const number = Number(message.id.slice(2));
+      const number = Number(message.id.replace(/^MS/i, ""));
       return Number.isFinite(number) ? Math.max(currentMax, number) : currentMax;
     }, 0);
+
     return `MS${String(max + 1).padStart(3, "0")}`;
   }
 
@@ -74,14 +108,24 @@ export default function AdminMessages() {
   }
 
   function openForm() {
-    setForm(emptyForm);
+    setForm({ ...emptyForm });
     setError("");
     setShowForm(true);
   }
 
+  function closeForm() {
+    setShowForm(false);
+    setError("");
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!form.to.trim() || !form.subject.trim() || !form.body.trim()) {
+
+    const to = form.to.trim();
+    const subject = form.subject.trim();
+    const body = form.body.trim();
+
+    if (!to || !subject || !body) {
       setError("To, subject and message are required.");
       return;
     }
@@ -89,10 +133,10 @@ export default function AdminMessages() {
     const newMessage: Message = {
       id: nextId(),
       box: "Sent",
-      person: form.to.trim(),
-      subject: form.subject.trim(),
-      body: form.body.trim(),
-      date: today,
+      person: to,
+      subject,
+      body,
+      date: getToday(),
       read: true,
     };
 
@@ -100,24 +144,32 @@ export default function AdminMessages() {
     setActiveBox("Sent");
     setSearch("");
     setPage(1);
-    setShowForm(false);
-    setForm(emptyForm);
-    setError("");
+    closeForm();
+    setForm({ ...emptyForm });
   }
 
   function openMessage(message: Message) {
-    setMessages((current) =>
-      current.map((item) => item.id === message.id ? { ...item, read: true } : item)
-    );
+    if (message.box === "Inbox" && !message.read) {
+      setMessages((current) =>
+        current.map((item) =>
+          item.id === message.id ? { ...item, read: true } : item,
+        ),
+      );
+    }
+
     setViewing({ ...message, read: true });
   }
 
-  const columns = [
+  const columns: DataTableColumn<Message>[] = [
     {
       key: "person",
       header: activeBox === "Inbox" ? "From" : "To",
-      render: (message: Message) => (
-        <span className={!message.read ? "font-semibold text-gray-900" : "text-gray-700"}>
+      render: (message) => (
+        <span
+          className={
+            !message.read ? "font-semibold text-gray-900" : "text-gray-700"
+          }
+        >
           {message.person}
         </span>
       ),
@@ -125,38 +177,48 @@ export default function AdminMessages() {
     {
       key: "subject",
       header: "Subject",
-      render: (message: Message) => (
+      render: (message) => (
         <div>
-          <p className={!message.read ? "font-semibold text-gray-900" : "text-gray-700"}>
+          <p
+            className={
+              !message.read ? "font-semibold text-gray-900" : "text-gray-700"
+            }
+          >
             {message.subject}
           </p>
-          <p className="mt-1 max-w-sm truncate text-xs text-gray-500">{message.body}</p>
+          <p className="mt-1 max-w-sm truncate text-xs text-gray-500">
+            {message.body}
+          </p>
         </div>
       ),
     },
     {
       key: "date",
       header: "Date",
-      render: (message: Message) => <span className="whitespace-nowrap">{message.date}</span>,
+      render: (message) => (
+        <span className="whitespace-nowrap">{message.date}</span>
+      ),
     },
     {
       key: "status",
       header: "Status",
-      render: (message: Message) => {
-        const status = message.box === "Sent" ? "Sent" : message.read ? "Read" : "Unread";
+      render: (message) => {
+        const status =
+          message.box === "Sent" ? "Sent" : message.read ? "Read" : "Unread";
         const className =
           status === "Sent"
             ? "bg-blue-100 text-blue-700"
             : status === "Read"
               ? "bg-gray-200 text-gray-600"
               : "bg-red-100 text-red-700";
+
         return <StatusBadge status={status} className={className} />;
       },
     },
     {
       key: "action",
       header: "Action",
-      render: (message: Message) => (
+      render: (message) => (
         <button
           type="button"
           onClick={() => openMessage(message)}
@@ -179,7 +241,7 @@ export default function AdminMessages() {
     "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10";
 
   return (
-        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <PageHeader
         title="Messages"
         description="Read and send messages to teachers, parents and students"
@@ -188,7 +250,12 @@ export default function AdminMessages() {
       <section className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         <div className="flex flex-col gap-3 border-b border-gray-200 p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={() => switchBox("Inbox")} className={tabClass("Inbox")}>
+            <button
+              type="button"
+              onClick={() => switchBox("Inbox")}
+              className={tabClass("Inbox")}
+              aria-pressed={activeBox === "Inbox"}
+            >
               Inbox
               {unreadCount > 0 && (
                 <span className="ml-2 rounded-full bg-red-500 px-2 py-0.5 text-xs text-white">
@@ -196,7 +263,12 @@ export default function AdminMessages() {
                 </span>
               )}
             </button>
-            <button type="button" onClick={() => switchBox("Sent")} className={tabClass("Sent")}>
+            <button
+              type="button"
+              onClick={() => switchBox("Sent")}
+              className={tabClass("Sent")}
+              aria-pressed={activeBox === "Sent"}
+            >
               Sent
             </button>
           </div>
@@ -212,6 +284,23 @@ export default function AdminMessages() {
                 placeholder="Search by name, subject, ID or message..."
               />
             </div>
+            <label className="flex items-center gap-2 text-sm text-gray-600">
+              <span className="whitespace-nowrap">Rows per page</span>
+              <select
+                value={pageSize}
+                onChange={(event) => {
+                  setPageSize(Number(event.target.value));
+                  setPage(1);
+                }}
+                className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none focus:border-[#27348b]"
+              >
+                {PAGE_SIZES.map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </label>
             <button
               type="button"
               onClick={openForm}
@@ -225,57 +314,58 @@ export default function AdminMessages() {
         <DataTable
           data={paged}
           columns={columns}
-          rowKey={(message: Message) => message.id}
-          emptyState="No messages found."
+          rowKey={(message) => message.id}
+          emptyState={
+            <div>
+              <p className="font-medium text-gray-700">No messages found.</p>
+              <p className="mt-1 text-xs text-gray-500">
+                {search.trim()
+                  ? "Try changing your search."
+                  : activeBox === "Inbox"
+                    ? "Messages received will appear here."
+                    : "Messages you compose will appear here."}
+              </p>
+            </div>
+          }
           tableClassName="min-w-[760px]"
-          rowClassName={(message: Message) => !message.read ? "bg-blue-50/40" : ""}
+          rowClassName={(message) => (!message.read ? "bg-blue-50/40" : "")}
         />
 
-        <div className="flex flex-col gap-3 border-t border-gray-200 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-            <span>
-              Showing <strong>{filtered.length === 0 ? 0 : (safePage - 1) * pageSize + 1}</strong>
-              {"–"}
-              <strong>{Math.min(safePage * pageSize, filtered.length)}</strong> of{" "}
-              <strong>{filtered.length}</strong>
-            </span>
-            <div className="w-32">
-              <FilterSelect
-                value={String(pageSize)}
-                onChange={(value: string) => {
-                  setPageSize(Number(value));
-                  setPage(1);
-                }}
-                options={PAGE_SIZES.map((size) => ({ label: `${size} / page`, value: String(size) }))}
-                placeholder="Page size"
-              />
-            </div>
-          </div>
-          <Pagination
-            currentPage={safePage}
-            totalPages={totalPages}
-            totalItems={filtered.length}
-            pageSize={pageSize}
-            onPageChange={setPage}
-            itemLabel="messages"
-          />
-        </div>
+        <Pagination
+          currentPage={safePage}
+          totalPages={totalPages}
+          totalItems={filtered.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          itemLabel="messages"
+        />
       </section>
 
       {showForm && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/40 p-4"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setShowForm(false);
+            if (event.target === event.currentTarget) closeForm();
           }}
+          role="presentation"
         >
-          <div className="w-full max-w-[520px] rounded-xl bg-white shadow-xl">
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="compose-message-title"
+            className="my-4 max-h-[90vh] w-full max-w-[520px] overflow-y-auto rounded-xl bg-white shadow-xl"
+          >
             <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-              <h2 className="text-lg font-bold text-gray-900">New Message</h2>
+              <h2
+                id="compose-message-title"
+                className="text-lg font-bold text-gray-900"
+              >
+                New Message
+              </h2>
               <button
                 type="button"
-                onClick={() => setShowForm(false)}
-                className="text-2xl leading-none text-gray-400 hover:text-gray-700"
+                onClick={closeForm}
+                className="rounded-md px-2 text-2xl leading-none text-gray-400 hover:bg-gray-100 hover:text-gray-700"
                 aria-label="Close compose form"
               >
                 ×
@@ -284,84 +374,129 @@ export default function AdminMessages() {
 
             <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
               <div>
-                <label htmlFor="message-to" className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                <label
+                  htmlFor="message-to"
+                  className="mb-1 block text-xs font-semibold uppercase text-gray-500"
+                >
                   To
                 </label>
                 <input
                   id="message-to"
                   value={form.to}
-                  onChange={(event) => setForm((current) => ({ ...current, to: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      to: event.target.value,
+                    }))
+                  }
                   placeholder="e.g. All Teachers, or Priya Verma (10-B)"
                   className={inputClass}
+                  maxLength={200}
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="message-subject" className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                <label
+                  htmlFor="message-subject"
+                  className="mb-1 block text-xs font-semibold uppercase text-gray-500"
+                >
                   Subject
                 </label>
                 <input
                   id="message-subject"
                   value={form.subject}
-                  onChange={(event) => setForm((current) => ({ ...current, subject: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      subject: event.target.value,
+                    }))
+                  }
                   placeholder="e.g. Staff meeting on Friday"
                   className={inputClass}
+                  maxLength={200}
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="message-body" className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                <label
+                  htmlFor="message-body"
+                  className="mb-1 block text-xs font-semibold uppercase text-gray-500"
+                >
                   Message
                 </label>
                 <textarea
                   id="message-body"
                   value={form.body}
-                  onChange={(event) => setForm((current) => ({ ...current, body: event.target.value }))}
+                  onChange={(event) =>
+                    setForm((current) => ({
+                      ...current,
+                      body: event.target.value,
+                    }))
+                  }
                   rows={5}
                   placeholder="Write your message here..."
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-[#27348b]/10"
+                  maxLength={10000}
                   required
                 />
+                <p className="mt-1 text-right text-xs text-gray-400">
+                  {form.body.length}/10000
+                </p>
               </div>
 
-              {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+              {error && (
+                <p role="alert" className="text-sm text-red-600">
+                  {error}
+                </p>
+              )}
 
-              <div className="flex justify-end gap-3 pt-2">
+              <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
-                  className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                  onClick={closeForm}
+                  className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
+                  className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white transition hover:bg-[#1f2a73]"
                 >
                   Send
                 </button>
               </div>
             </form>
-          </div>
+          </section>
         </div>
       )}
 
       {viewing && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto bg-black/40 p-4"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) setViewing(null);
           }}
+          role="presentation"
         >
-          <div className="w-full max-w-[520px] rounded-xl bg-white shadow-xl">
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="view-message-title"
+            className="my-4 max-h-[90vh] w-full max-w-[520px] overflow-y-auto rounded-xl bg-white shadow-xl"
+          >
             <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-              <h2 className="text-lg font-bold text-gray-900">{viewing.subject}</h2>
+              <h2
+                id="view-message-title"
+                className="text-lg font-bold text-gray-900"
+              >
+                {viewing.subject}
+              </h2>
               <button
                 type="button"
                 onClick={() => setViewing(null)}
-                className="text-2xl leading-none text-gray-400 hover:text-gray-700"
+                className="rounded-md px-2 text-2xl leading-none text-gray-400 hover:bg-gray-100 hover:text-gray-700"
                 aria-label="Close message"
               >
                 ×
@@ -374,18 +509,18 @@ export default function AdminMessages() {
                 {" · "}
                 {viewing.date}
               </div>
-              <p className="whitespace-pre-wrap">{viewing.body}</p>
+              <p className="whitespace-pre-wrap break-words">{viewing.body}</p>
             </div>
             <div className="flex justify-end border-t border-gray-200 px-5 py-3">
               <button
                 type="button"
                 onClick={() => setViewing(null)}
-                className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                className="h-10 rounded-lg border border-gray-300 px-4 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
               >
                 Close
               </button>
             </div>
-          </div>
+          </section>
         </div>
       )}
     </div>

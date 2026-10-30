@@ -1,5 +1,6 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Dispatch, FormEvent, SetStateAction } from "react";
 import { useStudents, type Student } from "../../store/studentStore";
 import DataTable from "../../components/common/DataTable";
 import FilterSelect from "../../components/common/FilterSelect";
@@ -20,6 +21,34 @@ import {
   FileText,
 } from "lucide-react";
 import ActionButtons from "../../components/common/ActionButtons";
+
+
+function usePersistentState<T>(
+  storageKey: string,
+  initialValue: T,
+): [T, Dispatch<SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(() => {
+    if (typeof window === "undefined") return initialValue;
+
+    try {
+      const storedValue = window.localStorage.getItem(storageKey);
+      return storedValue !== null ? (JSON.parse(storedValue) as T) : initialValue;
+    } catch (error) {
+      console.error(`Unable to read localStorage key "${storageKey}":`, error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(value));
+    } catch (error) {
+      console.error(`Unable to save localStorage key "${storageKey}":`, error);
+    }
+  }, [storageKey, value]);
+
+  return [value, setValue];
+}
 
 type AdmissionStatus = "Pending" | "Approved" | "Rejected";
 
@@ -61,7 +90,9 @@ const emptyForm = {
 
 export default function Admissions() {
   const [students, setStudents] = useStudents();
-  const [admissions, setAdmissions] = usePersistentState('schoolerp:pages_admin_admissions_tsx:admissions', []);
+  const [admissions, setAdmissions] = usePersistentState<Admission[]>(    
+    'schoolerp:pages_admin_admissions_tsx:admissions',  
+    initialAdmissions,  );
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [showForm, setShowForm] = useState(false);
@@ -141,7 +172,7 @@ export default function Admissions() {
     setShowForm(true);
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (editingId !== null) {
@@ -425,7 +456,10 @@ function updateStatus(id: number, status: AdmissionStatus) {
           totalItems={filtered.length}
           pageSize={pageSize}
           onPageChange={setPage}
-          onPageSizeChange={setPageSize}
+          onPageSizeChange={(size) => {          
+            setPageSize(size);            
+            setPage(1);          
+          }}
           pageSizes={PAGE_SIZES}
           itemLabel="applications"
         />

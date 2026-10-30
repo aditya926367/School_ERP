@@ -23,6 +23,9 @@ import ClassSubjectTeacherMapping from "./pages/admin/ClassSubjectTeacherMapping
 import HolidaysCalendar from "./pages/admin/HolidaysCalendar";
 import GradingExamSettings from "./pages/admin/GradingExamSettings";
 import Users from "./pages/admin/Users";
+import RolesPermissions from "./pages/admin/adminRolesAndPermission";
+import Notifications from "./pages/admin/adminNotification";
+
 
 // Student Management Pages (admin side)
 import Students from "./pages/admin/Students";
@@ -242,6 +245,14 @@ function App() {
           <Route path="/admin/holidays-calendar" element={<HolidaysCalendar />} />
           <Route path="/admin/grading-exam-settings" element={<GradingExamSettings />} />
           <Route path="/admin/users" element={<Users />} />
+          <Route
+  path="/admin/roles-permissions"
+  element={<RolesPermissions />}
+/>
+<Route
+  path="/admin/notifications"
+  element={<Notifications />}
+/>
 
           {/* Library dashboards */}
           <Route path="/librarydashboard" element={<LibraryDashboard />} />
@@ -313,8 +324,10 @@ function App() {
           <Route path="/parent/messages" element={<ParentMessages />} />
 
           {/* Certificates & Awards  */}
-          <Route path="/certificateDashboard" element={<CertificateDashboard />} />
-          <Route path="/createCertificate" element={<CreateCertificate />} />
+<Route
+  path="/certificateDashboard"
+  element={<CertificateDashboard />}
+/>          <Route path="/createCertificate" element={<CreateCertificate />} />
           <Route path="/manageCertificates" element={<ManageCertificates />} />
           <Route path="/bulkCertificate" element={<BulkCertificate />} />
           <Route path="/individualCertificate" element={<IndividualCertificate />} />

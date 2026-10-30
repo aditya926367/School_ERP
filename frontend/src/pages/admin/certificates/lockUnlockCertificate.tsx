@@ -242,7 +242,7 @@ export default function LockUnlockCertificate() {
               Prev
             </button>
             <span>
-              Page <b>{safePage}</b> of <b>{totalPages}</b>
+             <b>{safePage}</b> of <b>{totalPages}</b>
             </span>
             <button
               onClick={() => setPage(safePage + 1)}

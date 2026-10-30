@@ -1,6 +1,6 @@
 
-import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import {
   Search,
   GraduationCap,
@@ -11,6 +11,36 @@ import {
   Download,
   FileText,
 } from "lucide-react";
+
+/**
+ * Keeps component state synchronized with localStorage.
+ * Falls back to the supplied initial value if storage is unavailable or invalid.
+ */
+function usePersistentState<T>(
+  storageKey: string,
+  initialValue: T,
+): [T, Dispatch<SetStateAction<T>>] {
+  const [value, setValue] = useState<T>(() => {
+    if (typeof window === "undefined") return initialValue;
+
+    try {
+      const storedValue = window.localStorage.getItem(storageKey);
+      return storedValue !== null ? (JSON.parse(storedValue) as T) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(value));
+    } catch {
+      // State still works if browser storage is disabled or full.
+    }
+  }, [storageKey, value]);
+
+  return [value, setValue];
+}
 
 type ResultStatus = "Pass" | "Fail";
 type PublishStatus = "Published" | "Draft";
@@ -89,7 +119,7 @@ function Badge({
 }
 
 export default function AdminResults() {
-  const [results, setResults] = usePersistentState<StudentResult[]>('schoolerp:pages_admin_adminresults_tsx:results', []);
+  const [results, setResults] = usePersistentState<StudentResult[]>("schoolerp:pages_admin_adminresults_tsx:results", initialResults);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All");
   const [examFilter, setExamFilter] = useState("All");
