@@ -25,7 +25,8 @@ import GradingExamSettings from "./pages/admin/GradingExamSettings";
 import Users from "./pages/admin/Users";
 import RolesPermissions from "./pages/admin/adminRolesAndPermission";
 import Notifications from "./pages/admin/adminNotification";
-
+import SystemSetting from "./pages/admin/systemSetting";
+import AuditLog from "./pages/admin/AuditLog";
 
 // Student Management Pages (admin side)
 import Students from "./pages/admin/Students";
@@ -253,6 +254,9 @@ function App() {
   path="/admin/notifications"
   element={<Notifications />}
 />
+<Route path="/admin/systemSetting" element={<SystemSetting />} />
+<Route path="/admin/audit-log" element={<AuditLog />} />
+
 
           {/* Library dashboards */}
           <Route path="/librarydashboard" element={<LibraryDashboard />} />
