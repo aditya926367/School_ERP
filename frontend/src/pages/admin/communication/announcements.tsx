@@ -277,23 +277,7 @@ export default function AdminAnnouncements() {
             className="sm:max-w-[360px]"
           />
 
-          <label className="flex items-center gap-2 text-sm text-gray-600">
-            <span className="whitespace-nowrap">Rows per page</span>
-            <select
-              value={pageSize}
-              onChange={(event) => {
-                setPageSize(Number(event.target.value));
-                setPage(1);
-              }}
-              className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm outline-none focus:border-[#27348b]"
-            >
-              {pageSizes.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </label>
+          
         </div>
 
         <DataTable
