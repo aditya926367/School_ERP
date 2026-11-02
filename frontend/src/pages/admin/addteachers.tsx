@@ -1,18 +1,21 @@
+
+
 import { useState } from "react";
-import type { ChangeEvent, FormEvent, ReactNode } from "react";
+import type { FormEvent, ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getDemoUsers, saveDemoUsers } from "../../utils/demoAuth";
 import Pagination from "../../components/common/Pagination";
 import ActionButtons from "../../components/common/ActionButtons";
+import CameraCapture from "../../components/common/CameraCapture";
 import { useTeachers } from "../../store/teacherStore";
 import type { Gender, Status, Teacher } from "../../store/teacherStore";
 import {
+  Camera,
   Download,
   Filter,
   Plus,
   Printer,
   Search,
-  Upload,
   User,
   UserCheck,
   UserPlus,
@@ -213,6 +216,7 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
     initial ? { ...initial } : { ...emptyForm }
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   // Updates one field and clears its error
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -229,25 +233,6 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
       ? form.subjects.filter((s) => s !== subject)
       : [...form.subjects, subject];
     set("subjects", next);
-  }
-
-  function handlePhoto(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    e.target.value = ""; // allows choosing the same file again
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      setErrors({ ...errors, photo: "Please choose an image file" });
-      return;
-    }
-    if (file.size > 300 * 1024) {
-      setErrors({ ...errors, photo: "Photo must be smaller than 300 KB" });
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => set("photo", String(reader.result));
-    reader.readAsDataURL(file);
   }
 
   function validate(): Record<string, string> {
@@ -345,6 +330,16 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
         </div>
       )}
 
+      {cameraOpen && (
+        <CameraCapture
+          onClose={() => setCameraOpen(false)}
+          onCapture={(photo) => {
+            set("photo", photo);
+            setCameraOpen(false);
+          }}
+        />
+      )}
+
       {/* ---------------- Personal information ---------------- */}
       <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <h2 className="mb-4 text-base font-bold text-gray-900">Personal Information</h2>
@@ -358,11 +353,14 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
                 <User size={44} />
               )}
             </div>
-            <label className="flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-gray-200 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50">
-              <Upload size={16} />
-              {form.photo ? "Change photo" : "Upload photo"}
-              <input type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
-            </label>
+            <button
+              type="button"
+              onClick={() => setCameraOpen(true)}
+              className="flex h-10 items-center gap-2 rounded-xl border border-gray-200 px-4 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+            >
+              <Camera size={16} />
+              {form.photo ? "Retake photo" : "Take photo"}
+            </button>
             {form.photo && (
               <button
                 type="button"
@@ -373,7 +371,7 @@ function TeacherForm({ initial, teachers, onSave, onCancel }: FormProps) {
               </button>
             )}
             {errors.photo && <p className="text-center text-xs font-medium text-red-600">{errors.photo}</p>}
-            <p className="text-center text-xs text-gray-400">JPG or PNG, up to 300 KB</p>
+            <p className="text-center text-xs text-gray-400">Taken with the laptop or phone camera</p>
           </div>
 
           {/* Details */}

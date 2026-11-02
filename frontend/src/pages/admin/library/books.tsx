@@ -1,5 +1,6 @@
 // src/pages/admin/library/Books.tsx
 import { useMemo, useState } from "react";
+import { usePersistentState } from "../../../utils/usePersistentState";
 import type { FormEvent } from "react";
 import { BookOpen, LibraryBig, Plus, X } from "lucide-react";
 
@@ -36,6 +37,17 @@ const emptyForm = {
 
 export default function Books() {
   const [books, setBooks] = usePersistentState<Book[]>('schoolerp:pages_admin_library_books_tsx:books', []);
+   const categories = [
+    "Fiction",
+    "Non-Fiction",
+    "Science",
+    "Mathematics",
+    "History",
+    "Technology",
+    "Reference",
+    "Other",
+  ];
+
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [availabilityFilter, setAvailabilityFilter] = useState("All");

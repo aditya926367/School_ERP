@@ -1,4 +1,6 @@
 
+
+
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { useFees, money, PAYMENT_MODES, todayISO } from "../../store/feeStore";
@@ -19,6 +21,7 @@ import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import SummaryCard from "../../components/common/SummaryCard";
 import ActionButtons from "../../components/common/ActionButtons";
+import StudentPicker from "./StudentPicker";
 
 const emptyForm = {
   studentId: "",
@@ -119,6 +122,11 @@ export default function FeeCollection() {
   // }
   function collectFee(event: FormEvent<HTMLFormElement>) {
   event.preventDefault();
+
+  if (!form.studentId) {
+    alert("Please search and select a student.");
+    return;
+  }
 
   const result = addPayment({
     studentId: form.studentId,
@@ -242,7 +250,7 @@ export default function FeeCollection() {
               header: "Action",
               className: "text-right",
               render: (student) => {
-                const fullyPaid = student.totalFee > 0 && student.paid >= student.totalFee;
+                const fullyPaid = student.paid >= student.totalFee;
                 return (
                   <button
                     disabled={fullyPaid}
@@ -338,22 +346,14 @@ export default function FeeCollection() {
           </div>
 
             <form onSubmit={collectFee} className="space-y-4 p-5">
-              <label className="block space-y-1.5">
+              <div className="space-y-1.5">
                 <span className="text-sm font-medium text-gray-700">Student</span>
-                <select
-                  required
+                <StudentPicker
+                  students={students}
                   value={form.studentId}
-                  onChange={(event) => setForm({ ...form, studentId: event.target.value })}
-                  className="w-full rounded-lg border bg-white px-3 py-2.5 text-sm"
-                >
-                  <option value="">Select student</option>
-                  {students.map((student) => (
-                    <option key={student.studentId} value={student.studentId}>
-                      {student.studentName} — {student.studentId} ({money(Math.max(0, student.totalFee - student.paid))} due)
-                    </option>
-                  ))}
-                </select>
-              </label>
+                  onChange={(studentId) => setForm({ ...form, studentId })}
+                />
+              </div>
 
               <label className="block space-y-1.5">
                 <span className="text-sm font-medium text-gray-700">Amount (₹)</span>
@@ -377,10 +377,11 @@ export default function FeeCollection() {
                     onChange={(event) => setForm({ ...form, mode: event.target.value as PaymentMode })}
                     className="w-full rounded-lg border bg-white px-3 py-2.5 text-sm"
                   >
-                    <option>UPI</option>
-                    <option>Cash</option>
-                    <option>Card</option>
-                    <option>Bank Transfer</option>
+                    {PAYMENT_MODES.map((mode) => (
+                      <option key={mode} value={mode}>
+                        {mode}
+                      </option>
+                    ))}
                   </select>
                 </label>
 
