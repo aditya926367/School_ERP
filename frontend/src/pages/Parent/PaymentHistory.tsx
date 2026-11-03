@@ -175,7 +175,7 @@ export default function ParentPaymentHistory() {
 
         <button
           onClick={() => downloadCsv(filteredPayments)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#202b75]"
         >
           <Download size={17} />
           Export History

@@ -1,5 +1,4 @@
-
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   BookOpen,
   Plus,
@@ -49,8 +48,36 @@ const emptyForm = {
   totalStudents: "35",
 };
 
+function usePersistentState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const savedValue = localStorage.getItem(key);
+
+      return savedValue !== null
+        ? (JSON.parse(savedValue) as T)
+        : initialValue;
+    } catch (error) {
+      console.error("Error reading localStorage:", error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [key, state]);
+
+  return [state, setState] as const;
+}
+
 export default function TeacherHomework() {
-  const [homework, setHomework] = usePersistentState<HomeworkItem[]>('schoolerp:pages_teacher_homework_tsx:homework', []);
+const [homework, setHomework] = usePersistentState<HomeworkItem[]>(
+  "schoolerp:pages_teacher_homework_tsx:homework",
+  initialHomework
+);
   const [search, setSearch] = useState("");
   const [classFilter, setClassFilter] = useState("All Classes");
   const [subjectFilter, setSubjectFilter] = useState("All Subjects");
@@ -202,7 +229,7 @@ export default function TeacherHomework() {
 
           <button
             onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-4 py-3 text-sm font-semibold text-white shadow-sm"
           >
             <Plus size={18} />
             Assign Homework

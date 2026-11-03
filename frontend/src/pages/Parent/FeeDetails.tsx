@@ -155,7 +155,7 @@ export default function ParentFeeDetails() {
         <button
           type="button"
           onClick={exportCSV}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#202b75]"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white "
         >
           <Download size={18} />
           Export Report
@@ -436,14 +436,7 @@ export default function ParentFeeDetails() {
         </div>
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
-        <CalendarDays size={19} className="mt-0.5 shrink-0" />
-        <p>
-          <span className="font-semibold">Note:</span> This page currently
-          displays sample fee information. Actual fee records will be loaded
-          from the school's database after backend integration.
-        </p>
-      </div>
+      
     </div>
   );
 }

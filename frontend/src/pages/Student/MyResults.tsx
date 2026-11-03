@@ -199,7 +199,7 @@ export default function MyResults() {
         <button
           onClick={handlePrint}
           disabled={selectedExam.status === "Pending"}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-gray-300"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-5 py-3 text-sm font-semibold text-white shadow-sm "
         >
           <Printer size={17} />
           Print Marksheet

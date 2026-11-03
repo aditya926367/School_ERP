@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   CalendarDays,
   CheckCircle2,
@@ -32,17 +32,56 @@ const statusStyles: Record<AttendanceStatus, string> = {
   Leave: "bg-blue-50 text-blue-700 border-blue-200",
 };
 
+function usePersistentState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const savedValue = localStorage.getItem(key);
+
+      return savedValue !== null
+        ? (JSON.parse(savedValue) as T)
+        : initialValue;
+    } catch (error) {
+      console.error("Error reading localStorage:", error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [key, state]);
+
+  return [state, setState] as const;
+}
+
+
 export default function TeacherMarkAttendance() {
-  const [students, setStudents] = usePersistentState<Student[]>('schoolerp:pages_teacher_markattendance_tsx:students', []);
+  const [students, setStudents] = usePersistentState<Student[]>(
+    "schoolerp:pages_teacher_markattendance_tsx:students",
+    initialStudents
+  );
+
   const [selectedClass, setSelectedClass] = useState("Class 8-A");
+
   const [attendanceDate, setAttendanceDate] = useState(
     new Date().toISOString().slice(0, 10)
   );
+
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [savedKey, setSavedKey] = useState("");
-  const [savedRecords, setSavedRecords] = useState<Record<string, Student[]>>({});
 
+  const [savedRecords, setSavedRecords] = usePersistentState<
+    Record<string, Student[]>
+  >(
+    "schoolerp:pages_teacher_markattendance_tsx:savedRecords",
+    {}
+  );
+
+  // Keep the remaining existing code.
   const classStudents = useMemo(
     () => students.filter((student) => student.className === selectedClass),
     [students, selectedClass]
@@ -254,7 +293,7 @@ export default function TeacherMarkAttendance() {
               </button>
               <button
                 onClick={saveAttendance}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white shadow-sm "
               >
                 <Save size={16} />
                 Save Attendance

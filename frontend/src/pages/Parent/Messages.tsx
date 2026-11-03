@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   MessageSquare,
   Search,
@@ -30,9 +30,38 @@ type Conversation = {
 
 const initialConversations: Conversation[] = [];
 
+function usePersistentState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const savedValue = localStorage.getItem(key);
+
+      return savedValue !== null
+        ? (JSON.parse(savedValue) as T)
+        : initialValue;
+    } catch (error) {
+      console.error("Error reading localStorage:", error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [key, state]);
+
+  return [state, setState] as const;
+}
+
 export default function ParentMessages() {
-  const [conversations, setConversations] = usePersistentState<Conversation[]>('schoolerp:pages_parent_messages_tsx:conversations', []);
-  const [selectedId, setSelectedId] = useState<number>(1);
+const [conversations, setConversations] =
+  usePersistentState<Conversation[]>(
+    "schoolerp:pages_parent_messages_tsx:conversations",
+    initialConversations
+  );
+    const [selectedId, setSelectedId] = useState<number>(1);
   const [search, setSearch] = useState("");
   const [reply, setReply] = useState("");
   const [showNewMessage, setShowNewMessage] = useState(false);
@@ -159,7 +188,7 @@ export default function ParentMessages() {
 
         <button
           onClick={() => setShowNewMessage(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#202b75]"
         >
           <Plus size={18} />
           New Message
@@ -354,9 +383,7 @@ export default function ParentMessages() {
                     <span className="hidden sm:inline">Send</span>
                   </button>
                 </div>
-                <p className="mt-2 text-xs text-gray-400">
-                  Demo mode: messages are only stored in the current page state.
-                </p>
+               
               </form>
             </>
           ) : (

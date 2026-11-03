@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Megaphone,
   Plus,
@@ -47,9 +47,39 @@ const emptyForm = {
   pinned: false,
 };
 
+function usePersistentState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const savedValue = localStorage.getItem(key);
+
+      return savedValue !== null
+        ? (JSON.parse(savedValue) as T)
+        : initialValue;
+    } catch (error) {
+      console.error("Error reading localStorage:", error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [key, state]);
+
+  return [state, setState] as const;
+}
+
+
 export default function TeacherAnnouncements() {
-  const [announcements, setAnnouncements] = usePersistentState<Announcement[]>('schoolerp:pages_teacher_announcements_tsx:announcements', []);
-  const [search, setSearch] = useState("");
+const [announcements, setAnnouncements] =
+  usePersistentState<Announcement[]>(
+    "schoolerp:pages_teacher_announcements_tsx:announcements",
+    initialAnnouncements
+  );
+    const [search, setSearch] = useState("");
   const [audienceFilter, setAudienceFilter] = useState("All Audiences");
   const [priorityFilter, setPriorityFilter] = useState("All Priorities");
   const [showModal, setShowModal] = useState(false);
@@ -186,7 +216,7 @@ export default function TeacherAnnouncements() {
 
           <button
             onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-4 py-3 text-sm font-semibold text-white shadow-sm "
           >
             <Plus size={18} />
             Create Announcement
@@ -427,14 +457,7 @@ export default function TeacherAnnouncements() {
           )}
         </section>
 
-        <div className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
-          <CheckCircle2 size={19} className="mt-0.5 shrink-0" />
-          <p>
-            <strong>Demo mode:</strong> Announcements can be created, edited,
-            pinned, and deleted in this session. They are not yet saved to
-            PostgreSQL or sent as notifications to students.
-          </p>
-        </div>
+        
 
         {showModal && (
           <div
@@ -618,7 +641,7 @@ export default function TeacherAnnouncements() {
                   </button>
                   <button
                     type="submit"
-                    className="rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                    className="rounded-xl bg-[#27348b] px-5 py-3 text-sm font-semibold text-white "
                   >
                     {editingId ? "Save Changes" : "Publish Announcement"}
                   </button>

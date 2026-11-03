@@ -126,7 +126,7 @@ export default function MyExams() {
                 onClick={() => setFilter(item)}
                 className={`rounded-lg px-4 py-2 text-sm font-medium ${
                   filter === item
-                    ? "bg-blue-600 text-white"
+                    ? "bg-[#27348b] text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
@@ -237,10 +237,7 @@ export default function MyExams() {
           )}
         </div>
 
-        <p className="text-xs text-gray-400">
-          Demo data only. Official exam schedules and marks should come from
-          your school backend.
-        </p>
+        
       </div>
     </div>
   );

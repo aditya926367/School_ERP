@@ -205,7 +205,7 @@ export default function TeacherResults() {
           <button
             onClick={exportCSV}
             disabled={filteredResults.length === 0}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-4 py-3 text-sm font-semibold text-white shadow-sm "
           >
             <Download size={18} />
             Export Results
@@ -305,7 +305,7 @@ export default function TeacherResults() {
             </p>
             <button
               onClick={resetFilters}
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-indigo-600 hover:bg-indigo-50"
+              className="rounded-lg px-3 py-2 text-sm bg-[#27348b] font-semibold text-white"
             >
               Reset Filters
             </button>

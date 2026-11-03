@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   MessageSquare,
   Search,
@@ -31,8 +31,36 @@ type TeacherMessage = {
 
 const initialMessages: TeacherMessage[] = [];
 
+function usePersistentState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const savedValue = localStorage.getItem(key);
+
+      return savedValue !== null
+        ? (JSON.parse(savedValue) as T)
+        : initialValue;
+    } catch (error) {
+      console.error("Error reading localStorage:", error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [key, state]);
+
+  return [state, setState] as const;
+}
+
 export default function TeacherMessages() {
-  const [messages, setMessages] = usePersistentState<TeacherMessage[]>('schoolerp:pages_teacher_messages_tsx:messages', []);
+const [messages, setMessages] = usePersistentState<TeacherMessage[]>(
+  "schoolerp:pages_teacher_messages_tsx:messages",
+  initialMessages
+);
   const [folder, setFolder] = useState<MessageFolder>("Inbox");
   const [search, setSearch] = useState("");
   const [selectedMessageId, setSelectedMessageId] = useState<number | null>(
@@ -154,7 +182,7 @@ export default function TeacherMessages() {
 
           <button
             onClick={openCompose}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-4 py-3 text-sm font-semibold text-white shadow-sm "
           >
             <Plus size={18} />
             Compose Message
@@ -209,7 +237,7 @@ export default function TeacherMessages() {
                 }}
                 className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                   folder === "Inbox"
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-[#27348b] text-white"
                     : "border border-slate-200 text-slate-600 hover:bg-slate-50"
                 }`}
               >
@@ -236,7 +264,7 @@ export default function TeacherMessages() {
                 }}
                 className={`inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                   folder === "Sent"
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-[#27348b] text-white"
                     : "border border-slate-200 text-slate-600 hover:bg-slate-50"
                 }`}
               >
@@ -437,9 +465,7 @@ export default function TeacherMessages() {
             </div>
           )}
 
-          <div className="border-t border-slate-100 bg-slate-50 px-4 py-3 text-xs text-slate-500 sm:px-6">
-            Demo mode: messages are stored only in this page's state.
-          </div>
+         
         </section>
 
         {showCompose && (
@@ -544,7 +570,7 @@ export default function TeacherMessages() {
                   </button>
                   <button
                     type="submit"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-5 py-3 text-sm font-semibold text-white "
                   >
                     <Send size={16} />
                     Send Message
