@@ -437,7 +437,7 @@ export default function CreateCertificate() {
         <button
           type="button"
           onClick={handlePrint}
-          className="h-10 rounded-lg bg-emerald-600 px-4 text-sm font-semibold text-white hover:bg-emerald-700"
+          className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white "
         >
           Print Preview
         </button>
