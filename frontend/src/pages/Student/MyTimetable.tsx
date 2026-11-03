@@ -449,10 +449,7 @@ export default function MyTimetable() {
           </div>
         )}
 
-        <p className="text-xs text-gray-400">
-          Demo data only. Actual schedules will be loaded from the school
-          database when the backend integration is implemented.
-        </p>
+       
       </div>
     </div>
   );

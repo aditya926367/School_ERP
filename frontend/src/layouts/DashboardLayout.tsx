@@ -217,7 +217,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       title: "Communication",
       items: [
         { label: "Announcements", path: "/student/announcements", icon: Megaphone },
-        { label: "Messages", path: "/student/messages", icon: MessageSquare },
+        { label: "Messages", path: "/student/MyMessages", icon: MessageSquare },
       ],
     },
   ],

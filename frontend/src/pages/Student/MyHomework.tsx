@@ -245,7 +245,7 @@ export default function MyHomework() {
     );
 
     setFormError("");
-    setSuccessMessage("Homework submitted successfully in this demo.");
+    setSuccessMessage("Homework submitted successfully.");
   }
 
   const filters: { label: FilterType; count: number }[] = [
@@ -358,11 +358,7 @@ export default function MyHomework() {
           )}
         </div>
 
-        <p className="text-xs text-gray-400">
-          Demo data only. Submissions are kept in page state and are not
-          saved to the server. Attachments are selected locally and are not
-          uploaded.
-        </p>
+        
       </div>
 
       {/* Homework details and submission modal */}
@@ -556,8 +552,7 @@ export default function MyHomework() {
                     )}
 
                     <p className="mt-2 text-xs text-gray-400">
-                      Accepted: PDF, Word, images, or TXT. The file is not
-                      uploaded in this demo.
+                      Accepted: PDF, Word, images, or TXT. 
                     </p>
                   </div>
 

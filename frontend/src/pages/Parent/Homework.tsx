@@ -499,11 +499,7 @@ export default function ParentHomework() {
       )}
 
       <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
-        <p>
-          <span className="font-semibold">Note:</span> This page uses sample
-          homework records. Submission status and assignment details will be
-          connected to the school database during backend integration.
-        </p>
+       
       </div>
     </div>
   );

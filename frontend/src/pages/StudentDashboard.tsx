@@ -408,9 +408,7 @@ export default function StudentDashboard() {
         </div>
       </section>
 
-      <p className="pb-2 text-center text-xs text-slate-400">
-        Student Dashboard · {student.academicYear}
-      </p>
+    
     </div>
   );
 }

@@ -125,7 +125,7 @@ export default function ParentAttendance() {
         <button
           type="button"
           onClick={exportCSV}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#202b75]"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#27348b] px-4 py-2.5 text-sm font-semibold text-white "
         >
           <ClipboardCheck size={18} />
           Export Report
@@ -325,14 +325,7 @@ export default function ParentAttendance() {
         </div>
       </div>
 
-      <div className="flex items-start gap-3 rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
-        <Clock size={19} className="mt-0.5 shrink-0" />
-        <p>
-          <span className="font-semibold">Note:</span> These are sample
-          attendance records. Actual attendance will be fetched from the
-          school database after backend integration.
-        </p>
-      </div>
+     
     </div>
   );
 }

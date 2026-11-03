@@ -304,9 +304,7 @@ export default function MyAttendance() {
             />
           </div>
 
-          <p className="mt-3 text-xs text-gray-400">
-            This percentage uses the demo records currently displayed.
-          </p>
+         
         </section>
 
         {/* Calendar */}
@@ -548,10 +546,7 @@ export default function MyAttendance() {
           )}
         </section>
 
-        <p className="text-xs text-gray-400">
-          Demo data only. Official attendance must be retrieved from your
-          school's backend and database.
-        </p>
+       
       </div>
     </div>
   );

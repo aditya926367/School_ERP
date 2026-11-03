@@ -1,6 +1,4 @@
-
-import { useMemo, useState } from "react";
-import {
+import { useMemo, useState, useEffect } from "react";import {
   BookOpen,
   Search,
   Save,
@@ -53,14 +51,47 @@ function getGradeStyle(grade: string) {
   return "bg-red-50 text-red-700";
 }
 
+function usePersistentState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const savedValue = localStorage.getItem(key);
+
+      return savedValue !== null
+        ? (JSON.parse(savedValue) as T)
+        : initialValue;
+    } catch (error) {
+      console.error("Error reading localStorage:", error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [key, state]);
+
+  return [state, setState] as const;
+}
+
 export default function TeacherEnterMarks() {
   const [selectedClass, setSelectedClass] = useState("Class 8-A");
   const [selectedSubject, setSelectedSubject] = useState("Mathematics");
   const [selectedExam, setSelectedExam] = useState("Unit Test 1");
   const [maxMarks, setMaxMarks] = useState("100");
-  const [students, setStudents] = usePersistentState<StudentMark[]>('schoolerp:pages_teacher_entermarks_tsx:students', []);
+const [students, setStudents] = usePersistentState<StudentMark[]>(
+  "schoolerp:pages_teacher_entermarks_tsx:students",
+  initialStudents
+);
   const [search, setSearch] = useState("");
-  const [savedRecords, setSavedRecords] = useState<Record<string, StudentMark[]>>({});
+const [savedRecords, setSavedRecords] = usePersistentState<
+  Record<string, StudentMark[]>
+>(
+  "schoolerp:pages_teacher_entermarks_tsx:savedRecords",
+  {}
+);
   const [message, setMessage] = useState("");
   const [savedKey, setSavedKey] = useState("");
 
@@ -200,7 +231,7 @@ export default function TeacherEnterMarks() {
 
           <button
             onClick={saveMarks}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-5 py-3 text-sm font-semibold text-white shadow-sm "
           >
             <Save size={18} />
             Save Marks

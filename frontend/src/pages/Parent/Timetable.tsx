@@ -210,7 +210,7 @@ export default function ParentTimetable() {
               onClick={() => setSelectedDay(day)}
               className={`min-w-24 rounded-lg px-4 py-3 text-sm font-medium transition ${
                 selectedDay === day
-                  ? "bg-blue-600 text-white"
+                  ? "bg-[#27348b] text-white"
                   : "border border-gray-200 text-gray-600 hover:bg-gray-50"
               }`}
             >
@@ -255,10 +255,7 @@ export default function ParentTimetable() {
           })}
         </div>
 
-        <p className="mt-5 text-xs text-gray-400">
-          Demo timetable. Both children currently share the same sample schedule.
-          Actual schedules should be loaded according to each child's class.
-        </p>
+        
       </section>
     </div>
   );

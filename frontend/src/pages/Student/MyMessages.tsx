@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Mail,
   MailOpen,
@@ -36,8 +36,38 @@ type SchoolMessage = {
 
 const initialMessages: SchoolMessage[] = [];
 
-export default function Messages() {
-  const [messages, setMessages] = usePersistentState('schoolerp:pages_student_messages_tsx:messages', []);
+function usePersistentState<T>(
+  key: string,
+  initialValue: T
+): [T, React.Dispatch<React.SetStateAction<T>>] {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const savedValue = localStorage.getItem(key);
+      return savedValue !== null
+        ? (JSON.parse(savedValue) as T)
+        : initialValue;
+    } catch (error) {
+      console.error("Error loading saved data:", error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  }, [key, state]);
+
+  return [state, setState];
+}
+
+export default function MyMessages() {
+const [messages, setMessages] = usePersistentState<SchoolMessage[]>(
+  "schoolerp:pages_student_messages_tsx:messages",
+  initialMessages
+);
   const [folder, setFolder] = useState<MessageFolder>("Inbox");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMessage, setSelectedMessage] =
@@ -175,7 +205,7 @@ export default function Messages() {
             setNotice("");
             setShowCompose(true);
           }}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#27348b] px-5 py-3 text-sm font-semibold text-white shadow-sm "
         >
           <Plus size={18} />
           Compose Message
@@ -590,7 +620,7 @@ export default function Messages() {
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#27348b] px-5 py-2.5 text-sm font-semibold text-white hover:bg-indigo-700"
                 >
                   <Send size={16} />
                   Send Message

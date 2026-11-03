@@ -1,5 +1,5 @@
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Bell,
   CalendarDays,
@@ -41,9 +41,36 @@ const categories: Category[] = [
   "Exams",
   "General",
 ];
+function usePersistentState<T>(key: string, initialValue: T) {
+  const [state, setState] = useState<T>(() => {
+    try {
+      const savedValue = localStorage.getItem(key);
 
-export default function Announcements() {
-  const [announcements, setAnnouncements] = usePersistentState('schoolerp:pages_student_announcements_tsx:announcements', []);
+      return savedValue !== null
+        ? (JSON.parse(savedValue) as T)
+        : initialValue;
+    } catch (error) {
+      console.error("Error reading localStorage:", error);
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  }, [key, state]);
+
+  return [state, setState] as const;
+}
+
+export default function MyAnnouncements() {
+const [announcements, setAnnouncements] = usePersistentState<Announcement[]>(
+  "schoolerp:pages_student_announcements_tsx:announcements",
+  initialAnnouncements
+);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState<Category>("All");
   const [statusFilter, setStatusFilter] = useState<
