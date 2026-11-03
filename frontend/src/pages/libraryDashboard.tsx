@@ -58,7 +58,7 @@ const quickActions = [
   {
     title: "Issue / Return Book",
     icon: ArrowDownLeft,
-    path: "/issueReturns",
+    path: "/issueReturn",
   },
   {
     title: "Book Catalogue",
@@ -260,7 +260,7 @@ export default function LibraryDashboard() {
 
             <button
               type="button"
-              onClick={() => navigate("/issueReturns")}
+              onClick={() => navigate("/issueReturn")}
               className="hidden items-center gap-1 text-sm font-semibold text-blue-600 hover:underline sm:inline-flex"
             >
               View all
@@ -340,7 +340,7 @@ export default function LibraryDashboard() {
           <div className="border-t border-gray-200 px-6 py-3 sm:hidden">
             <button
               type="button"
-              onClick={() => navigate("/issueReturns")}
+              onClick={() => navigate("/issueReturn")}
               className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline"
             >
               View all transactions
@@ -354,7 +354,7 @@ export default function LibraryDashboard() {
           <SectionHeading
             title="Overdue Books"
             action="View all"
-            onAction={() => navigate("/issueReturns")}
+            onAction={() => navigate("/issueReturn")}
           />
 
           <div className="divide-y divide-gray-200">

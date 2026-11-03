@@ -1,6 +1,8 @@
 // src/pages/admin/library/IssueReturn.tsx
+
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
+import { usePersistentState } from "../../../utils/usePersistentState";
 import {
   ArrowLeftRight,
   BookOpenCheck,
@@ -35,7 +37,6 @@ type TransactionColumn = {
   render: (transaction: Transaction) => ReactNode;
 };
 
-const initialTransactions: Transaction[] = [];
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
@@ -139,7 +140,7 @@ export default function IssueReturn() {
     setMemberId("");
     setBookId("");
     setDueDate("");
-    setNotice("Book issue recorded for this page session.");
+   setNotice("Book issue recorded successfully.");
   }
 
   function handleReturn(id: number) {

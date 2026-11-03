@@ -78,7 +78,7 @@ import TeacherAnnouncements from "./pages/teacher/Announcements";
 import TeacherMessages from "./pages/teacher/Messages";
 
 import MainHeader from "./layouts/mainHeader";
-import SimpleHeader from "./layouts/simpleHeader";
+// import SimpleHeader from "./layouts/simpleHeader";
 
 
 import Children from "./pages/parent/Children";
@@ -161,7 +161,7 @@ function App() {
         <Route path="/auth/register" element={<Register />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/mainHeader" element={<MainHeader />} />
-        <Route path="/simpleHeader" element={<SimpleHeader />} />
+        {/* <Route path="/simpleHeader" element={<SimpleHeader />} /> */}
 
         {/* Protected Dashboard Layout Routes */}
         <Route element={<DashboardLayout />}>
@@ -264,7 +264,7 @@ function App() {
           {/* Library pages () */}
           <Route path="/books" element={<Books />} />
           <Route path="/members" element={<Members />} />
-          <Route path="/issueReturns" element={<IssueReturn />} />
+          <Route path="/issueReturn" element={<IssueReturn />} />
           <Route path="/fines" element={<Fines />} />
           <Route path="/accountantDashboard" element={<AccountDashbaord />} />
           <Route path="/authorList" element={<AuthorList />} />
