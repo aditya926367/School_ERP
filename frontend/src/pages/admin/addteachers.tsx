@@ -754,21 +754,21 @@ export default function Teachers() {
         <div className="hidden shrink-0 items-center justify-end gap-3 lg:flex">
           <button
             onClick={handleExport}
-            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-4 text-sm font-semibold text-white transition hover:bg-indigo-900"
+            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#27348B] px-4 text-sm font-semibold text-white "
           >
             <Download size={18} />
             Export CSV
           </button>
           <button
             onClick={handlePrint}
-            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-4 text-sm font-semibold text-white transition hover:bg-indigo-900"
+            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#27348b] px-4 text-sm font-semibold text-white "
           >
             <Printer size={18} />
             Print
           </button>
           <button
             onClick={openAdd}
-            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-5 text-sm font-semibold text-white transition hover:bg-indigo-900"
+            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#27348b] px-5 text-sm font-semibold text-white "
           >
             <Plus size={18} />
             Add Teacher
@@ -780,14 +780,14 @@ export default function Teachers() {
           <div className="flex w-full justify-end gap-2 sm:w-auto sm:gap-3">
             <button
               onClick={handleExport}
-              className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-3 text-sm font-semibold text-white transition hover:bg-indigo-900 sm:px-4"
+              className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#27348b] px-3 text-sm font-semibold text-white"
             >
               <Download size={18} />
               Export CSV
             </button>
             <button
               onClick={handlePrint}
-              className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-3 text-sm font-semibold text-white transition hover:bg-indigo-900 sm:px-4"
+              className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#27348b] px-3 text-sm font-semibold text-white "
             >
               <Printer size={18} />
               Print
@@ -795,7 +795,7 @@ export default function Teachers() {
           </div>
           <button
             onClick={openAdd}
-            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-indigo-800 px-5 text-sm font-semibold text-white transition hover:bg-indigo-900"
+            className="flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#27348b] px-5 text-sm font-semibold text-white "
           >
             <Plus size={18} />
             Add Teacher

@@ -45,7 +45,6 @@ type UserRole =
   | "student"
   | "parent"
   | "library"
-  | "certificate"
   | "accountant";
 
 type MenuItem = {
@@ -323,11 +322,7 @@ const roleInfo: Record<UserRole, { name: string; title: string; initials: string
   student: { name: "Aarav Sharma", title: "Student", initials: "AS" },
   parent: { name: "Rajesh Sharma", title: "Parent", initials: "RS" },
   library: { name: "Librarian", title: "Library Management", initials: "L" },
-  certificate: {
-    name: "Certificate Manager",
-    title: "Certificate Management",
-    initials: "C",
-  },
+ 
 };
 
 const dashboardPaths: Record<UserRole, string> = {
@@ -336,7 +331,7 @@ const dashboardPaths: Record<UserRole, string> = {
   student: "/studentdashboard",
   parent: "/parentdashboard",
   library: "/librarydashboard",
-  certificate: "/certificateDashboard",
+ 
   accountant: "/accountantDashboard",
 };
 
@@ -416,82 +411,66 @@ export default function DashboardLayout() {
   const storedRole = localStorage.getItem("role") as UserRole | null;
 
   const currentRole: UserRole = (() => {
-    const path = location.pathname;
-    const lowerPath = path.toLowerCase();
+  const path = location.pathname;
+  const lowerPath = path.toLowerCase();
 
-    // Accountant: saved role is accountant, or the page is accountant-only
-    if (storedRole === "accountant" || accountantPaths.includes(lowerPath)) {
-      return "accountant";
-    }
+  if (storedRole === "accountant" || accountantPaths.includes(lowerPath)) {
+    return "accountant";
+  }
 
-    if (path === "/studentdashboard" || path.startsWith("/student/")) {
-      return "student";
-    }
-    if (path === "/teacherdashboard" || path.startsWith("/teacher/")) {
-      return "teacher";
-    }
-    if (path === "/parentdashboard" || path.startsWith("/parent/")) {
-      return "parent";
-    }
-    if (path === "/admindashboard" || path.startsWith("/admin/")) {
-      return "admin";
-    }
+  if (path === "/studentdashboard" || path.startsWith("/student/")) {
+    return "student";
+  }
 
-    // Admins keep the Admin sidebar while opening certificate pages.
-    // Certificate users still get their dedicated certificate sidebar.
-    if (storedRole === "admin" && certificatePaths.includes(path)) {
-      return "admin";
-    }
-// Keep certificate pages inside the Admin Panel
-// when the logged-in user is an admin.
-if (
-  storedRole === "admin" &&
-  (
-    path === "/certificateDashboard" ||
-    path.startsWith("/admin/certificateDashboard") ||
-    path === "/createCertificate" ||
-    path === "/manageCertificates" ||
-    path === "/bulkCertificate" ||
-    path === "/individualCertificate" ||
-    path === "/awards" ||
-    path === "/transferCertificate" ||
-    path === "/characterCertificate" ||
-    path === "/lockUnlockCertificate" ||
-    path === "/admindashboard" ||
-    path.startsWith("/admin/")
-  )
-) {
-  return "admin";
-}
+  if (path === "/teacherdashboard" || path.startsWith("/teacher/")) {
+    return "teacher";
+  }
 
-if (certificatePaths.includes(path)) {
-  return "certificate";
-}    if (libraryPaths.includes(path) || path.startsWith("/library/")) {
-      return "library";
-    }
+  if (path === "/parentdashboard" || path.startsWith("/parent/")) {
+    return "parent";
+  }
 
-    return storedRole && roleMenus[storedRole] ? storedRole : "admin";
-  })();
+  if (path === "/admindashboard" || path.startsWith("/admin/")) {
+    return "admin";
+  }
 
+  // All certificate pages use the Admin sidebar.
+  if (certificatePaths.includes(path)) {
+    return "admin";
+  }
+
+  if (libraryPaths.includes(path) || path.startsWith("/library/")) {
+    return "library";
+  }
+
+  return storedRole && roleMenus[storedRole] ? storedRole : "admin";
+})();
+
+
+const currentMenuGroups = roleMenus[currentRole] ?? roleMenus.admin;
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    roleMenus[currentRole].forEach((group) => {
-      initial[group.title] = true;
-    });
-    return initial;
+  const initial: Record<string, boolean> = {};
+
+  currentMenuGroups.forEach((group) => {
+    initial[group.title] = true;
   });
 
-  useEffect(() => {
-    setOpenGroups((prev) => {
-      const updated = { ...prev };
-      roleMenus[currentRole].forEach((group) => {
-        if (updated[group.title] === undefined) {
-          updated[group.title] = true;
-        }
-      });
-      return updated;
+  return initial;
+});
+
+ useEffect(() => {
+  setOpenGroups((prev) => {
+    const updated = { ...prev };
+
+    currentMenuGroups.forEach((group) => {
+      if (updated[group.title] === undefined) {
+        updated[group.title] = true;
+      }
     });
-  }, [currentRole]);
+
+    return updated;
+  });
+}, [currentRole]);
 
   const user = roleInfo[currentRole];
 
@@ -573,7 +552,7 @@ if (certificatePaths.includes(path)) {
             <span>Dashboard</span>
           </NavLink>
 
-          {roleMenus[currentRole].map((group) => {
+          {currentMenuGroups.map((group) => {
             const isOpen = openGroups[group.title];
 
             return (

@@ -1,6 +1,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
+import Pagination from "../../components/common/Pagination";
 import {
   Search,
   GraduationCap,
@@ -124,6 +125,8 @@ export default function AdminResults() {
   const [classFilter, setClassFilter] = useState("All");
   const [examFilter, setExamFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const classes = useMemo(
     () => [...new Set(results.map((result) => result.className))].sort(),
@@ -161,6 +164,18 @@ export default function AdminResults() {
       return matchesSearch && matchesClass && matchesExam && matchesStatus;
     });
   }, [results, search, classFilter, examFilter, statusFilter]);
+
+  // Reset to the first page whenever the search or filters change.
+  useEffect(() => {
+    setPage(1);
+  }, [search, classFilter, examFilter, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredResults.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const paginatedResults = filteredResults.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize,
+  );
 
   const publishedResults = results.filter(
     (result) => result.publishStatus === "Published",
@@ -388,7 +403,7 @@ export default function AdminResults() {
             </thead>
 
             <tbody className="divide-y divide-gray-100">
-              {filteredResults.map((result) => {
+              {paginatedResults.map((result) => {
                 const percentage = getPercentage(result);
                 const grade = getGrade(percentage);
                 const status = getResultStatus(percentage);
@@ -481,6 +496,17 @@ export default function AdminResults() {
             </tbody>
           </table>
         </div>
+
+        <Pagination
+          currentPage={safePage}
+          totalPages={totalPages}
+          totalItems={filteredResults.length}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
+          pageSizes={[5, 10, 20, 50]}
+          itemLabel="results"
+        />
       </div>
     </div>
   );

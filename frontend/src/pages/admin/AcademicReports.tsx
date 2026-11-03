@@ -491,20 +491,19 @@ export default function AcademicReports() {
           </table>
         </div>
 
-        {filteredRecords.length > 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={filteredRecords.length}
-            pageSize={pageSize}
-            onPageChange={(page) => setCurrentPage(page)}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setCurrentPage(1);
-            }}
-            pageSizes={[5, 10, 20, 50]}
-          />
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={filteredRecords.length}
+          pageSize={pageSize}
+          onPageChange={setCurrentPage}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setCurrentPage(1);
+          }}
+          pageSizes={[5, 10, 20, 50]}
+          itemLabel="records"
+        />
       </div>
     </div>
   );
