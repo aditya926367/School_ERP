@@ -3,11 +3,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
 }
 
-// Temporary table to test the connection, we will replace it later
-model Test {
+model test {
   id   Int    @id @default(autoincrement())
   name String
 }
