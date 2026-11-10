@@ -83,6 +83,7 @@ export default function ParentAnnouncements() {
         <h1 className="text-2xl font-bold text-gray-900">
           Announcements
         </h1>
+        
         <p className="mt-1 text-sm text-gray-500">
           Stay updated with important school announcements and notices.
         </p>
