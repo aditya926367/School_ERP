@@ -19,10 +19,7 @@ const categories = [
 
 const mostIssued = [
   { title: "Wings of Fire", author: "A.P.J. Abdul Kalam", times: 48 },
-  { title: "Concept of Physics", author: "H.C. Verma", times: 41 },
-  { title: "Rich Dad Poor Dad", author: "Robert Kiyosaki", times: 35 },
-  { title: "Gitanjali", author: "Rabindranath Tagore", times: 28 },
-  { title: "Discovery of India", author: "Jawaharlal Nehru", times: 22 },
+  
 ];
 
 const overdue = [
@@ -59,9 +56,9 @@ export default function LibraryReports() {
 
         <button
           onClick={exportCsv}
-          className="h-10 rounded-lg border border-[#27348b] px-4 text-sm font-semibold text-[#27348b] hover:bg-[#27348b] hover:text-white"
+          className="h-10 rounded-lg border border-[#27348b] bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
         >
-          Export Most Issued (CSV)
+          Export CSV
         </button>
       </div>
 

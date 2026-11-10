@@ -406,10 +406,7 @@ export default function IssueReturn() {
           />
         </div>
 
-        <p className="border-t border-gray-100 px-5 py-3 text-xs text-gray-500">
-          Sample data only. Changes are kept in React state for this page
-          session and are not saved to the database.
-        </p>
+     
       </section>
     </div>
   );

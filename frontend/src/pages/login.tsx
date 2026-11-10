@@ -100,7 +100,7 @@ function Dots({ className = "" }) {
 export default function AdminLogin() {
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-  const [year, setYear] = useState("2024");
+  const [year, setYear] = useState("2026");
   const [error, setError] = useState("");
 const navigate = useNavigate();
 
@@ -220,9 +220,9 @@ const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
                 onChange={(e) => setYear(e.target.value)}
                 className={`${inputCls} appearance-none h-[26px] pr-8 bg-[#f4f7fe] border-[#27348b]`}
               >
+                <option>2026</option>
+                <option>2025</option>
                 <option>2024</option>
-                <option>2023</option>
-                <option>2022</option>
               </select>
               <svg
                 className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-500"
