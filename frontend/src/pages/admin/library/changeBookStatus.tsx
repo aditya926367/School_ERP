@@ -1,13 +1,10 @@
+
 import { useState } from "react";
 import Pagination from "../../../components/common/Pagination";
-
-type CopyStatus = "Available" | "Issued" | "Lost" | "Damaged" | "Under Repair";
-
-type BookCopy = {
-  id: string;
-  title: string;
-  status: CopyStatus;
-};
+import {
+  useBookCopies,
+  type CopyStatus,
+} from "../../../store/libraryStore";
 
 const statuses: CopyStatus[] = [
   "Available",
@@ -19,8 +16,6 @@ const statuses: CopyStatus[] = [
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
-const initialCopies: BookCopy[] = [];
-
 const statusColor: Record<CopyStatus, string> = {
   Available: "bg-green-100 text-green-700",
   Issued: "bg-yellow-100 text-yellow-700",
@@ -30,11 +25,10 @@ const statusColor: Record<CopyStatus, string> = {
 };
 
 export default function ChangeBookStatus() {
-  const [copies, setCopies] = useState<BookCopy[]>(initialCopies);
+  const [copies, setCopies] = useBookCopies();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"All" | CopyStatus>("All");
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
@@ -45,7 +39,6 @@ export default function ChangeBookStatus() {
         c.id.toLowerCase().includes(search.toLowerCase()))
   );
 
-  // Pagination calculations
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
 
@@ -55,8 +48,8 @@ export default function ChangeBookStatus() {
   );
 
   function changeStatus(id: string, status: CopyStatus) {
-    setCopies((previousCopies) =>
-      previousCopies.map((copy) =>
+    setCopies(
+      copies.map((copy) =>
         copy.id === id ? { ...copy, status } : copy
       )
     );
@@ -64,7 +57,6 @@ export default function ChangeBookStatus() {
 
   return (
     <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
-      {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
           Change Book Status
@@ -75,7 +67,6 @@ export default function ChangeBookStatus() {
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        {/* Search and Status Filter */}
         <div className="flex flex-col gap-3 border-b border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between">
           <input
             value={search}
@@ -105,7 +96,6 @@ export default function ChangeBookStatus() {
           </select>
         </div>
 
-        {/* Book Copies Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-800">
             <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -172,7 +162,6 @@ export default function ChangeBookStatus() {
           </table>
         </div>
 
-        {/* Shared Pagination Component */}
         <div className="border-t border-gray-200 px-4 py-3">
           <Pagination
             currentPage={safePage}

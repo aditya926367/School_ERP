@@ -1,8 +1,12 @@
 // src/pages/admin/library/Books.tsx
 import { useMemo, useState } from "react";
-import { usePersistentState } from "../../../utils/usePersistentState";
+// import { usePersistentState } from "../../../utils/usePersistentState";
 import type { FormEvent } from "react";
 import { BookOpen, LibraryBig, Plus, X } from "lucide-react";
+
+// import { useBooks } from "../../../store/libraryStore";
+import { useBooks, type Book } from "../../../store/libraryStore";
+
 
 import DataTable from "../../../components/common/DataTable";
 import FilterSelect from "../../../components/common/FilterSelect";
@@ -12,41 +16,36 @@ import SearchBar from "../../../components/common/SearchBar";
 import StatusBadge from "../../../components/common/StatusBadge";
 import SummaryCard from "../../../components/common/SummaryCard";
 
-type Book = {
-  id: string;
-  title: string;
-  author: string;
-  category: string;
-  copies: number;
-  available: number;
-};
+// type Book = {
+//   id: string;
+//   title: string;
+//   author: string;
+//   category: string;
+//   copies: number;
+//   available: number;
+// };
 
-const initialBooks: Book[] = [];
+// const initialBooks: Book[] = [];
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
 const inputStyle =
   "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] focus:ring-2 focus:ring-blue-100";
 
+
 const emptyForm = {
   title: "",
   author: "",
-  category: "Science",
-  copies: "1",
+  category: "",
+  copies: "",
 };
 
 export default function Books() {
-  const [books, setBooks] = usePersistentState<Book[]>('schoolerp:pages_admin_library_books_tsx:books', []);
-   const categories = [
-    "Fiction",
-    "Non-Fiction",
-    "Science",
-    "Mathematics",
-    "History",
-    "Technology",
-    "Reference",
-    "Other",
-  ];
+
+
+
+  const [books, setBooks] = useBooks();
+  const categories = [...new Set(books.map((book) => book.category))];
 
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -417,22 +416,15 @@ export default function Books() {
                   <label className="mb-1 block text-sm font-medium text-gray-700">
                     Category
                   </label>
-                  <select
+              
+                  <input
                     value={form.category}
                     onChange={(event) =>
-                      setForm({
-                        ...form,
-                        category: event.target.value,
-                      })
+                      setForm({ ...form, category: event.target.value })
                     }
+                    placeholder="Enter category"
                     className={inputStyle}
-                  >
-                    {categories.map((category) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div>
@@ -482,7 +474,7 @@ export default function Books() {
         </div>
       )}
 
-      
+
     </div>
   );
 }

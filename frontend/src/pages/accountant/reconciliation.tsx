@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Head, card, inputCls, th, td } from "./feesShared";
-import { useFees, money, sumAmounts } from "../../store/feeStore";
+import { useFees, money, sumAmounts } from "../../store/accountantStore";
 
 export default function Reconciliation() {
   const { payments } = useFees();

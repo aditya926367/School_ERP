@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import { BookUser, Plus, Users, X } from "lucide-react";
-import { usePersistentState } from "../../../utils/usePersistentState";
+import { useMembers } from "../../../store/libraryStore";
 
 import DataTable from "../../../components/common/DataTable";
 import FilterSelect from "../../../components/common/FilterSelect";
@@ -29,7 +29,7 @@ const inputStyle = "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm o
 const emptyForm = { name: "", type: "Student" as MemberType, className: "", active: true };
 
 export default function Members() {
-  const [members, setMembers] = usePersistentState<Member[]>('schoolerp:pages_admin_library_members_tsx:members', []);
+  const [members, setMembers] = useMembers();
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");

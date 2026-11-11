@@ -1,5 +1,5 @@
 import { Head, Stat, card, th, td } from "./feesShared";
-import { useFees, money, outstanding } from "../../store/feeStore";
+import { useFees, money, outstanding } from "../../store/accountantStore";
 
 export default function MisStatus() {
   const { students } = useFees();

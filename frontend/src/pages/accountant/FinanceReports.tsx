@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Pagination from "../../components/common/Pagination";
-import { useFees, todayISO } from "../../store/feeStore";
-import type { FeePayment } from "../../store/feeStore";
+import { useFees, todayISO } from "../../store/accountantStore";
+import type { FeePayment } from "../../store/accountantStore";
 import {
   Banknote,
   Download,

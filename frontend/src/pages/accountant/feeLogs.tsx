@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Head, card, inputCls, th, td } from "./feesShared";
-import { useFees } from "../../store/feeStore";
+import { useFees } from "../../store/accountantStore";
 
 export default function FeeLogs() {
   const { logs } = useFees();

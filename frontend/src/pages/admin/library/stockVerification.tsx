@@ -1,50 +1,60 @@
+
 import { useState } from "react";
 import Pagination from "../../../components/common/Pagination";
-import { usePersistentState } from "../../../utils/usePersistentState";
-type StockRow = {
-  id: string;
-  title: string;
-  system: number;
-  physical: string;
-};
-
-const initialRows: StockRow[] = [];
+import { useBooks } from "../../../store/libraryStore";
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
-function getResult(r: StockRow): {
-  label: string;
-  className: string;
-  diff: number;
-} {
-  if (r.physical === "") {
-    return {
-      label: "Not counted",
-      className: "bg-gray-200 text-gray-600",
-      diff: 0,
-    };
-  }
-
-  const diff = Number(r.physical) - r.system;
-  if (diff === 0) {
-    return { label: "Match", className: "bg-green-100 text-green-700", diff };
-  }
-  if (diff < 0) {
-    return {
-      label: `Missing ${Math.abs(diff)}`,
-      className: "bg-red-100 text-red-700",
-      diff,
-    };
-  }
-  return { label: `Extra ${diff}`, className: "bg-yellow-100 text-yellow-700", diff };
-}
-
 export default function StockVerification() {
-  const [rows, setRows] = usePersistentState<StockRow[]>('schoolerp:pages_admin_library_stockverification_tsx:rows', []);
+  const [books] = useBooks();
+  const [physicalCounts, setPhysicalCounts] = useState<Record<string, string>>(
+    {}
+  );
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
+
+  const rows = books.map((book) => ({
+    id: book.id,
+    title: book.title,
+    system: book.copies,
+    physical: physicalCounts[book.id] ?? "",
+  }));
+
+  function getResult(row: (typeof rows)[number]) {
+    if (row.physical === "") {
+      return {
+        label: "Not counted",
+        className: "bg-gray-200 text-gray-600",
+        diff: 0,
+      };
+    }
+
+    const diff = Number(row.physical) - row.system;
+
+    if (diff === 0) {
+      return {
+        label: "Match",
+        className: "bg-green-100 text-green-700",
+        diff,
+      };
+    }
+
+    if (diff < 0) {
+      return {
+        label: `Missing ${Math.abs(diff)}`,
+        className: "bg-red-100 text-red-700",
+        diff,
+      };
+    }
+
+    return {
+      label: `Extra ${diff}`,
+      className: "bg-yellow-100 text-yellow-700",
+      diff,
+    };
+  }
 
   const filteredRows = rows.filter(
     (row) =>
@@ -54,27 +64,32 @@ export default function StockVerification() {
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / pageSize));
   const safePage = Math.min(currentPage, totalPages);
+
   const pagedRows = filteredRows.slice(
     (safePage - 1) * pageSize,
     safePage * pageSize
   );
 
   const countedRows = rows.filter((row) => row.physical !== "");
+
   const mismatchCount = countedRows.filter(
     (row) => getResult(row).diff !== 0
   ).length;
 
   function setPhysical(id: string, value: string) {
     setMessage("");
-    setRows((currentRows) =>
-      currentRows.map((row) =>
-        row.id === id ? { ...row, physical: value } : row
-      )
-    );
+
+    setPhysicalCounts((current) => ({
+      ...current,
+      [id]: value,
+    }));
   }
 
   function handleSave() {
+    if (countedRows.length === 0) return;
+
     const today = new Date().toISOString().slice(0, 10);
+
     setMessage(
       `Verification saved on ${today}: ${countedRows.length} counted, ${mismatchCount} mismatches`
     );
@@ -82,9 +97,7 @@ export default function StockVerification() {
 
   function handleReset() {
     setMessage("");
-    setRows((currentRows) =>
-      currentRows.map((row) => ({ ...row, physical: "" }))
-    );
+    setPhysicalCounts({});
   }
 
   return (
@@ -96,7 +109,6 @@ export default function StockVerification() {
         </p>
       </div>
 
-      {/* Summary cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="text-xs font-semibold uppercase text-gray-500">
@@ -106,6 +118,7 @@ export default function StockVerification() {
             {rows.length}
           </div>
         </div>
+
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="text-xs font-semibold uppercase text-gray-500">
             Counted
@@ -114,6 +127,7 @@ export default function StockVerification() {
             {countedRows.length}
           </div>
         </div>
+
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <div className="text-xs font-semibold uppercase text-gray-500">
             Mismatches
@@ -125,7 +139,6 @@ export default function StockVerification() {
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        {/* Search and actions */}
         <div className="flex flex-col gap-3 border-b border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between">
           <input
             value={search}
@@ -144,6 +157,7 @@ export default function StockVerification() {
             >
               Reset
             </button>
+
             <button
               onClick={handleSave}
               disabled={countedRows.length === 0}
@@ -160,7 +174,6 @@ export default function StockVerification() {
           </p>
         )}
 
-        {/* Stock table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-800">
             <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -172,6 +185,7 @@ export default function StockVerification() {
                 <th className="px-4 py-3">Result</th>
               </tr>
             </thead>
+
             <tbody>
               {pagedRows.map((row) => {
                 const result = getResult(row);
@@ -217,7 +231,6 @@ export default function StockVerification() {
           </table>
         </div>
 
-        {/* Use the shared Pagination component only; no separate page-size dropdown */}
         <div className="border-t border-gray-200 px-5 py-3">
           <Pagination
             currentPage={safePage}

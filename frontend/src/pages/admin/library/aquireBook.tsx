@@ -2,43 +2,31 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import Pagination from "../../../components/common/Pagination";
-import { usePersistentState } from "../../../utils/usePersistentState";
-
-type OrderStatus = "Ordered" | "Received";
-
-type Acquisition = {
-  id: string;
-  title: string;
-  author: string;
-  supplier: string;
-  quantity: number;
-  price: number; // price per copy in rupees
-  orderDate: string;
-  status: OrderStatus;
-};
+import { useAcquisitions } from "../../../store/libraryStore";
 
 const today = new Date().toISOString().slice(0, 10);
 
-const initialOrders: Acquisition[] = [];
-
-// Empty form state
-const emptyForm = { title: "", author: "", supplier: "", quantity: "1", price: "", orderDate: today };
+const emptyForm = {
+  title: "",
+  author: "",
+  supplier: "",
+  quantity: "1",
+  price: "",
+  orderDate: today,
+};
 
 const inputStyle =
   "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b]";
 
-// ---------- Pagination helpers ----------
 const PAGE_SIZES = [5, 10, 25, 50];
 
 export default function AcquireBook() {
-  const [orders, setOrders] = usePersistentState<Acquisition[]>('schoolerp:pages_admin_library_aquirebook_tsx:orders', []);
+  const [orders, setOrders] = useAcquisitions();
   const [search, setSearch] = useState("");
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
-  // Popup form state
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
@@ -50,20 +38,28 @@ export default function AcquireBook() {
       o.id.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Pagination calculation
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
-  const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
-  // Summary is calculated on ALL orders
-  const pendingCount = orders.filter((o) => o.status === "Ordered").length;
+  const paged = filtered.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
+
+  const pendingCount = orders.filter(
+    (o) => o.status === "Ordered"
+  ).length;
+
   const totalSpent = orders
     .filter((o) => o.status === "Received")
     .reduce((sum, o) => sum + o.quantity * o.price, 0);
 
-  // Next ID: highest number + 1
   function nextId(): string {
-    const max = orders.reduce((m, o) => Math.max(m, Number(o.id.slice(2))), 0);
+    const max = orders.reduce(
+      (m, o) => Math.max(m, Number(o.id.slice(2)) || 0),
+      0
+    );
+
     return "AQ" + String(max + 1).padStart(3, "0");
   }
 
@@ -87,20 +83,23 @@ export default function AcquireBook() {
       setError("Title, author and supplier are required");
       return;
     }
+
     if (!Number.isInteger(quantity) || quantity < 1) {
       setError("Quantity must be 1 or more");
       return;
     }
+
     if (!(price > 0)) {
       setError("Price must be greater than 0");
       return;
     }
+
     if (!form.orderDate) {
       setError("Order date is required");
       return;
     }
 
-    const newOrder: Acquisition = {
+    const newOrder = {
       id: nextId(),
       title: form.title.trim(),
       author: form.author.trim(),
@@ -108,39 +107,50 @@ export default function AcquireBook() {
       quantity,
       price,
       orderDate: form.orderDate,
-      status: "Ordered",
+      status: "Ordered" as const,
     };
 
     setOrders([newOrder, ...orders]);
-    setPage(1); // new entry is at the top
+    setPage(1);
     closeForm();
   }
 
   function markReceived(id: string) {
-    setOrders(orders.map((o) => (o.id === id ? { ...o, status: "Received" } : o)));
+    setOrders(
+      orders.map((o) =>
+        o.id === id ? { ...o, status: "Received" as const } : o
+      )
+    );
   }
 
   return (
-        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Acquire Book</h1>
         <p className="text-sm text-gray-500">Track orders for new books</p>
       </div>
 
-      {/* Summary cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold uppercase text-gray-500">Pending Orders</div>
-          <div className="mt-1 text-2xl font-bold text-yellow-600">{pendingCount}</div>
+          <div className="text-xs font-semibold uppercase text-gray-500">
+            Pending Orders
+          </div>
+          <div className="mt-1 text-2xl font-bold text-yellow-600">
+            {pendingCount}
+          </div>
         </div>
+
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-          <div className="text-xs font-semibold uppercase text-gray-500">Spent on Received Books</div>
-          <div className="mt-1 text-2xl font-bold text-green-600">₹{totalSpent}</div>
+          <div className="text-xs font-semibold uppercase text-gray-500">
+            Spent on Received Books
+          </div>
+          <div className="mt-1 text-2xl font-bold text-green-600">
+            ₹{totalSpent}
+          </div>
         </div>
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        {/* Top bar: search + add button */}
         <div className="flex flex-col gap-3 border-b border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between">
           <input
             value={search}
@@ -151,6 +161,7 @@ export default function AcquireBook() {
             placeholder="Search by title, supplier or ID..."
             className="h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] sm:w-[320px]"
           />
+
           <button
             onClick={openForm}
             className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
@@ -159,7 +170,6 @@ export default function AcquireBook() {
           </button>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-800">
             <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -174,18 +184,25 @@ export default function AcquireBook() {
                 <th className="px-4 py-3">Action</th>
               </tr>
             </thead>
+
             <tbody>
               {paged.map((o) => (
-                <tr key={o.id} className="border-t border-gray-200 hover:bg-gray-50">
+                <tr
+                  key={o.id}
+                  className="border-t border-gray-200 hover:bg-gray-50"
+                >
                   <td className="px-4 py-3 text-gray-500">{o.id}</td>
+
                   <td className="px-4 py-3">
                     <div className="font-semibold">{o.title}</div>
                     <div className="text-xs text-gray-500">{o.author}</div>
                   </td>
+
                   <td className="px-4 py-3">{o.supplier}</td>
                   <td className="px-4 py-3">{o.quantity}</td>
                   <td className="px-4 py-3">₹{o.quantity * o.price}</td>
                   <td className="px-4 py-3">{o.orderDate}</td>
+
                   <td className="px-4 py-3">
                     {o.status === "Received" ? (
                       <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700">
@@ -197,6 +214,7 @@ export default function AcquireBook() {
                       </span>
                     )}
                   </td>
+
                   <td className="px-4 py-3">
                     {o.status === "Ordered" && (
                       <button
@@ -212,7 +230,10 @@ export default function AcquireBook() {
 
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  <td
+                    colSpan={8}
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
                     No orders found
                   </td>
                 </tr>
@@ -221,7 +242,6 @@ export default function AcquireBook() {
           </table>
         </div>
 
-        {/* Shared Pagination component: includes page-size selection */}
         <div className="border-t border-gray-200 px-5 py-3">
           <Pagination
             currentPage={safePage}
@@ -239,7 +259,6 @@ export default function AcquireBook() {
         </div>
       </div>
 
-      {/* New order popup */}
       {showForm && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
@@ -250,7 +269,10 @@ export default function AcquireBook() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-              <h2 className="text-lg font-bold text-gray-900">New Book Order</h2>
+              <h2 className="text-lg font-bold text-gray-900">
+                New Book Order
+              </h2>
+
               <button
                 onClick={closeForm}
                 className="text-2xl leading-none text-gray-400 hover:text-gray-700"
@@ -262,10 +284,14 @@ export default function AcquireBook() {
 
             <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
               <div>
-                <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Book Title</label>
+                <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                  Book Title
+                </label>
                 <input
                   value={form.title}
-                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, title: e.target.value })
+                  }
                   placeholder="e.g. Atomic Habits"
                   className={inputStyle}
                 />
@@ -273,18 +299,27 @@ export default function AcquireBook() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Author</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                    Author
+                  </label>
                   <input
                     value={form.author}
-                    onChange={(e) => setForm({ ...form, author: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, author: e.target.value })
+                    }
                     className={inputStyle}
                   />
                 </div>
+
                 <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Supplier</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                    Supplier
+                  </label>
                   <input
                     value={form.supplier}
-                    onChange={(e) => setForm({ ...form, supplier: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, supplier: e.target.value })
+                    }
                     className={inputStyle}
                   />
                 </div>
@@ -292,31 +327,45 @@ export default function AcquireBook() {
 
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Quantity</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                    Quantity
+                  </label>
                   <input
                     type="number"
                     min={1}
                     value={form.quantity}
-                    onChange={(e) => setForm({ ...form, quantity: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, quantity: e.target.value })
+                    }
                     className={inputStyle}
                   />
                 </div>
+
                 <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Price / copy (₹)</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                    Price / copy (₹)
+                  </label>
                   <input
                     type="number"
                     min={1}
                     value={form.price}
-                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, price: e.target.value })
+                    }
                     className={inputStyle}
                   />
                 </div>
+
                 <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Order Date</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                    Order Date
+                  </label>
                   <input
                     type="date"
                     value={form.orderDate}
-                    onChange={(e) => setForm({ ...form, orderDate: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, orderDate: e.target.value })
+                    }
                     className={inputStyle}
                   />
                 </div>
@@ -332,6 +381,7 @@ export default function AcquireBook() {
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"

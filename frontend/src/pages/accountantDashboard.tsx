@@ -19,7 +19,7 @@ import {
   outstanding,
   sumAmounts,
   todayISO,
-} from "../store/feeStore";
+} from "../store/accountantStore";
 
 import { loadRuns, inr } from "./accountant/payroll/payrollShared";
 

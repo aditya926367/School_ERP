@@ -3,8 +3,8 @@
 
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
-import { useFees, money, PAYMENT_MODES, todayISO } from "../../store/feeStore";
-import type { PaymentMode, FeePayment, FeeStudent } from "../../store/feeStore";
+import { useFees, money, PAYMENT_MODES, todayISO } from "../../store/accountantStore";
+import type { PaymentMode, FeePayment, FeeStudent } from "../../store/accountantStore";
 import {
   Plus,
   IndianRupee,
