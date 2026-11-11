@@ -1,6 +1,6 @@
 import ActionButtons from "../../components/common/ActionButtons";
-import { useFees } from "../../store/feeStore";
-import type { FeeStructureItem } from "../../store/feeStore";
+import { useFees } from "../../store/accountantStore";
+import type { FeeStructureItem } from "../../store/accountantStore";
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {

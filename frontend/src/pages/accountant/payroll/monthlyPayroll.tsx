@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Head, Stat, Badge, card, inputCls, btn, th, td, inr, netOf, getStaff, loadRuns, saveRuns, monthLabel, WORKING_DAYS, daysOf } from "./payrollShared";
 import type { Row, Run } from "./payrollShared";
-import { todayISO } from "../../../store/feeStore";
+import { todayISO } from "../../../store/accountantStore";
 
 export default function MonthlyPayroll() {
   const [month, setMonth] = useState(todayISO().slice(0, 7));

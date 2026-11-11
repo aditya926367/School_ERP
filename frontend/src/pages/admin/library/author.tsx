@@ -2,34 +2,22 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import Pagination from "../../../components/common/Pagination";
+import { useAuthors } from "../../../store/libraryStore";
 
-type Author = {
-  id: string;
-  name: string;
-  country: string;
-  books: number;
-};
-
-const initialAuthors: Author[] = [];
-
-// Empty form state
 const emptyForm = { name: "", country: "India", books: "1" };
 
 const inputStyle =
   "h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b]";
 
-// Page sizes supported by the shared Pagination component.
 const PAGE_SIZES = [5, 10, 25, 50];
 
 export default function AuthorList() {
-  const [authors, setAuthors] = usePersistentState<Author[]>('schoolerp:pages_admin_library_author_tsx:authors', []);
+  const [authors, setAuthors] = useAuthors();
   const [search, setSearch] = useState("");
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
 
-  // Popup form state
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState("");
@@ -40,14 +28,20 @@ export default function AuthorList() {
       a.country.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Pagination calculation
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
-  const paged = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
 
-  // Next ID: highest number + 1
+  const paged = filtered.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
+
   function nextId(): string {
-    const max = authors.reduce((m, a) => Math.max(m, Number(a.id.slice(2))), 0);
+    const max = authors.reduce(
+      (m, a) => Math.max(m, Number(a.id.slice(2)) || 0),
+      0
+    );
+
     return "AU" + String(max + 1).padStart(3, "0");
   }
 
@@ -70,12 +64,13 @@ export default function AuthorList() {
       setError("Name and country are required");
       return;
     }
+
     if (!Number.isInteger(books) || books < 0) {
       setError("Books must be 0 or more");
       return;
     }
 
-    const newAuthor: Author = {
+    const newAuthor = {
       id: nextId(),
       name: form.name.trim(),
       country: form.country.trim(),
@@ -83,19 +78,20 @@ export default function AuthorList() {
     };
 
     setAuthors([newAuthor, ...authors]);
-    setPage(1); // new entry is at the top
+    setPage(1);
     closeForm();
   }
 
   return (
-        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Author List</h1>
-        <p className="text-sm text-gray-500">Maintain a database of authors</p>
+        <p className="text-sm text-gray-500">
+          Maintain a database of authors
+        </p>
       </div>
 
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        {/* Top bar: search + add button */}
         <div className="flex flex-col gap-3 border-b border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between">
           <input
             value={search}
@@ -106,6 +102,7 @@ export default function AuthorList() {
             placeholder="Search by author or country..."
             className="h-10 w-full rounded-lg border border-gray-300 px-3 text-sm outline-none focus:border-[#27348b] sm:w-[320px]"
           />
+
           <button
             onClick={openForm}
             className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
@@ -114,7 +111,6 @@ export default function AuthorList() {
           </button>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-800">
             <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -125,10 +121,15 @@ export default function AuthorList() {
                 <th className="px-4 py-3">Books in Library</th>
               </tr>
             </thead>
+
             <tbody>
               {paged.map((a) => (
-                <tr key={a.id} className="border-t border-gray-200 hover:bg-gray-50">
+                <tr
+                  key={a.id}
+                  className="border-t border-gray-200 hover:bg-gray-50"
+                >
                   <td className="px-4 py-3 text-gray-500">{a.id}</td>
+
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#27348b] text-xs font-bold text-white">
@@ -137,6 +138,7 @@ export default function AuthorList() {
                       <span className="font-semibold">{a.name}</span>
                     </div>
                   </td>
+
                   <td className="px-4 py-3">{a.country}</td>
                   <td className="px-4 py-3">{a.books}</td>
                 </tr>
@@ -144,7 +146,10 @@ export default function AuthorList() {
 
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                  <td
+                    colSpan={4}
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
                     No authors found
                   </td>
                 </tr>
@@ -153,7 +158,6 @@ export default function AuthorList() {
           </table>
         </div>
 
-        {/* Shared Pagination component */}
         <div className="border-t border-gray-200 px-4 py-3">
           <Pagination
             currentPage={safePage}
@@ -171,7 +175,6 @@ export default function AuthorList() {
         </div>
       </div>
 
-      {/* Add author popup */}
       {showForm && (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
@@ -182,7 +185,10 @@ export default function AuthorList() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
-              <h2 className="text-lg font-bold text-gray-900">Add Author</h2>
+              <h2 className="text-lg font-bold text-gray-900">
+                Add Author
+              </h2>
+
               <button
                 onClick={closeForm}
                 className="text-2xl leading-none text-gray-400 hover:text-gray-700"
@@ -194,10 +200,15 @@ export default function AuthorList() {
 
             <form onSubmit={handleSubmit} className="space-y-4 px-5 py-4">
               <div>
-                <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Author Name</label>
+                <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                  Author Name
+                </label>
+
                 <input
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, name: e.target.value })
+                  }
                   placeholder="e.g. A.P.J. Abdul Kalam"
                   className={inputStyle}
                 />
@@ -205,26 +216,39 @@ export default function AuthorList() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Country</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                    Country
+                  </label>
+
                   <input
                     value={form.country}
-                    onChange={(e) => setForm({ ...form, country: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, country: e.target.value })
+                    }
                     className={inputStyle}
                   />
                 </div>
+
                 <div>
-                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">Books</label>
+                  <label className="mb-1 block text-xs font-semibold uppercase text-gray-500">
+                    Books
+                  </label>
+
                   <input
                     type="number"
                     min={0}
                     value={form.books}
-                    onChange={(e) => setForm({ ...form, books: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, books: e.target.value })
+                    }
                     className={inputStyle}
                   />
                 </div>
               </div>
 
-              {error && <p className="text-sm text-red-600">{error}</p>}
+              {error && (
+                <p className="text-sm text-red-600">{error}</p>
+              )}
 
               <div className="flex justify-end gap-3 pt-2">
                 <button
@@ -234,6 +258,7 @@ export default function AuthorList() {
                 >
                   Cancel
                 </button>
+
                 <button
                   type="submit"
                   className="h-10 rounded-lg bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"

@@ -1,5 +1,5 @@
 import { Head, card, th, td } from "./feesShared";
-import { useFees, money, outstanding, sumAmounts } from "../../store/feeStore";
+import { useFees, money, outstanding, sumAmounts } from "../../store/accountantStore";
 
 export default function MonthlyProjection() {
   const { students, payments } = useFees();

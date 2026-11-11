@@ -60,8 +60,8 @@ import DataTable from "../../components/common/DataTable";
 import PageHeader from "../../components/common/PageHeader";
 import Pagination from "../../components/common/Pagination";
 import SummaryCard from "../../components/common/SummaryCard";
-import { useFees, money, sumAmounts, todayISO } from "../../store/feeStore";
-import type { FeePayment, PaymentMode } from "../../store/feeStore";
+import { useFees, money, sumAmounts, todayISO } from "../../store/accountantStore";
+import type { FeePayment, PaymentMode } from "../../store/accountantStore";
 
 // Icon and colours of each payment mode (same style as the cards on the other pages)
 const MODE_STYLE: Record<PaymentMode, { icon: ReactNode; iconClass: string; bgClass: string; badgeClass: string }> = {

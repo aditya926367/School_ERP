@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Printer, Search } from "lucide-react";
 import { Head, card, inputCls, btn } from "./feesShared";
-import { useFees, money, outstanding } from "../../store/feeStore";
+import { useFees, money, outstanding } from "../../store/accountantStore";
 import Pagination from "../../components/common/Pagination";
 import { useBankDetails, useSchool, SCHOOL_NAME_MISSING } from "../../store/schoolStore";
 

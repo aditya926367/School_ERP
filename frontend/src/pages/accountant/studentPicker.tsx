@@ -4,8 +4,8 @@
 import { useState } from "react";
 import type { KeyboardEvent } from "react";
 import { Search } from "lucide-react";
-import { money } from "../../store/feeStore";
-import type { FeeStudent } from "../../store/feeStore";
+import { money } from "../../store/accountantStore";
+import type { FeeStudent } from "../../store/accountantStore";
 
 const MAX_RESULTS = 8;
 

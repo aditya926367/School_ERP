@@ -14,8 +14,8 @@ import Pagination from "../../components/common/Pagination";
 import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import ActionButtons from "../../components/common/ActionButtons";
-import { useFees, money } from "../../store/feeStore";
-import type { FeePayment } from "../../store/feeStore";
+import { useFees, money } from "../../store/accountantStore";
+import type { FeePayment } from "../../store/accountantStore";
 
 
 type Receipt = FeePayment & { status: "Paid" | "Refunded" };

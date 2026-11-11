@@ -17,8 +17,8 @@ import Pagination from "../../components/common/Pagination";
 import SearchBar from "../../components/common/SearchBar";
 import StatusBadge from "../../components/common/StatusBadge";
 import SummaryCard from "../../components/common/SummaryCard";
-import type { FeeStudent } from "../../store/feeStore";
-import { useFees, money, dueStatus } from "../../store/feeStore";
+import type { FeeStudent } from "../../store/accountantStore";
+import { useFees, money, dueStatus } from "../../store/accountantStore";
 
 type DueRecord = FeeStudent & { id: number };
 
