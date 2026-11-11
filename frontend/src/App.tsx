@@ -59,11 +59,6 @@ import MyMessages from "./pages/Student/MyMessages.tsx";
 // Keep this import only if this file exists in your project.
 // import StudentProfile from "./pages/admin/StudentProfile";
 
-// Library Pages (aapka)
-import Books from "./pages/admin/library/books";
-import Members from "./pages/admin/library/Members";
-import IssueReturn from "./pages/admin/library/IssueReturn";
-import Fines from "./pages/admin/library/Fines";
 
 
 import TeacherMyClasses from "./pages/teacher/MyClasses";
@@ -113,14 +108,19 @@ import AdminMessages from "./pages/admin/communication/messages.tsx";
 //library
 import LibraryDashboard from "./pages/libraryDashboard";
 import AccountDashbaord from "./pages/accountantDashboard.tsx";
-import AuthorList from "./pages/admin/library/author.tsx";
+import AuthorList from "./pages/admin/library/authorList.tsx";
 import ImportBookMaster from "./pages/admin/library/importBookMaster.tsx";
 import ChangeBookStatus from "./pages/admin/library/changeBookStatus.tsx";
 import BarcodeGenerator from "./pages/admin/library/barcodeGenerator.tsx";
 import StockVerification from "./pages/admin/library/stockVerification.tsx";
-import AcquireBook from "./pages/admin/library/aquireBook.tsx";
+import OrderBook from "./pages/admin/library/orderBook.tsx";
 import LibraryReports from "./pages/admin/library/libraryReports.tsx";
 import LibrarySetup from "./pages/admin/library/librarySetup.tsx";
+import BookMaster from "./pages/admin/library/bookMaster.tsx";
+import Members from "./pages/admin/library/Members";
+import IssueBook from "./pages/admin/library/IssueBook.tsx";
+import Fines from "./pages/admin/library/Fines";
+
 
 ///my profile 
 import MyProfile from "./pages/common/myProfile.tsx";
@@ -262,9 +262,9 @@ function App() {
           <Route path="/librarydashboard" element={<LibraryDashboard />} />
 
           {/* Library pages () */}
-          <Route path="/books" element={<Books />} />
+          <Route path="/bookMaster" element={<BookMaster />} />
           <Route path="/members" element={<Members />} />
-          <Route path="/issueReturn" element={<IssueReturn />} />
+          <Route path="/issueBooks" element={<IssueBook />} />
           <Route path="/fines" element={<Fines />} />
           <Route path="/accountantDashboard" element={<AccountDashbaord />} />
           <Route path="/authorList" element={<AuthorList />} />
@@ -272,7 +272,7 @@ function App() {
           <Route path="/changeBookStatus" element={<ChangeBookStatus />} />
           <Route path="/barcodeGenerator" element={<BarcodeGenerator />} />
           <Route path="/stockVerification" element={<StockVerification />} />
-          <Route path="/acquireBook" element={<AcquireBook />} />
+          <Route path="/OrderBooks" element={<OrderBook />} />
           <Route path="/libraryReports" element={<LibraryReports />} />
           <Route path="/librarySetup" element={<LibrarySetup />} />
 

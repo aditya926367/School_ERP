@@ -262,7 +262,7 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
       title: "Library Management",
       items: [
         { label: "Library Setup", path: "/librarySetup", icon: Pencil },
-        { label: "Issue and Return", path: "/issueReturn", icon: BookMarked },
+        { label: "Issue and Return", path: "/issueBooks", icon: BookMarked },
         { label: "Stock Verification", path: "/stockVerification", icon: ClipboardCheck },
         { label: "Reports", path: "/libraryReports", icon: BarChart3 },
       ],
@@ -270,8 +270,8 @@ const roleMenus: Record<UserRole, MenuGroup[]> = {
     {
       title: "Books",
       items: [
-        { label: "Book Master", path: "/books", icon: BookOpen },
-        { label: "Acquire Book", path: "/acquireBook", icon: ShoppingCart },
+        { label: "Book Master", path: "/bookMaster", icon: BookOpen },
+        { label: "Order Book", path: "/orderBooks", icon: ShoppingCart },
         { label: "Import BookMaster", path: "/importBookMaster", icon: Upload },
         { label: "Change Book Status", path: "/changeBookStatus", icon: RefreshCw },
         { label: "Barcode Generator", path: "/barcodeGenerator", icon: Barcode },

@@ -1,8 +1,15 @@
-// src/pages/admin/library/IssueReturn.tsx
+
 
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import { usePersistentState } from "../../../utils/usePersistentState";
+
+import {
+  useBooks,
+  useTransactions,
+  type Transaction,
+  type Book,
+} from "../../../store/libraryStore";
+
 import {
   ArrowLeftRight,
   BookOpenCheck,
@@ -19,15 +26,6 @@ import SearchBar from "../../../components/common/SearchBar";
 import StatusBadge from "../../../components/common/StatusBadge";
 import SummaryCard from "../../../components/common/SummaryCard";
 
-type Transaction = {
-  id: number;
-  memberId: string;
-  bookId: string;
-  issueDate: string;
-  dueDate: string;
-  returned: boolean;
-};
-
 type TransactionStatus = "Issued" | "Returned" | "Overdue";
 
 type TransactionColumn = {
@@ -36,7 +34,6 @@ type TransactionColumn = {
   className?: string;
   render: (transaction: Transaction) => ReactNode;
 };
-
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
@@ -54,8 +51,9 @@ function getStatus(transaction: Transaction): TransactionStatus {
   return dueDate < today ? "Overdue" : "Issued";
 }
 
-export default function IssueReturn() {
-  const [transactions, setTransactions] = usePersistentState<Transaction[]>('schoolerp:pages_admin_library_issuereturn_tsx:transactions', []);
+export default function IssueBook() {
+  const [transactions, setTransactions] = useTransactions();
+  const [books, setBooks] = useBooks();
 
   const [memberId, setMemberId] = useState("");
   const [bookId, setBookId] = useState("");
@@ -87,34 +85,49 @@ export default function IssueReturn() {
 
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredTransactions.length / pageSize),
+    Math.ceil(filteredTransactions.length / pageSize)
   );
 
   const safePage = Math.min(page, totalPages);
 
   const pagedTransactions = filteredTransactions.slice(
     (safePage - 1) * pageSize,
-    safePage * pageSize,
+    safePage * pageSize
   );
 
   const activeCount = transactions.filter(
-    (transaction) => !transaction.returned,
+    (transaction) => !transaction.returned
   ).length;
 
   const returnedCount = transactions.filter(
-    (transaction) => transaction.returned,
+    (transaction) => transaction.returned
   ).length;
 
   const overdueCount = transactions.filter(
-    (transaction) => getStatus(transaction) === "Overdue",
+    (transaction) => getStatus(transaction) === "Overdue"
   ).length;
 
+  // Issue a book
   function handleIssue() {
     setFormError("");
     setNotice("");
 
     if (!memberId.trim() || !bookId.trim() || !dueDate) {
       setFormError("Please fill in the member ID, book ID, and due date.");
+      return;
+    }
+
+    const selectedBook = books.find(
+      (book) => book.id.toLowerCase() === bookId.trim().toLowerCase()
+    );
+
+    if (!selectedBook) {
+      setFormError("Book ID not found. Please enter a valid Book ID.");
+      return;
+    }
+
+    if (selectedBook.available <= 0) {
+      setFormError("This book has no available copies.");
       return;
     }
 
@@ -129,30 +142,73 @@ export default function IssueReturn() {
     const newTransaction: Transaction = {
       id: Date.now(),
       memberId: memberId.trim(),
-      bookId: bookId.trim(),
+      bookId: selectedBook.id,
       issueDate: new Date().toISOString().slice(0, 10),
       dueDate,
       returned: false,
     };
 
+    // Save the issue transaction
     setTransactions((current) => [newTransaction, ...current]);
+
+    // Decrease available copies in Books Management
+    setBooks((current) =>
+      current.map((book) =>
+        book.id === selectedBook.id
+          ? {
+              ...book,
+              available: Math.max(0, book.available - 1),
+            }
+          : book
+      )
+    );
+
     setPage(1);
     setMemberId("");
     setBookId("");
     setDueDate("");
-   setNotice("Book issue recorded successfully.");
+    setNotice("Book issued successfully. Available copies updated.");
   }
 
+  // Return a book
   function handleReturn(id: number) {
+    setNotice("");
+    setFormError("");
+
+    const transaction = transactions.find((item) => item.id === id);
+
+    if (!transaction) {
+      setFormError("Transaction not found.");
+      return;
+    }
+
+    if (transaction.returned) {
+      setFormError("This book has already been returned.");
+      return;
+    }
+
+    // Mark the transaction as returned
     setTransactions((current) =>
-      current.map((transaction) =>
-        transaction.id === id
-          ? { ...transaction, returned: true }
-          : transaction,
-      ),
+      current.map((item) =>
+        item.id === id
+          ? { ...item, returned: true }
+          : item
+      )
     );
 
-    setNotice("Book return recorded for this page session.");
+    // Increase available copies in Books Management
+    setBooks((current) =>
+      current.map((book) =>
+        book.id === transaction.bookId
+          ? {
+              ...book,
+              available: Math.min(book.copies, book.available + 1),
+            }
+          : book
+      )
+    );
+
+    setNotice("Book returned successfully. Available copies updated.");
   }
 
   const columns: TransactionColumn[] = [
@@ -185,36 +241,36 @@ export default function IssueReturn() {
       render: (transaction) => transaction.dueDate,
     },
     {
-  key: "status",
-  header: "Status",
-  className: "w-[140px] whitespace-nowrap px-3",
-  render: (transaction) => (
-    <StatusBadge status={getStatus(transaction)} />
-  ),
-},
-{
-  key: "action",
-  header: "Action",
-  className: "w-[140px] whitespace-nowrap text-right px-3",
-  render: (transaction) =>
-    transaction.returned ? (
-      <span className="text-xs text-gray-400">
-        Completed
-      </span>
-    ) : (
-      <button
-        type="button"
-        onClick={() => handleReturn(transaction.id)}
-        className="inline-flex min-h-9 items-center justify-center whitespace-nowrap rounded-lg border border-[#27348b] bg-white px-3 py-2 text-xs font-semibold text-[#27348b] transition-colors hover:bg-[#27348b] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#27348b] focus:ring-offset-1"
-      >
-        Mark Returned
-      </button>
-    ),
-},
+      key: "status",
+      header: "Status",
+      className: "w-[140px] whitespace-nowrap px-3",
+      render: (transaction) => (
+        <StatusBadge status={getStatus(transaction)} />
+      ),
+    },
+    {
+      key: "action",
+      header: "Action",
+      className: "w-[140px] whitespace-nowrap text-right px-3",
+      render: (transaction) =>
+        transaction.returned ? (
+          <span className="text-xs text-gray-400">
+            Completed
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => handleReturn(transaction.id)}
+            className="inline-flex min-h-9 items-center justify-center whitespace-nowrap rounded-lg border border-[#27348b] bg-white px-3 py-2 text-xs font-semibold text-[#27348b] transition-colors hover:bg-[#27348b] hover:text-white focus:outline-none focus:ring-2 focus:ring-[#27348b] focus:ring-offset-1"
+          >
+            Mark Returned
+          </button>
+        ),
+    },
   ];
 
   return (
-        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <PageHeader
         title="Issue / Return"
         description="Record book issues, monitor due dates, and mark books as returned."
@@ -405,9 +461,8 @@ export default function IssueReturn() {
             itemLabel="records"
           />
         </div>
-
-     
       </section>
     </div>
   );
 }
+

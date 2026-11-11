@@ -2,7 +2,11 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import Pagination from "../../../components/common/Pagination";
-import { useAcquisitions } from "../../../store/libraryStore";
+import {
+  useAcquisitions,
+  useBooks,
+  type Book,
+} from "../../../store/libraryStore";
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -20,7 +24,8 @@ const inputStyle =
 
 const PAGE_SIZES = [5, 10, 25, 50];
 
-export default function AcquireBook() {
+export default function OrderBook() {
+  const [books, setBooks] = useBooks();
   const [orders, setOrders] = useAcquisitions();
   const [search, setSearch] = useState("");
 
@@ -115,13 +120,57 @@ export default function AcquireBook() {
     closeForm();
   }
 
+  
   function markReceived(id: string) {
-    setOrders(
-      orders.map((o) =>
-        o.id === id ? { ...o, status: "Received" as const } : o
-      )
+  const order = orders.find((o) => o.id === id);
+
+  if (!order || order.status === "Received") return;
+
+  setBooks((currentBooks) => {
+    const existingBook = currentBooks.find(
+      (book) =>
+        book.title.trim().toLowerCase() ===
+          order.title.trim().toLowerCase() &&
+        book.author.trim().toLowerCase() ===
+          order.author.trim().toLowerCase()
     );
-  }
+
+    if (existingBook) {
+      return currentBooks.map((book) =>
+        book.id === existingBook.id
+          ? {
+              ...book,
+              copies: book.copies + order.quantity,
+              available: book.available + order.quantity,
+            }
+          : book
+      );
+    }
+
+    const maxId = currentBooks.reduce(
+      (max, book) =>
+        Math.max(max, Number(book.id.replace(/^B/, "")) || 0),
+      0
+    );
+
+    const newBook: Book = {
+      id: `B${String(maxId + 1).padStart(3, "0")}`,
+      title: order.title,
+      author: order.author,
+      category: "",
+      copies: order.quantity,
+      available: order.quantity,
+    };
+
+    return [newBook, ...currentBooks];
+  });
+
+  setOrders((currentOrders) =>
+    currentOrders.map((o) =>
+      o.id === id ? { ...o, status: "Received" as const } : o
+    )
+  );
+}
 
   return (
     <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
