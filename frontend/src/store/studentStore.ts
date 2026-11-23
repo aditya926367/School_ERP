@@ -43,6 +43,9 @@ export type Student = {
   documents: string[];
 };
 
+
+
+
 // Demo students (used only the first time, or after resetStudents())
 // export const SEED_STUDENTS: Student[] = [];
 export const SEED_STUDENTS: Student[] = [];

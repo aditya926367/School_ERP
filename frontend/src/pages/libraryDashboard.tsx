@@ -79,10 +79,10 @@ function getDaysOverdue(dueDate: string): number {
 // -------------------- Quick Actions --------------------
 
 const quickActions = [
-  { title: "Issue / Return Book", icon: ArrowDownLeft, path: "/issueReturn" },
-  { title: "Book Catalogue", icon: BookOpen, path: "/books" },
+  { title: "Issue Book", icon: ArrowDownLeft, path: "/issueBooks" },
+  { title: "Book Master", icon: BookOpen, path: "/bookMaster" },
   { title: "Library Members", icon: Users, path: "/members" },
-  { title: "Acquire New Books", icon: BookPlus, path: "/acquireBook" },
+  { title: "Order Books", icon: BookPlus, path: "/orderBooks" },
 ];
 
 // -------------------- Reusable Section Heading --------------------
@@ -455,7 +455,7 @@ export default function LibraryDashboard() {
               Library Setup
             </span>
           </button>
-          <button
+          {/* <button
             type="button"
             onClick={() => navigate("/acquireBook")}
             className="flex items-center gap-3 rounded-lg border border-gray-200 p-3 text-left transition-colors hover:bg-gray-50"
@@ -464,7 +464,7 @@ export default function LibraryDashboard() {
             <span className="text-sm font-medium text-gray-700">
               Purchase / Add Stock
             </span>
-          </button>
+          </button> */}
         </div>
       </section>
     </div>

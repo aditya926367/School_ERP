@@ -40,7 +40,7 @@ const emptyForm = {
   copies: "",
 };
 
-export default function Books() {
+export default function BookMaster() {
 
 
 
