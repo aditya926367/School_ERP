@@ -142,35 +142,14 @@ export default function LibraryReports() {
 
   // Export most issued books to CSV
   function exportCsv() {
-    if (mostIssued.length === 0) return;
-
-    const header = ["Book", "Author", "Times Issued"];
-
-    const rows = mostIssued.map((book) => [
-      book.title,
-      book.author,
-      book.times,
-    ]);
-
-    const csv = [header, ...rows]
-      .map((row) =>
-        row
-          .map((value) => `"${String(value).replace(/"/g, '""')}"`)
-          .join(",")
-      )
-      .join("\n");
-
-    const blob = new Blob(["\uFEFF" + csv], {
-      type: "text/csv;charset=utf-8;",
-    });
-
+    const header = "title,author,times_issued";
+    const lines = mostIssued.map((b) => `${b.title},${b.author},${b.times}`);
+    const blob = new Blob([[header, ...lines].join("\n")], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-
     link.href = url;
     link.download = "most-issued-books.csv";
     link.click();
-
     URL.revokeObjectURL(url);
   }
 
@@ -180,27 +159,22 @@ export default function LibraryReports() {
   );
 
   return (
-    <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
+        <div className="min-h-screen space-y-6 bg-slate-50 p-4 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Library Reports
-          </h1>
-          <p className="text-sm text-gray-500">
-            Overview of books, issues and fines
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">Library Reports</h1>
+          <p className="text-sm text-gray-500">Overview of books, issues and fines</p>
         </div>
 
         <button
           onClick={exportCsv}
-          disabled={mostIssued.length === 0}
-          className="h-10 rounded-lg border border-[#27348b] bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73] disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-10 rounded-lg border border-[#27348b] bg-[#27348b] px-4 text-sm font-semibold text-white hover:bg-[#1f2a73]"
         >
           Export CSV
         </button>
       </div>
 
-      {/* Summary */}
+      {/* Summary cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {summary.map((item) => (
           <div
@@ -219,7 +193,7 @@ export default function LibraryReports() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Categories */}
+        {/* Books by category (simple bar chart) */}
         <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
           <h2 className="mb-4 text-base font-semibold text-gray-900">
             Books by Category
@@ -249,9 +223,15 @@ export default function LibraryReports() {
                     />
                   </div>
                 </div>
-              ))}
-            </div>
-          )}
+                <div className="h-2.5 w-full rounded-full bg-gray-100">
+                  <div
+                    className="h-2.5 rounded-full bg-[#27348b]"
+                    style={{ width: `${(c.count / maxCategory) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Most Issued Books */}
@@ -262,7 +242,7 @@ export default function LibraryReports() {
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-gray-800">
-              <thead className="bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+              <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
                 <tr>
                   <th className="px-4 py-3">#</th>
                   <th className="px-4 py-3">Book</th>
@@ -279,6 +259,7 @@ export default function LibraryReports() {
                     >
                       No issue history available.
                     </td>
+                    <td className="px-4 py-3">{b.times}</td>
                   </tr>
                 ) : (
                   mostIssued.map((book, index) => (
@@ -320,7 +301,7 @@ export default function LibraryReports() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm text-gray-800">
-            <thead className="bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+            <thead className="bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
               <tr>
                 <th className="px-4 py-3">Member</th>
                 <th className="px-4 py-3">Book</th>
@@ -339,6 +320,7 @@ export default function LibraryReports() {
                   >
                     No overdue books found.
                   </td>
+                  <td className="px-4 py-3">₹{o.daysLate * FINE_PER_DAY}</td>
                 </tr>
               ) : (
                 overdue.map((item) => (
