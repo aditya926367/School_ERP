@@ -36,7 +36,7 @@ CREATE TABLE "admissions" (
     CONSTRAINT "admissions_pkey" PRIMARY KEY ("id")
 );
 
--- CreateTable
+-- CreateTable  
 CREATE TABLE "campuses" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
