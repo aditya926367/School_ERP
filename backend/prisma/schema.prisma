@@ -1,6 +1,9 @@
+// School ERP: paired with baseline.sql. SQL-only checks, partial/expression indexes and triggers must be preserved.
+// Use migrations, not db push, for full database behavior.
+// The current-year partial unique index lives in SQL to retain the one-to-many relation.
+// Financial year selection uses academic_years unless a separate fiscal calendar is required.
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -8,6 +11,7 @@ datasource db {
   schemas  = ["school_erp"]
 }
 
+<<<<<<< HEAD
 /// Multi-school tenant root table (har school ka alag isolated data)
 model schools {
   id                            String                          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -470,9 +474,12 @@ model library_book_fines {
   @@schema("school_erp")
 }
 
+=======
+>>>>>>> main
 model academic_years {
+  holiday_calendar holiday_calendar[]
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  school_id           String                @unique(map: "one_current_academic_year_per_school", where: raw("is_current")) @db.Uuid
+  school_id           String                @db.Uuid
   name                String                @db.VarChar(40)
   start_date          DateTime              @db.Date
   end_date            DateTime              @db.Date
@@ -613,6 +620,7 @@ model exam_subjects {
   subjects     subjects       @relation(fields: [school_id, subject_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([school_id, id])
+  @@unique([school_id, exam_id, section_id, subject_id], map: "exam_subjects_school_id_exam_id_section_id_subject_id_key")
   @@schema("school_erp")
 }
 
@@ -665,7 +673,7 @@ model fee_discounts {
   created_at          DateTime          @default(now()) @db.Timestamptz(6)
   users               users?            @relation(fields: [school_id, approved_by_user_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
   schools             schools           @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  student_invoices    student_invoices? @relation(fields: [school_id, invoice_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  student_invoices    student_invoices? @relation(fields: [school_id, student_id, invoice_id], references: [school_id, student_id, id], onDelete: NoAction, onUpdate: NoAction, map: "fee_discounts_school_id_invoice_id_fkey")
   students            students          @relation(fields: [school_id, student_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
 
   @@schema("school_erp")
@@ -687,7 +695,10 @@ model fee_heads {
   @@unique([school_id, id])
   @@schema("school_erp")
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 model fee_payments {
   id                    String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   school_id             String                @db.Uuid
@@ -708,6 +719,7 @@ model fee_payments {
 
   @@unique([school_id, id])
   @@unique([school_id, receipt_no])
+  @@unique([school_id, student_id, id], map: "fee_payments_school_id_student_id_id_key")
   @@schema("school_erp")
 }
 
@@ -832,6 +844,7 @@ model library_book_authors {
 }
 
 model library_book_copies {
+<<<<<<< HEAD
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   school_id           String                @db.Uuid
   book_id             String                @db.Uuid
@@ -843,6 +856,19 @@ model library_book_copies {
   library_books       library_books         @relation(fields: [school_id, book_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
   schools             schools               @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   library_book_issues library_book_issues[]
+=======
+  library_loans library_loans[]
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id       String        @db.Uuid
+  book_id         String        @db.Uuid
+  barcode         String        @db.VarChar(80)
+  copy_status     String        @default("available") @db.VarChar(20)
+  acquired_on     DateTime?     @db.Date
+  purchase_price  Decimal?      @db.Decimal(12, 2)
+  condition_notes String?
+  library_books   library_books @relation(fields: [school_id, book_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  schools         schools       @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+>>>>>>> main
 
   @@unique([school_id, barcode])
   @@unique([school_id, id])
@@ -850,6 +876,7 @@ model library_book_copies {
 }
 
 model library_books {
+  library_reservations library_reservations[]
   id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   school_id            String                 @db.Uuid
   category_id          String?                @db.Uuid
@@ -890,6 +917,7 @@ model library_categories {
 }
 
 model library_members {
+<<<<<<< HEAD
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   school_id           String                @db.Uuid
   student_id          String?               @db.Uuid
@@ -902,6 +930,21 @@ model library_members {
   staff               staff?                @relation(fields: [school_id, staff_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
   students            students?             @relation(fields: [school_id, student_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
   library_book_issues library_book_issues[]
+=======
+  library_reservations library_reservations[]
+  library_loans library_loans[]
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id   String    @db.Uuid
+  student_id  String?   @db.Uuid
+  staff_id    String?   @db.Uuid
+  member_code String    @db.VarChar(60)
+  member_type String    @db.VarChar(20)
+  joined_on   DateTime  @default(dbgenerated("CURRENT_DATE")) @db.Date
+  status      String    @default("active") @db.VarChar(20)
+  schools     schools   @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  staff       staff?    @relation(fields: [school_id, staff_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
+  students    students? @relation(fields: [school_id, student_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
+>>>>>>> main
 
   @@unique([school_id, id])
   @@unique([school_id, member_code])
@@ -957,17 +1000,19 @@ model password_reset_tokens {
   schools    schools   @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
   users      users     @relation(fields: [school_id, user_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
 
+  @@index([school_id, user_id, expires_at], map: "password_reset_tokens_school_id_user_id_expires_at_idx")
   @@schema("school_erp")
 }
 
 model payment_allocations {
+  student_id String @db.Uuid
   school_id        String           @db.Uuid
   payment_id       String           @db.Uuid
   invoice_id       String           @db.Uuid
   amount           Decimal          @db.Decimal(12, 2)
   schools          schools          @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
-  student_invoices student_invoices @relation(fields: [school_id, invoice_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
-  fee_payments     fee_payments     @relation(fields: [school_id, payment_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
+  student_invoices student_invoices @relation(fields: [school_id, student_id, invoice_id], references: [school_id, student_id, id], onDelete: NoAction, onUpdate: NoAction, map: "payment_allocations_school_id_invoice_id_fkey")
+  fee_payments     fee_payments     @relation(fields: [school_id, student_id, payment_id], references: [school_id, student_id, id], onDelete: Cascade, onUpdate: NoAction, map: "payment_allocations_school_id_payment_id_fkey")
 
   @@id([school_id, payment_id, invoice_id])
   @@schema("school_erp")
@@ -1069,9 +1114,95 @@ model salary_payments {
   users                 users?        @relation(fields: [school_id, paid_by_user_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([school_id, id])
+  @@unique([school_id, staff_id, effective_from], map: "salary_structures_school_id_staff_id_effective_from_key")
   @@schema("school_erp")
 }
 
+<<<<<<< HEAD
+=======
+model schools {
+  leave_requests leave_requests[]
+  notifications notifications[]
+  announcements announcements[]
+  library_fines library_fines[]
+  library_reservations library_reservations[]
+  library_loans library_loans[]
+  audit_logs audit_logs[]
+  user_sessions user_sessions[]
+  holiday_calendar holiday_calendar[]
+  organization_memberships organization_memberships[]
+  organization_id String? @db.Uuid
+  organizations organizations? @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                    String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_code           String                  @unique @db.VarChar(40)
+  name                  String                  @db.VarChar(200)
+  legal_name            String?                 @db.VarChar(200)
+  email                 String?                 @db.VarChar(254)
+  phone                 String?                 @db.VarChar(30)
+  website               String?
+  address               String?
+  city                  String?                 @db.VarChar(100)
+  state                 String?                 @db.VarChar(100)
+  postal_code           String?                 @db.VarChar(20)
+  country               String                  @default("India") @db.VarChar(100)
+  timezone              String                  @default("Asia/Kolkata") @db.VarChar(80)
+  currency              String                  @default("INR") @db.Char(3)
+  logo_url              String?
+  status                String                  @default("active") @db.VarChar(20)
+  created_at            DateTime                @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime                @default(now()) @db.Timestamptz(6)
+  academic_years        academic_years[]
+  admissions            admissions[]
+  campuses              campuses[]
+  class_subjects        class_subjects[]
+  classes               classes[]
+  exam_results          exam_results[]
+  exam_subjects         exam_subjects[]
+  exams                 exams[]
+  expenses              expenses[]
+  fee_discounts         fee_discounts[]
+  fee_heads             fee_heads[]
+  fee_payments          fee_payments[]
+  fee_structure_items   fee_structure_items[]
+  fee_structures        fee_structures[]
+  homework              homework[]
+  homework_submissions  homework_submissions[]
+  invoice_items         invoice_items[]
+  library_authors       library_authors[]
+  library_book_authors  library_book_authors[]
+  library_book_copies   library_book_copies[]
+  library_books         library_books[]
+  library_categories    library_categories[]
+  library_members       library_members[]
+  library_publishers    library_publishers[]
+  parents_guardians     parents_guardians[]
+  password_reset_tokens password_reset_tokens[]
+  payment_allocations   payment_allocations[]
+  payroll_items         payroll_items[]
+  payroll_runs          payroll_runs[]
+  role_permissions      role_permissions[]
+  roles                 roles[]
+  salary_payments       salary_payments[]
+  salary_structures     salary_structures[]
+  sections              sections[]
+  staff                 staff[]
+  staff_attendance      staff_attendance[]
+  student_attendance    student_attendance[]
+  student_enrollments   student_enrollments[]
+  student_guardians     student_guardians[]
+  student_invoices      student_invoices[]
+  students              students[]
+  subjects              subjects[]
+  teacher_profiles      teacher_profiles[]
+  timetable_entries     timetable_entries[]
+  user_roles            user_roles[]
+  users                 users[]
+
+  @@unique([organization_id, id], map: "schools_organization_id_id_key")
+  @@schema("school_erp")
+}
+
+>>>>>>> main
 model sections {
   id                  String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   school_id           String                @db.Uuid
@@ -1088,10 +1219,104 @@ model sections {
   timetable_entries   timetable_entries[]
 
   @@unique([school_id, id])
+  @@unique([school_id, class_id, id], map: "sections_school_id_class_id_id_key")
+  @@schema("school_erp")
+}
+
+<<<<<<< HEAD
+model student_attendance {
+=======
+model staff {
+  leave_requests leave_requests[]
+  id                      String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id               String              @db.Uuid
+  campus_id               String?             @db.Uuid
+  user_id                 String?             @db.Uuid
+  employee_code           String              @db.VarChar(50)
+  first_name              String              @db.VarChar(100)
+  last_name               String?             @db.VarChar(100)
+  gender                  String?             @db.VarChar(20)
+  date_of_birth           DateTime?           @db.Date
+  blood_group             String?             @db.VarChar(5)
+  phone                   String?             @db.VarChar(30)
+  email                   String?             @db.VarChar(254)
+  address                 String?
+  city                    String?             @db.VarChar(100)
+  state                   String?             @db.VarChar(100)
+  postal_code             String?             @db.VarChar(20)
+  emergency_contact_name  String?             @db.VarChar(160)
+  emergency_contact_phone String?             @db.VarChar(30)
+  designation             String?             @db.VarChar(120)
+  department              String?             @db.VarChar(120)
+  qualification           String?
+  experience_years        Decimal?            @db.Decimal(5, 2)
+  joining_date            DateTime?           @db.Date
+  employment_type         String?             @db.VarChar(30)
+  staff_role              String              @db.VarChar(30)
+  status                  String              @default("active") @db.VarChar(20)
+  photo_url               String?
+  created_at              DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime            @default(now()) @db.Timestamptz(6)
+  class_subjects          class_subjects[]
+  exam_results            exam_results[]
+  homework                homework[]
+  library_members         library_members[]
+  payroll_items           payroll_items[]
+  salary_structures       salary_structures[]
+  sections                sections[]
+  campuses                campuses?           @relation(fields: [school_id, campus_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  schools                 schools             @relation(fields: [school_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users                   users?              @relation(fields: [school_id, user_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  staff_attendance        staff_attendance[]
+  teacher_profiles        teacher_profiles?
+  timetable_entries       timetable_entries[]
+
+  @@unique([school_id, employee_code])
+  @@unique([school_id, id])
+  @@unique([school_id, user_id])
+  @@schema("school_erp")
+}
+
+model staff_attendance {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id         String    @db.Uuid
+  staff_id          String    @db.Uuid
+  attendance_date   DateTime  @db.Date
+  check_in          DateTime? @db.Time(6)
+  check_out         DateTime? @db.Time(6)
+  status            String    @db.VarChar(20)
+  remarks           String?
+  marked_by_user_id String?   @db.Uuid
+  schools           schools   @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users             users?    @relation(fields: [school_id, marked_by_user_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  staff             staff     @relation(fields: [school_id, staff_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([school_id, staff_id, attendance_date])
   @@schema("school_erp")
 }
 
 model student_attendance {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id         String         @db.Uuid
+  academic_year_id  String         @db.Uuid
+  student_id        String         @db.Uuid
+  attendance_date   DateTime       @db.Date
+  status            String         @db.VarChar(20)
+  remarks           String?
+  marked_by_user_id String?        @db.Uuid
+  created_at        DateTime       @default(now()) @db.Timestamptz(6)
+  academic_years    academic_years @relation(fields: [school_id, academic_year_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  schools           schools        @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users             users?         @relation(fields: [school_id, marked_by_user_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  students          students       @relation(fields: [school_id, student_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([school_id, student_id, attendance_date])
+  @@index([school_id, academic_year_id, attendance_date], map: "student_attendance_school_id_academic_year_id_attendan_1ab02993")
+  @@schema("school_erp")
+}
+
+model student_enrollments {
+>>>>>>> main
   id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   school_id        String         @db.Uuid
   academic_year_id String         @db.Uuid
@@ -1101,8 +1326,12 @@ model student_attendance {
   status           String         @db.VarChar(20)
   remarks          String?
   schools          schools        @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+<<<<<<< HEAD
   academic_years   academic_years @relation(fields: [school_id, academic_year_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
   sections         sections       @relation(fields: [school_id, section_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+=======
+  sections         sections       @relation(fields: [school_id, class_id, section_id], references: [school_id, class_id, id], onDelete: NoAction, onUpdate: NoAction, map: "student_enrollments_school_id_section_id_fkey")
+>>>>>>> main
   students         students       @relation(fields: [school_id, student_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([school_id, student_id, attendance_date])
@@ -1127,6 +1356,11 @@ model student_enrollments {
 
   @@unique([school_id, academic_year_id, student_id])
   @@unique([school_id, id])
+<<<<<<< HEAD
+=======
+  @@unique([school_id, student_id, academic_year_id])
+  @@unique([school_id, academic_year_id, section_id, roll_number], map: "student_enrollments_school_id_academic_year_id_section_cba911c7")
+>>>>>>> main
   @@schema("school_erp")
 }
 
@@ -1161,6 +1395,55 @@ model student_invoices {
   payment_allocations payment_allocations[]
 
   @@unique([school_id, invoice_no])
+<<<<<<< HEAD
+=======
+  @@unique([school_id, student_id, id], map: "student_invoices_school_id_student_id_id_key")
+  @@index([school_id, student_id, status], map: "student_invoices_school_id_student_id_status_idx")
+  @@schema("school_erp")
+}
+
+model students {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id            String                 @db.Uuid
+  campus_id            String?                @db.Uuid
+  user_id              String?                @db.Uuid
+  admission_no         String                 @db.VarChar(60)
+  first_name           String                 @db.VarChar(100)
+  middle_name          String?                @db.VarChar(100)
+  last_name            String?                @db.VarChar(100)
+  date_of_birth        DateTime?              @db.Date
+  gender               String?                @db.VarChar(20)
+  blood_group          String?                @db.VarChar(5)
+  phone                String?                @db.VarChar(30)
+  email                String?                @db.VarChar(254)
+  address              String?
+  city                 String?                @db.VarChar(100)
+  state                String?                @db.VarChar(100)
+  postal_code          String?                @db.VarChar(20)
+  admission_date       DateTime               @db.Date
+  previous_school      String?
+  previous_result      String?
+  previous_percentage  Decimal?               @db.Decimal(5, 2)
+  photo_url            String?
+  status               String                 @default("active") @db.VarChar(20)
+  created_at           DateTime               @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime               @default(now()) @db.Timestamptz(6)
+  admissions           admissions[]
+  exam_results         exam_results[]
+  fee_discounts        fee_discounts[]
+  fee_payments         fee_payments[]
+  homework_submissions homework_submissions[]
+  library_members      library_members[]
+  student_attendance   student_attendance[]
+  student_enrollments  student_enrollments[]
+  student_guardians    student_guardians[]
+  student_invoices     student_invoices[]
+  campuses             campuses?              @relation(fields: [school_id, campus_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  schools              schools                @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users                users?                 @relation(fields: [school_id, user_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([school_id, admission_no])
+>>>>>>> main
   @@unique([school_id, id])
   @@schema("school_erp")
 }
@@ -1182,6 +1465,23 @@ model subjects {
   @@schema("school_erp")
 }
 
+<<<<<<< HEAD
+=======
+model teacher_profiles {
+  school_id                 String    @db.Uuid
+  staff_id                  String    @db.Uuid
+  class_teacher_section_id  String?   @db.Uuid
+  teaching_experience_years Decimal?  @db.Decimal(5, 2)
+  employment_notes          String?
+  sections                  sections? @relation(fields: [school_id, class_teacher_section_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "teacher_profiles_class_teacher_section_fk")
+  schools                   schools   @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  staff                     staff     @relation(fields: [school_id, staff_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([school_id, staff_id])
+  @@schema("school_erp")
+}
+
+>>>>>>> main
 model timetable_entries {
   id               String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   school_id        String         @db.Uuid
@@ -1195,7 +1495,11 @@ model timetable_entries {
   sections         sections       @relation(fields: [school_id, section_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
   subjects         subjects?      @relation(fields: [school_id, subject_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
 
+<<<<<<< HEAD
   @@unique([school_id, id])
+=======
+  @@unique([school_id, academic_year_id, section_id, day_of_week, period_number], map: "timetable_entries_schedule_key")
+>>>>>>> main
   @@schema("school_erp")
 }
 
@@ -1208,9 +1512,49 @@ model user_roles {
   roles     roles   @relation(fields: [school_id, role_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([school_id, user_id, role_id])
+  @@index([school_id, role_id], map: "user_roles_school_id_role_id_idx")
   @@schema("school_erp")
 }
 
+<<<<<<< HEAD
+=======
+model users {
+  notifications notifications[]
+  announcements announcements[]
+  audit_logs audit_logs[]
+  user_sessions user_sessions[]
+  organization_memberships organization_memberships[]
+  id                                                              String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id                                                       String                  @db.Uuid
+  campus_id                                                       String?                 @db.Uuid
+  username                                                        String                  @db.VarChar(100)
+  email                                                           String?                 @db.VarChar(254)
+  phone                                                           String?                 @db.VarChar(30)
+  password_hash                                                   String
+  full_name                                                       String                  @db.VarChar(180)
+  avatar_url                                                      String?
+  status                                                          String                  @default("active") @db.VarChar(20)
+  email_verified_at                                               DateTime?               @db.Timestamptz(6)
+  last_login_at                                                   DateTime?               @db.Timestamptz(6)
+  password_changed_at                                             DateTime?               @db.Timestamptz(6)
+  created_at                                                      DateTime                @default(now()) @db.Timestamptz(6)
+  updated_at                                                      DateTime                @default(now()) @db.Timestamptz(6)
+  expenses                                                        expenses[]
+  fee_discounts                                                   fee_discounts[]
+  fee_payments                                                    fee_payments[]
+  parents_guardians                                               parents_guardians?
+  password_reset_tokens                                           password_reset_tokens[]
+  payroll_runs_payroll_runs_school_id_approved_by_user_idTousers  payroll_runs[]          @relation("payroll_runs_school_id_approved_by_user_idTousers")
+  payroll_runs_payroll_runs_school_id_generated_by_user_idTousers payroll_runs[]          @relation("payroll_runs_school_id_generated_by_user_idTousers")
+  salary_payments                                                 salary_payments[]
+  staff                                                           staff?
+  staff_attendance                                                staff_attendance[]
+  student_attendance                                              student_attendance[]
+  students                                                        students?
+  user_roles                                                      user_roles[]
+  campuses                                                        campuses?               @relation(fields: [school_id, campus_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction)
+  schools                                                         schools                 @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+>>>>>>> main
 
 
 /// Audit trail for user actions across modules (AuditLog.tsx)
@@ -1337,5 +1681,163 @@ model user_notification_preferences {
 
   @@unique([school_id, user_id, pref_key])
   @@unique([school_id, id])
+  @@schema("school_erp")
+}
+model organizations {
+  organization_memberships organization_memberships[]
+  schools schools[]
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_code String @db.VarChar(40)
+  name String @db.VarChar(200)
+  status String @default("active") @db.VarChar(20)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  @@unique([organization_code], map: "organizations_organization_code_key")
+  @@schema("school_erp")
+}
+
+model organization_memberships {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  organization_id String @db.Uuid
+  school_id String @db.Uuid
+  user_id String @db.Uuid
+  access_role String @default("owner") @db.VarChar(30)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  organizations organizations @relation(fields: [organization_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "organization_memberships_organization_id_fkey")
+  schools schools @relation(fields: [organization_id, school_id], references: [organization_id, id], onDelete: Cascade, onUpdate: NoAction, map: "organization_memberships_home_org_fkey")
+  users users @relation(fields: [school_id, user_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction, map: "organization_memberships_school_id_user_id_fkey")
+  @@unique([organization_id, user_id], map: "organization_memberships_organization_id_user_id_key")
+  @@index([school_id, user_id], map: "organization_memberships_school_id_user_id_idx")
+  @@schema("school_erp")
+}
+
+model holiday_calendar {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  academic_year_id String @db.Uuid
+  title String @db.VarChar(180)
+  start_date DateTime @db.Date
+  end_date DateTime @db.Date
+  description String?
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "holiday_calendar_school_id_fkey")
+  academic_years academic_years @relation(fields: [school_id, academic_year_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "holiday_calendar_school_id_academic_year_id_fkey")
+  @@index([school_id, academic_year_id, start_date], map: "holiday_calendar_school_id_academic_year_id_start_date_idx")
+  @@schema("school_erp")
+}
+
+model user_sessions {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  user_id String @db.Uuid
+  token_hash String
+  expires_at DateTime @db.Timestamptz(6)
+  revoked_at DateTime? @db.Timestamptz(6)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "user_sessions_school_id_fkey")
+  users users @relation(fields: [school_id, user_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction, map: "user_sessions_school_id_user_id_fkey")
+  @@unique([token_hash], map: "user_sessions_token_hash_key")
+  @@index([school_id, user_id, expires_at], map: "user_sessions_school_id_user_id_expires_at_idx")
+  @@schema("school_erp")
+}
+
+model audit_logs {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  user_id String? @db.Uuid
+  action String @db.VarChar(100)
+  entity_type String @db.VarChar(80)
+  entity_id String? @db.Uuid
+  details Json?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "audit_logs_school_id_fkey")
+  users users? @relation(fields: [school_id, user_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "audit_logs_school_id_user_id_fkey")
+  @@index([school_id, created_at], map: "audit_logs_school_id_created_at_idx")
+  @@schema("school_erp")
+}
+
+model library_loans {
+  library_fines library_fines[]
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  copy_id String @db.Uuid
+  member_id String @db.Uuid
+  issued_at DateTime @default(now()) @db.Timestamptz(6)
+  due_at DateTime @db.Timestamptz(6)
+  returned_at DateTime? @db.Timestamptz(6)
+  status String @default("issued") @db.VarChar(20)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "library_loans_school_id_fkey")
+  library_book_copies library_book_copies @relation(fields: [school_id, copy_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "library_loans_school_id_copy_id_fkey")
+  library_members library_members @relation(fields: [school_id, member_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "library_loans_school_id_member_id_fkey")
+  @@unique([school_id, id], map: "library_loans_school_id_id_key")
+  @@index([school_id, member_id, status], map: "library_loans_school_id_member_id_status_idx")
+  @@schema("school_erp")
+}
+
+model library_reservations {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  book_id String @db.Uuid
+  member_id String @db.Uuid
+  reserved_at DateTime @default(now()) @db.Timestamptz(6)
+  status String @default("pending") @db.VarChar(20)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "library_reservations_school_id_fkey")
+  library_books library_books @relation(fields: [school_id, book_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "library_reservations_school_id_book_id_fkey")
+  library_members library_members @relation(fields: [school_id, member_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "library_reservations_school_id_member_id_fkey")
+  @@index([school_id, book_id, status], map: "library_reservations_school_id_book_id_status_idx")
+  @@schema("school_erp")
+}
+
+model library_fines {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  loan_id String @db.Uuid
+  amount Decimal @db.Decimal(12, 2)
+  status String @default("unpaid") @db.VarChar(20)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "library_fines_school_id_fkey")
+  library_loans library_loans @relation(fields: [school_id, loan_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "library_fines_school_id_loan_id_fkey")
+  @@index([school_id, loan_id], map: "library_fines_school_id_loan_id_idx")
+  @@schema("school_erp")
+}
+
+model announcements {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  created_by_user_id String? @db.Uuid
+  title String @db.VarChar(200)
+  body String
+  published_at DateTime? @db.Timestamptz(6)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "announcements_school_id_fkey")
+  users users? @relation(fields: [school_id, created_by_user_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "announcements_school_id_created_by_user_id_fkey")
+  @@index([school_id, published_at], map: "announcements_school_id_published_at_idx")
+  @@schema("school_erp")
+}
+
+model notifications {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  user_id String @db.Uuid
+  title String @db.VarChar(200)
+  body String
+  read_at DateTime? @db.Timestamptz(6)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "notifications_school_id_fkey")
+  users users @relation(fields: [school_id, user_id], references: [school_id, id], onDelete: Cascade, onUpdate: NoAction, map: "notifications_school_id_user_id_fkey")
+  @@index([school_id, user_id, read_at], map: "notifications_school_id_user_id_read_at_idx")
+  @@schema("school_erp")
+}
+
+model leave_requests {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  school_id String @db.Uuid
+  staff_id String @db.Uuid
+  start_date DateTime @db.Date
+  end_date DateTime @db.Date
+  reason String?
+  status String @default("pending") @db.VarChar(20)
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  schools schools @relation(fields: [school_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "leave_requests_school_id_fkey")
+  staff staff @relation(fields: [school_id, staff_id], references: [school_id, id], onDelete: NoAction, onUpdate: NoAction, map: "leave_requests_school_id_staff_id_fkey")
+  @@index([school_id, staff_id, status], map: "leave_requests_school_id_staff_id_status_idx")
   @@schema("school_erp")
 }
