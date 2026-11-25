@@ -4,7 +4,7 @@ import prisma from "../db";
 
 const router = express.Router();
 
-router.get("/students", async (req, res) => {
+router.get("/students", async (_req, res) => {
   try {
     const students = await prisma.students.findMany();
 
