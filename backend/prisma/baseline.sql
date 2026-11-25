@@ -1,8 +1,12 @@
+-- School ERP baseline for a NEW, EMPTY schema. Do not execute over existing tables.
+-- SQL-only checks, partial indexes and triggers are intentional.
+-- Use this as the initial migration only; if a migration was already applied, create a forward migration instead.
+BEGIN;
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "school_erp";
 
 -- CreateTable
-CREATE TABLE "academic_years" (
+CREATE TABLE "school_erp"."academic_years" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "name" VARCHAR(40) NOT NULL,
@@ -16,7 +20,7 @@ CREATE TABLE "academic_years" (
 );
 
 -- CreateTable
-CREATE TABLE "admissions" (
+CREATE TABLE "school_erp"."admissions" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "application_no" VARCHAR(60) NOT NULL,
@@ -37,7 +41,7 @@ CREATE TABLE "admissions" (
 );
 
 -- CreateTable  
-CREATE TABLE "campuses" (
+CREATE TABLE "school_erp"."campuses" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "campus_code" VARCHAR(40) NOT NULL,
@@ -51,7 +55,7 @@ CREATE TABLE "campuses" (
 );
 
 -- CreateTable
-CREATE TABLE "class_subjects" (
+CREATE TABLE "school_erp"."class_subjects" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "class_id" UUID NOT NULL,
@@ -63,7 +67,7 @@ CREATE TABLE "class_subjects" (
 );
 
 -- CreateTable
-CREATE TABLE "classes" (
+CREATE TABLE "school_erp"."classes" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "campus_id" UUID,
@@ -75,7 +79,7 @@ CREATE TABLE "classes" (
 );
 
 -- CreateTable
-CREATE TABLE "exam_results" (
+CREATE TABLE "school_erp"."exam_results" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "exam_subject_id" UUID NOT NULL,
@@ -90,7 +94,7 @@ CREATE TABLE "exam_results" (
 );
 
 -- CreateTable
-CREATE TABLE "exam_subjects" (
+CREATE TABLE "school_erp"."exam_subjects" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "exam_id" UUID NOT NULL,
@@ -104,7 +108,7 @@ CREATE TABLE "exam_subjects" (
 );
 
 -- CreateTable
-CREATE TABLE "exams" (
+CREATE TABLE "school_erp"."exams" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "academic_year_id" UUID NOT NULL,
@@ -118,7 +122,7 @@ CREATE TABLE "exams" (
 );
 
 -- CreateTable
-CREATE TABLE "expenses" (
+CREATE TABLE "school_erp"."expenses" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "expense_no" VARCHAR(60) NOT NULL,
@@ -136,7 +140,7 @@ CREATE TABLE "expenses" (
 );
 
 -- CreateTable
-CREATE TABLE "fee_discounts" (
+CREATE TABLE "school_erp"."fee_discounts" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "student_id" UUID NOT NULL,
@@ -151,7 +155,7 @@ CREATE TABLE "fee_discounts" (
 );
 
 -- CreateTable
-CREATE TABLE "fee_heads" (
+CREATE TABLE "school_erp"."fee_heads" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "name" VARCHAR(100) NOT NULL,
@@ -164,7 +168,7 @@ CREATE TABLE "fee_heads" (
 );
 
 -- CreateTable
-CREATE TABLE "fee_payments" (
+CREATE TABLE "school_erp"."fee_payments" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "student_id" UUID NOT NULL,
@@ -182,7 +186,7 @@ CREATE TABLE "fee_payments" (
 );
 
 -- CreateTable
-CREATE TABLE "fee_structure_items" (
+CREATE TABLE "school_erp"."fee_structure_items" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "fee_structure_id" UUID NOT NULL,
@@ -193,7 +197,7 @@ CREATE TABLE "fee_structure_items" (
 );
 
 -- CreateTable
-CREATE TABLE "fee_structures" (
+CREATE TABLE "school_erp"."fee_structures" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "academic_year_id" UUID NOT NULL,
@@ -208,7 +212,7 @@ CREATE TABLE "fee_structures" (
 );
 
 -- CreateTable
-CREATE TABLE "homework" (
+CREATE TABLE "school_erp"."homework" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "academic_year_id" UUID NOT NULL,
@@ -226,7 +230,7 @@ CREATE TABLE "homework" (
 );
 
 -- CreateTable
-CREATE TABLE "homework_submissions" (
+CREATE TABLE "school_erp"."homework_submissions" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "homework_id" UUID NOT NULL,
@@ -242,7 +246,7 @@ CREATE TABLE "homework_submissions" (
 );
 
 -- CreateTable
-CREATE TABLE "invoice_items" (
+CREATE TABLE "school_erp"."invoice_items" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "invoice_id" UUID NOT NULL,
@@ -256,7 +260,7 @@ CREATE TABLE "invoice_items" (
 );
 
 -- CreateTable
-CREATE TABLE "library_authors" (
+CREATE TABLE "school_erp"."library_authors" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "name" VARCHAR(180) NOT NULL,
@@ -266,7 +270,7 @@ CREATE TABLE "library_authors" (
 );
 
 -- CreateTable
-CREATE TABLE "library_book_authors" (
+CREATE TABLE "school_erp"."library_book_authors" (
     "school_id" UUID NOT NULL,
     "book_id" UUID NOT NULL,
     "author_id" UUID NOT NULL,
@@ -275,7 +279,7 @@ CREATE TABLE "library_book_authors" (
 );
 
 -- CreateTable
-CREATE TABLE "library_book_copies" (
+CREATE TABLE "school_erp"."library_book_copies" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "book_id" UUID NOT NULL,
@@ -289,7 +293,7 @@ CREATE TABLE "library_book_copies" (
 );
 
 -- CreateTable
-CREATE TABLE "library_books" (
+CREATE TABLE "school_erp"."library_books" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "category_id" UUID,
@@ -309,7 +313,7 @@ CREATE TABLE "library_books" (
 );
 
 -- CreateTable
-CREATE TABLE "library_categories" (
+CREATE TABLE "school_erp"."library_categories" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "name" VARCHAR(100) NOT NULL,
@@ -320,7 +324,7 @@ CREATE TABLE "library_categories" (
 );
 
 -- CreateTable
-CREATE TABLE "library_members" (
+CREATE TABLE "school_erp"."library_members" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "student_id" UUID,
@@ -334,7 +338,7 @@ CREATE TABLE "library_members" (
 );
 
 -- CreateTable
-CREATE TABLE "library_publishers" (
+CREATE TABLE "school_erp"."library_publishers" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "name" VARCHAR(180) NOT NULL,
@@ -346,7 +350,7 @@ CREATE TABLE "library_publishers" (
 );
 
 -- CreateTable
-CREATE TABLE "parents_guardians" (
+CREATE TABLE "school_erp"."parents_guardians" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "user_id" UUID,
@@ -364,7 +368,7 @@ CREATE TABLE "parents_guardians" (
 );
 
 -- CreateTable
-CREATE TABLE "password_reset_tokens" (
+CREATE TABLE "school_erp"."password_reset_tokens" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
@@ -377,7 +381,8 @@ CREATE TABLE "password_reset_tokens" (
 );
 
 -- CreateTable
-CREATE TABLE "payment_allocations" (
+CREATE TABLE "school_erp"."payment_allocations" (
+    "student_id" UUID NOT NULL,
     "school_id" UUID NOT NULL,
     "payment_id" UUID NOT NULL,
     "invoice_id" UUID NOT NULL,
@@ -387,7 +392,7 @@ CREATE TABLE "payment_allocations" (
 );
 
 -- CreateTable
-CREATE TABLE "payroll_items" (
+CREATE TABLE "school_erp"."payroll_items" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "payroll_run_id" UUID NOT NULL,
@@ -404,7 +409,7 @@ CREATE TABLE "payroll_items" (
 );
 
 -- CreateTable
-CREATE TABLE "payroll_runs" (
+CREATE TABLE "school_erp"."payroll_runs" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "payroll_month" DATE NOT NULL,
@@ -418,7 +423,7 @@ CREATE TABLE "payroll_runs" (
 );
 
 -- CreateTable
-CREATE TABLE "permissions" (
+CREATE TABLE "school_erp"."permissions" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "permission_code" VARCHAR(100) NOT NULL,
     "module" VARCHAR(60) NOT NULL,
@@ -428,7 +433,7 @@ CREATE TABLE "permissions" (
 );
 
 -- CreateTable
-CREATE TABLE "role_permissions" (
+CREATE TABLE "school_erp"."role_permissions" (
     "school_id" UUID NOT NULL,
     "role_id" UUID NOT NULL,
     "permission_id" UUID NOT NULL,
@@ -437,7 +442,7 @@ CREATE TABLE "role_permissions" (
 );
 
 -- CreateTable
-CREATE TABLE "roles" (
+CREATE TABLE "school_erp"."roles" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "role_code" VARCHAR(50) NOT NULL,
@@ -450,7 +455,7 @@ CREATE TABLE "roles" (
 );
 
 -- CreateTable
-CREATE TABLE "salary_payments" (
+CREATE TABLE "school_erp"."salary_payments" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "payroll_item_id" UUID NOT NULL,
@@ -464,7 +469,7 @@ CREATE TABLE "salary_payments" (
 );
 
 -- CreateTable
-CREATE TABLE "salary_structures" (
+CREATE TABLE "school_erp"."salary_structures" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "staff_id" UUID NOT NULL,
@@ -481,7 +486,7 @@ CREATE TABLE "salary_structures" (
 );
 
 -- CreateTable
-CREATE TABLE "schools" (
+CREATE TABLE "school_erp"."schools" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_code" VARCHAR(40) NOT NULL,
     "name" VARCHAR(200) NOT NULL,
@@ -505,7 +510,7 @@ CREATE TABLE "schools" (
 );
 
 -- CreateTable
-CREATE TABLE "sections" (
+CREATE TABLE "school_erp"."sections" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "class_id" UUID NOT NULL,
@@ -518,7 +523,7 @@ CREATE TABLE "sections" (
 );
 
 -- CreateTable
-CREATE TABLE "staff" (
+CREATE TABLE "school_erp"."staff" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "campus_id" UUID,
@@ -553,7 +558,7 @@ CREATE TABLE "staff" (
 );
 
 -- CreateTable
-CREATE TABLE "staff_attendance" (
+CREATE TABLE "school_erp"."staff_attendance" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "staff_id" UUID NOT NULL,
@@ -568,7 +573,7 @@ CREATE TABLE "staff_attendance" (
 );
 
 -- CreateTable
-CREATE TABLE "student_attendance" (
+CREATE TABLE "school_erp"."student_attendance" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "academic_year_id" UUID NOT NULL,
@@ -583,7 +588,7 @@ CREATE TABLE "student_attendance" (
 );
 
 -- CreateTable
-CREATE TABLE "student_enrollments" (
+CREATE TABLE "school_erp"."student_enrollments" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "student_id" UUID NOT NULL,
@@ -598,7 +603,7 @@ CREATE TABLE "student_enrollments" (
 );
 
 -- CreateTable
-CREATE TABLE "student_guardians" (
+CREATE TABLE "school_erp"."student_guardians" (
     "school_id" UUID NOT NULL,
     "student_id" UUID NOT NULL,
     "guardian_id" UUID NOT NULL,
@@ -610,7 +615,7 @@ CREATE TABLE "student_guardians" (
 );
 
 -- CreateTable
-CREATE TABLE "student_invoices" (
+CREATE TABLE "school_erp"."student_invoices" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "student_id" UUID NOT NULL,
@@ -631,7 +636,7 @@ CREATE TABLE "student_invoices" (
 );
 
 -- CreateTable
-CREATE TABLE "students" (
+CREATE TABLE "school_erp"."students" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "campus_id" UUID,
@@ -662,7 +667,7 @@ CREATE TABLE "students" (
 );
 
 -- CreateTable
-CREATE TABLE "subjects" (
+CREATE TABLE "school_erp"."subjects" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "name" VARCHAR(120) NOT NULL,
@@ -675,7 +680,7 @@ CREATE TABLE "subjects" (
 );
 
 -- CreateTable
-CREATE TABLE "teacher_profiles" (
+CREATE TABLE "school_erp"."teacher_profiles" (
     "school_id" UUID NOT NULL,
     "staff_id" UUID NOT NULL,
     "class_teacher_section_id" UUID,
@@ -686,7 +691,7 @@ CREATE TABLE "teacher_profiles" (
 );
 
 -- CreateTable
-CREATE TABLE "timetable_entries" (
+CREATE TABLE "school_erp"."timetable_entries" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "academic_year_id" UUID NOT NULL,
@@ -703,7 +708,7 @@ CREATE TABLE "timetable_entries" (
 );
 
 -- CreateTable
-CREATE TABLE "user_roles" (
+CREATE TABLE "school_erp"."user_roles" (
     "school_id" UUID NOT NULL,
     "user_id" UUID NOT NULL,
     "role_id" UUID NOT NULL,
@@ -713,7 +718,7 @@ CREATE TABLE "user_roles" (
 );
 
 -- CreateTable
-CREATE TABLE "users" (
+CREATE TABLE "school_erp"."users" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),
     "school_id" UUID NOT NULL,
     "campus_id" UUID,
@@ -734,577 +739,855 @@ CREATE TABLE "users" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "one_current_academic_year_per_school" ON "academic_years"("school_id") WHERE (is_current);
 
 -- CreateIndex
-CREATE UNIQUE INDEX "academic_years_school_id_id_key" ON "academic_years"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "academic_years_school_id_name_key" ON "academic_years"("school_id", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "admissions_school_id_application_no_key" ON "admissions"("school_id", "application_no");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "admissions_school_id_id_key" ON "admissions"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "campuses_school_id_campus_code_key" ON "campuses"("school_id", "campus_code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "campuses_school_id_id_key" ON "campuses"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "class_subjects_school_id_class_id_subject_id_academic_year__key" ON "class_subjects"("school_id", "class_id", "subject_id", "academic_year_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "class_subjects_school_id_id_key" ON "class_subjects"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "classes_school_id_campus_id_name_key" ON "classes"("school_id", "campus_id", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "classes_school_id_id_key" ON "classes"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "exam_results_school_id_exam_subject_id_student_id_key" ON "exam_results"("school_id", "exam_subject_id", "student_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "exam_subjects_school_id_id_key" ON "exam_subjects"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "exams_school_id_id_key" ON "exams"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "expenses_school_id_expense_no_key" ON "expenses"("school_id", "expense_no");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "fee_heads_school_id_code_key" ON "fee_heads"("school_id", "code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "fee_heads_school_id_id_key" ON "fee_heads"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "fee_payments_school_id_id_key" ON "fee_payments"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "fee_payments_school_id_receipt_no_key" ON "fee_payments"("school_id", "receipt_no");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "fee_structure_items_school_id_fee_structure_id_fee_head_id_key" ON "fee_structure_items"("school_id", "fee_structure_id", "fee_head_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "fee_structures_school_id_id_key" ON "fee_structures"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "homework_school_id_id_key" ON "homework"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "homework_submissions_school_id_homework_id_student_id_key" ON "homework_submissions"("school_id", "homework_id", "student_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_authors_school_id_id_key" ON "library_authors"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_authors_school_id_name_key" ON "library_authors"("school_id", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_book_copies_school_id_barcode_key" ON "library_book_copies"("school_id", "barcode");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_book_copies_school_id_id_key" ON "library_book_copies"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_books_school_id_accession_code_key" ON "library_books"("school_id", "accession_code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_books_school_id_id_key" ON "library_books"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_categories_school_id_id_key" ON "library_categories"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_categories_school_id_name_key" ON "library_categories"("school_id", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_members_school_id_id_key" ON "library_members"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_members_school_id_member_code_key" ON "library_members"("school_id", "member_code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_publishers_school_id_id_key" ON "library_publishers"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "library_publishers_school_id_name_key" ON "library_publishers"("school_id", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "parents_guardians_school_id_id_key" ON "parents_guardians"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "parents_guardians_school_id_user_id_key" ON "parents_guardians"("school_id", "user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "password_reset_tokens_token_hash_key" ON "password_reset_tokens"("token_hash");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "payroll_items_school_id_id_key" ON "payroll_items"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "payroll_items_school_id_payroll_run_id_staff_id_key" ON "payroll_items"("school_id", "payroll_run_id", "staff_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "payroll_runs_school_id_id_key" ON "payroll_runs"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "payroll_runs_school_id_payroll_month_key" ON "payroll_runs"("school_id", "payroll_month");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "permissions_permission_code_key" ON "permissions"("permission_code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "roles_school_id_id_key" ON "roles"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "roles_school_id_role_code_key" ON "roles"("school_id", "role_code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "salary_structures_school_id_id_key" ON "salary_structures"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "schools_school_code_key" ON "schools"("school_code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "sections_school_id_class_id_name_key" ON "sections"("school_id", "class_id", "name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "sections_school_id_id_key" ON "sections"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "staff_school_id_employee_code_key" ON "staff"("school_id", "employee_code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "staff_school_id_id_key" ON "staff"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "staff_school_id_user_id_key" ON "staff"("school_id", "user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "staff_attendance_school_id_staff_id_attendance_date_key" ON "staff_attendance"("school_id", "staff_id", "attendance_date");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "student_attendance_school_id_student_id_attendance_date_key" ON "student_attendance"("school_id", "student_id", "attendance_date");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "student_enrollments_school_id_id_key" ON "student_enrollments"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "student_enrollments_school_id_student_id_academic_year_id_key" ON "student_enrollments"("school_id", "student_id", "academic_year_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "student_invoices_school_id_id_key" ON "student_invoices"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "student_invoices_school_id_invoice_no_key" ON "student_invoices"("school_id", "invoice_no");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "students_school_id_admission_no_key" ON "students"("school_id", "admission_no");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "students_school_id_id_key" ON "students"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "students_school_id_user_id_key" ON "students"("school_id", "user_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "subjects_school_id_code_key" ON "subjects"("school_id", "code");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "subjects_school_id_id_key" ON "subjects"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_school_id_email_key" ON "users"("school_id", "email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_school_id_id_key" ON "users"("school_id", "id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_school_id_username_key" ON "users"("school_id", "username");
 
+CREATE UNIQUE INDEX "one_current_academic_year_per_school" ON "school_erp"."academic_years"("school_id") WHERE (is_current);
+CREATE UNIQUE INDEX "academic_years_school_id_id_key" ON "school_erp"."academic_years"("school_id", "id");
+CREATE UNIQUE INDEX "academic_years_school_id_name_key" ON "school_erp"."academic_years"("school_id", "name");
+CREATE UNIQUE INDEX "admissions_school_id_application_no_key" ON "school_erp"."admissions"("school_id", "application_no");
+CREATE UNIQUE INDEX "admissions_school_id_id_key" ON "school_erp"."admissions"("school_id", "id");
+CREATE UNIQUE INDEX "campuses_school_id_campus_code_key" ON "school_erp"."campuses"("school_id", "campus_code");
+CREATE UNIQUE INDEX "campuses_school_id_id_key" ON "school_erp"."campuses"("school_id", "id");
+CREATE UNIQUE INDEX "class_subjects_school_id_class_id_subject_id_academic_year__key" ON "school_erp"."class_subjects"("school_id", "class_id", "subject_id", "academic_year_id");
+CREATE UNIQUE INDEX "class_subjects_school_id_id_key" ON "school_erp"."class_subjects"("school_id", "id");
+CREATE UNIQUE INDEX "classes_school_id_campus_id_name_key" ON "school_erp"."classes"("school_id", "campus_id", "name");
+CREATE UNIQUE INDEX "classes_school_id_id_key" ON "school_erp"."classes"("school_id", "id");
+CREATE UNIQUE INDEX "exam_results_school_id_exam_subject_id_student_id_key" ON "school_erp"."exam_results"("school_id", "exam_subject_id", "student_id");
+CREATE UNIQUE INDEX "exam_subjects_school_id_id_key" ON "school_erp"."exam_subjects"("school_id", "id");
+CREATE UNIQUE INDEX "exams_school_id_id_key" ON "school_erp"."exams"("school_id", "id");
+CREATE UNIQUE INDEX "expenses_school_id_expense_no_key" ON "school_erp"."expenses"("school_id", "expense_no");
+CREATE UNIQUE INDEX "fee_heads_school_id_code_key" ON "school_erp"."fee_heads"("school_id", "code");
+CREATE UNIQUE INDEX "fee_heads_school_id_id_key" ON "school_erp"."fee_heads"("school_id", "id");
+CREATE UNIQUE INDEX "fee_payments_school_id_id_key" ON "school_erp"."fee_payments"("school_id", "id");
+CREATE UNIQUE INDEX "fee_payments_school_id_receipt_no_key" ON "school_erp"."fee_payments"("school_id", "receipt_no");
+CREATE UNIQUE INDEX "fee_structure_items_school_id_fee_structure_id_fee_head_id_key" ON "school_erp"."fee_structure_items"("school_id", "fee_structure_id", "fee_head_id");
+CREATE UNIQUE INDEX "fee_structures_school_id_id_key" ON "school_erp"."fee_structures"("school_id", "id");
+CREATE UNIQUE INDEX "homework_school_id_id_key" ON "school_erp"."homework"("school_id", "id");
+CREATE UNIQUE INDEX "homework_submissions_school_id_homework_id_student_id_key" ON "school_erp"."homework_submissions"("school_id", "homework_id", "student_id");
+CREATE UNIQUE INDEX "library_authors_school_id_id_key" ON "school_erp"."library_authors"("school_id", "id");
+CREATE UNIQUE INDEX "library_authors_school_id_name_key" ON "school_erp"."library_authors"("school_id", "name");
+CREATE UNIQUE INDEX "library_book_copies_school_id_barcode_key" ON "school_erp"."library_book_copies"("school_id", "barcode");
+CREATE UNIQUE INDEX "library_book_copies_school_id_id_key" ON "school_erp"."library_book_copies"("school_id", "id");
+CREATE UNIQUE INDEX "library_books_school_id_accession_code_key" ON "school_erp"."library_books"("school_id", "accession_code");
+CREATE UNIQUE INDEX "library_books_school_id_id_key" ON "school_erp"."library_books"("school_id", "id");
+CREATE UNIQUE INDEX "library_categories_school_id_id_key" ON "school_erp"."library_categories"("school_id", "id");
+CREATE UNIQUE INDEX "library_categories_school_id_name_key" ON "school_erp"."library_categories"("school_id", "name");
+CREATE UNIQUE INDEX "library_members_school_id_id_key" ON "school_erp"."library_members"("school_id", "id");
+CREATE UNIQUE INDEX "library_members_school_id_member_code_key" ON "school_erp"."library_members"("school_id", "member_code");
+CREATE UNIQUE INDEX "library_publishers_school_id_id_key" ON "school_erp"."library_publishers"("school_id", "id");
+CREATE UNIQUE INDEX "library_publishers_school_id_name_key" ON "school_erp"."library_publishers"("school_id", "name");
+CREATE UNIQUE INDEX "parents_guardians_school_id_id_key" ON "school_erp"."parents_guardians"("school_id", "id");
+CREATE UNIQUE INDEX "parents_guardians_school_id_user_id_key" ON "school_erp"."parents_guardians"("school_id", "user_id");
+CREATE UNIQUE INDEX "password_reset_tokens_token_hash_key" ON "school_erp"."password_reset_tokens"("token_hash");
+CREATE UNIQUE INDEX "payroll_items_school_id_id_key" ON "school_erp"."payroll_items"("school_id", "id");
+CREATE UNIQUE INDEX "payroll_items_school_id_payroll_run_id_staff_id_key" ON "school_erp"."payroll_items"("school_id", "payroll_run_id", "staff_id");
+CREATE UNIQUE INDEX "payroll_runs_school_id_id_key" ON "school_erp"."payroll_runs"("school_id", "id");
+CREATE UNIQUE INDEX "payroll_runs_school_id_payroll_month_key" ON "school_erp"."payroll_runs"("school_id", "payroll_month");
+CREATE UNIQUE INDEX "permissions_permission_code_key" ON "school_erp"."permissions"("permission_code");
+CREATE UNIQUE INDEX "roles_school_id_id_key" ON "school_erp"."roles"("school_id", "id");
+CREATE UNIQUE INDEX "roles_school_id_role_code_key" ON "school_erp"."roles"("school_id", "role_code");
+CREATE UNIQUE INDEX "salary_structures_school_id_id_key" ON "school_erp"."salary_structures"("school_id", "id");
+CREATE UNIQUE INDEX "schools_school_code_key" ON "school_erp"."schools"("school_code");
+CREATE UNIQUE INDEX "sections_school_id_class_id_name_key" ON "school_erp"."sections"("school_id", "class_id", "name");
+CREATE UNIQUE INDEX "sections_school_id_id_key" ON "school_erp"."sections"("school_id", "id");
+CREATE UNIQUE INDEX "staff_school_id_employee_code_key" ON "school_erp"."staff"("school_id", "employee_code");
+CREATE UNIQUE INDEX "staff_school_id_id_key" ON "school_erp"."staff"("school_id", "id");
+CREATE UNIQUE INDEX "staff_school_id_user_id_key" ON "school_erp"."staff"("school_id", "user_id");
+CREATE UNIQUE INDEX "staff_attendance_school_id_staff_id_attendance_date_key" ON "school_erp"."staff_attendance"("school_id", "staff_id", "attendance_date");
+CREATE UNIQUE INDEX "student_attendance_school_id_student_id_attendance_date_key" ON "school_erp"."student_attendance"("school_id", "student_id", "attendance_date");
+CREATE UNIQUE INDEX "student_enrollments_school_id_id_key" ON "school_erp"."student_enrollments"("school_id", "id");
+CREATE UNIQUE INDEX "student_enrollments_school_id_student_id_academic_year_id_key" ON "school_erp"."student_enrollments"("school_id", "student_id", "academic_year_id");
+CREATE UNIQUE INDEX "student_invoices_school_id_id_key" ON "school_erp"."student_invoices"("school_id", "id");
+CREATE UNIQUE INDEX "student_invoices_school_id_invoice_no_key" ON "school_erp"."student_invoices"("school_id", "invoice_no");
+CREATE UNIQUE INDEX "students_school_id_admission_no_key" ON "school_erp"."students"("school_id", "admission_no");
+CREATE UNIQUE INDEX "students_school_id_id_key" ON "school_erp"."students"("school_id", "id");
+CREATE UNIQUE INDEX "students_school_id_user_id_key" ON "school_erp"."students"("school_id", "user_id");
+CREATE UNIQUE INDEX "subjects_school_id_code_key" ON "school_erp"."subjects"("school_id", "code");
+CREATE UNIQUE INDEX "subjects_school_id_id_key" ON "school_erp"."subjects"("school_id", "id");
+CREATE UNIQUE INDEX "users_school_id_email_key" ON "school_erp"."users"("school_id", "email");
+CREATE UNIQUE INDEX "users_school_id_id_key" ON "school_erp"."users"("school_id", "id");
+CREATE UNIQUE INDEX "users_school_id_username_key" ON "school_erp"."users"("school_id", "username");
+CREATE UNIQUE INDEX "sections_school_id_class_id_id_key" ON "school_erp"."sections"("school_id", "class_id", "id");
+CREATE UNIQUE INDEX "student_invoices_school_id_student_id_id_key" ON "school_erp"."student_invoices"("school_id", "student_id", "id");
+CREATE UNIQUE INDEX "fee_payments_school_id_student_id_id_key" ON "school_erp"."fee_payments"("school_id", "student_id", "id");
+CREATE UNIQUE INDEX "exam_subjects_school_id_exam_id_section_id_subject_id_key" ON "school_erp"."exam_subjects"("school_id", "exam_id", "section_id", "subject_id");
+CREATE UNIQUE INDEX "timetable_entries_schedule_key" ON "school_erp"."timetable_entries"("school_id", "academic_year_id", "section_id", "day_of_week", "period_number");
+CREATE INDEX "student_attendance_school_id_academic_year_id_attendan_1ab02993" ON "school_erp"."student_attendance"("school_id", "academic_year_id", "attendance_date");
+CREATE INDEX "student_invoices_school_id_student_id_status_idx" ON "school_erp"."student_invoices"("school_id", "student_id", "status");
+CREATE INDEX "user_roles_school_id_role_id_idx" ON "school_erp"."user_roles"("school_id", "role_id");
+CREATE INDEX "password_reset_tokens_school_id_user_id_expires_at_idx" ON "school_erp"."password_reset_tokens"("school_id", "user_id", "expires_at");
+CREATE UNIQUE INDEX "student_enrollments_school_id_academic_year_id_section_cba911c7" ON "school_erp"."student_enrollments"("school_id", "academic_year_id", "section_id", "roll_number");
+CREATE UNIQUE INDEX "salary_structures_school_id_staff_id_effective_from_key" ON "school_erp"."salary_structures"("school_id", "staff_id", "effective_from");
+CREATE UNIQUE INDEX "classes_school_no_campus_name_key" ON "school_erp"."classes" ("school_id","name") WHERE "campus_id" IS NULL;
+CREATE UNIQUE INDEX "campuses_one_main_key" ON "school_erp"."campuses" ("school_id") WHERE "is_main";
+CREATE UNIQUE INDEX "timetable_teacher_period_key" ON "school_erp"."timetable_entries" ("school_id","academic_year_id","teacher_staff_id","day_of_week","period_number") WHERE "teacher_staff_id" IS NOT NULL;
+CREATE UNIQUE INDEX "users_username_ci_key" ON "school_erp"."users" ("school_id",lower("username"));
+CREATE UNIQUE INDEX "users_email_ci_key" ON "school_erp"."users" ("school_id",lower("email")) WHERE "email" IS NOT NULL;
+
 -- AddForeignKey
-ALTER TABLE "academic_years" ADD CONSTRAINT "academic_years_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."academic_years" ADD CONSTRAINT "academic_years_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "admissions" ADD CONSTRAINT "admissions_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."admissions" ADD CONSTRAINT "admissions_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "admissions" ADD CONSTRAINT "admissions_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."admissions" ADD CONSTRAINT "admissions_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "admissions" ADD CONSTRAINT "admissions_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."admissions" ADD CONSTRAINT "admissions_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "campuses" ADD CONSTRAINT "campuses_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."campuses" ADD CONSTRAINT "campuses_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "class_subjects" ADD CONSTRAINT "class_subjects_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."class_subjects" ADD CONSTRAINT "class_subjects_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "class_subjects" ADD CONSTRAINT "class_subjects_school_id_class_id_fkey" FOREIGN KEY ("school_id", "class_id") REFERENCES "classes"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."class_subjects" ADD CONSTRAINT "class_subjects_school_id_class_id_fkey" FOREIGN KEY ("school_id", "class_id") REFERENCES "school_erp"."classes"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "class_subjects" ADD CONSTRAINT "class_subjects_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."class_subjects" ADD CONSTRAINT "class_subjects_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "class_subjects" ADD CONSTRAINT "class_subjects_school_id_subject_id_fkey" FOREIGN KEY ("school_id", "subject_id") REFERENCES "subjects"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."class_subjects" ADD CONSTRAINT "class_subjects_school_id_subject_id_fkey" FOREIGN KEY ("school_id", "subject_id") REFERENCES "school_erp"."subjects"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "class_subjects" ADD CONSTRAINT "class_subjects_school_id_teacher_staff_id_fkey" FOREIGN KEY ("school_id", "teacher_staff_id") REFERENCES "staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."class_subjects" ADD CONSTRAINT "class_subjects_school_id_teacher_staff_id_fkey" FOREIGN KEY ("school_id", "teacher_staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "classes" ADD CONSTRAINT "classes_school_id_campus_id_fkey" FOREIGN KEY ("school_id", "campus_id") REFERENCES "campuses"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."classes" ADD CONSTRAINT "classes_school_id_campus_id_fkey" FOREIGN KEY ("school_id", "campus_id") REFERENCES "school_erp"."campuses"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "classes" ADD CONSTRAINT "classes_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."classes" ADD CONSTRAINT "classes_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exam_results" ADD CONSTRAINT "exam_results_school_id_entered_by_staff_id_fkey" FOREIGN KEY ("school_id", "entered_by_staff_id") REFERENCES "staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exam_results" ADD CONSTRAINT "exam_results_school_id_entered_by_staff_id_fkey" FOREIGN KEY ("school_id", "entered_by_staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exam_results" ADD CONSTRAINT "exam_results_school_id_exam_subject_id_fkey" FOREIGN KEY ("school_id", "exam_subject_id") REFERENCES "exam_subjects"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exam_results" ADD CONSTRAINT "exam_results_school_id_exam_subject_id_fkey" FOREIGN KEY ("school_id", "exam_subject_id") REFERENCES "school_erp"."exam_subjects"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exam_results" ADD CONSTRAINT "exam_results_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exam_results" ADD CONSTRAINT "exam_results_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exam_results" ADD CONSTRAINT "exam_results_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exam_results" ADD CONSTRAINT "exam_results_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exam_subjects" ADD CONSTRAINT "exam_subjects_school_id_exam_id_fkey" FOREIGN KEY ("school_id", "exam_id") REFERENCES "exams"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exam_subjects" ADD CONSTRAINT "exam_subjects_school_id_exam_id_fkey" FOREIGN KEY ("school_id", "exam_id") REFERENCES "school_erp"."exams"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exam_subjects" ADD CONSTRAINT "exam_subjects_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exam_subjects" ADD CONSTRAINT "exam_subjects_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exam_subjects" ADD CONSTRAINT "exam_subjects_school_id_section_id_fkey" FOREIGN KEY ("school_id", "section_id") REFERENCES "sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exam_subjects" ADD CONSTRAINT "exam_subjects_school_id_section_id_fkey" FOREIGN KEY ("school_id", "section_id") REFERENCES "school_erp"."sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exam_subjects" ADD CONSTRAINT "exam_subjects_school_id_subject_id_fkey" FOREIGN KEY ("school_id", "subject_id") REFERENCES "subjects"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exam_subjects" ADD CONSTRAINT "exam_subjects_school_id_subject_id_fkey" FOREIGN KEY ("school_id", "subject_id") REFERENCES "school_erp"."subjects"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exams" ADD CONSTRAINT "exams_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exams" ADD CONSTRAINT "exams_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "exams" ADD CONSTRAINT "exams_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."exams" ADD CONSTRAINT "exams_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "expenses" ADD CONSTRAINT "expenses_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."expenses" ADD CONSTRAINT "expenses_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "expenses" ADD CONSTRAINT "expenses_school_id_recorded_by_user_id_fkey" FOREIGN KEY ("school_id", "recorded_by_user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."expenses" ADD CONSTRAINT "expenses_school_id_recorded_by_user_id_fkey" FOREIGN KEY ("school_id", "recorded_by_user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_discounts" ADD CONSTRAINT "fee_discounts_school_id_approved_by_user_id_fkey" FOREIGN KEY ("school_id", "approved_by_user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_discounts" ADD CONSTRAINT "fee_discounts_school_id_approved_by_user_id_fkey" FOREIGN KEY ("school_id", "approved_by_user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_discounts" ADD CONSTRAINT "fee_discounts_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_discounts" ADD CONSTRAINT "fee_discounts_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_discounts" ADD CONSTRAINT "fee_discounts_school_id_invoice_id_fkey" FOREIGN KEY ("school_id", "invoice_id") REFERENCES "student_invoices"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_discounts" ADD CONSTRAINT "fee_discounts_school_id_invoice_id_fkey" FOREIGN KEY ("school_id", "student_id", "invoice_id") REFERENCES "school_erp"."student_invoices"("school_id", "student_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_discounts" ADD CONSTRAINT "fee_discounts_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_discounts" ADD CONSTRAINT "fee_discounts_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_heads" ADD CONSTRAINT "fee_heads_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_heads" ADD CONSTRAINT "fee_heads_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_payments" ADD CONSTRAINT "fee_payments_school_id_collected_by_user_id_fkey" FOREIGN KEY ("school_id", "collected_by_user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_payments" ADD CONSTRAINT "fee_payments_school_id_collected_by_user_id_fkey" FOREIGN KEY ("school_id", "collected_by_user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_payments" ADD CONSTRAINT "fee_payments_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_payments" ADD CONSTRAINT "fee_payments_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_payments" ADD CONSTRAINT "fee_payments_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_payments" ADD CONSTRAINT "fee_payments_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_structure_items" ADD CONSTRAINT "fee_structure_items_school_id_fee_head_id_fkey" FOREIGN KEY ("school_id", "fee_head_id") REFERENCES "fee_heads"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_structure_items" ADD CONSTRAINT "fee_structure_items_school_id_fee_head_id_fkey" FOREIGN KEY ("school_id", "fee_head_id") REFERENCES "school_erp"."fee_heads"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_structure_items" ADD CONSTRAINT "fee_structure_items_school_id_fee_structure_id_fkey" FOREIGN KEY ("school_id", "fee_structure_id") REFERENCES "fee_structures"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_structure_items" ADD CONSTRAINT "fee_structure_items_school_id_fee_structure_id_fkey" FOREIGN KEY ("school_id", "fee_structure_id") REFERENCES "school_erp"."fee_structures"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_structure_items" ADD CONSTRAINT "fee_structure_items_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_structure_items" ADD CONSTRAINT "fee_structure_items_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_structures" ADD CONSTRAINT "fee_structures_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_structures" ADD CONSTRAINT "fee_structures_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_structures" ADD CONSTRAINT "fee_structures_school_id_class_id_fkey" FOREIGN KEY ("school_id", "class_id") REFERENCES "classes"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_structures" ADD CONSTRAINT "fee_structures_school_id_class_id_fkey" FOREIGN KEY ("school_id", "class_id") REFERENCES "school_erp"."classes"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "fee_structures" ADD CONSTRAINT "fee_structures_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."fee_structures" ADD CONSTRAINT "fee_structures_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "homework" ADD CONSTRAINT "homework_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."homework" ADD CONSTRAINT "homework_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "homework" ADD CONSTRAINT "homework_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."homework" ADD CONSTRAINT "homework_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "homework" ADD CONSTRAINT "homework_school_id_section_id_fkey" FOREIGN KEY ("school_id", "section_id") REFERENCES "sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."homework" ADD CONSTRAINT "homework_school_id_section_id_fkey" FOREIGN KEY ("school_id", "section_id") REFERENCES "school_erp"."sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "homework" ADD CONSTRAINT "homework_school_id_subject_id_fkey" FOREIGN KEY ("school_id", "subject_id") REFERENCES "subjects"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."homework" ADD CONSTRAINT "homework_school_id_subject_id_fkey" FOREIGN KEY ("school_id", "subject_id") REFERENCES "school_erp"."subjects"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "homework" ADD CONSTRAINT "homework_school_id_teacher_staff_id_fkey" FOREIGN KEY ("school_id", "teacher_staff_id") REFERENCES "staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."homework" ADD CONSTRAINT "homework_school_id_teacher_staff_id_fkey" FOREIGN KEY ("school_id", "teacher_staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "homework_submissions" ADD CONSTRAINT "homework_submissions_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."homework_submissions" ADD CONSTRAINT "homework_submissions_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "homework_submissions" ADD CONSTRAINT "homework_submissions_school_id_homework_id_fkey" FOREIGN KEY ("school_id", "homework_id") REFERENCES "homework"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."homework_submissions" ADD CONSTRAINT "homework_submissions_school_id_homework_id_fkey" FOREIGN KEY ("school_id", "homework_id") REFERENCES "school_erp"."homework"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "homework_submissions" ADD CONSTRAINT "homework_submissions_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."homework_submissions" ADD CONSTRAINT "homework_submissions_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_school_id_fee_head_id_fkey" FOREIGN KEY ("school_id", "fee_head_id") REFERENCES "fee_heads"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."invoice_items" ADD CONSTRAINT "invoice_items_school_id_fee_head_id_fkey" FOREIGN KEY ("school_id", "fee_head_id") REFERENCES "school_erp"."fee_heads"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."invoice_items" ADD CONSTRAINT "invoice_items_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "invoice_items" ADD CONSTRAINT "invoice_items_school_id_invoice_id_fkey" FOREIGN KEY ("school_id", "invoice_id") REFERENCES "student_invoices"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."invoice_items" ADD CONSTRAINT "invoice_items_school_id_invoice_id_fkey" FOREIGN KEY ("school_id", "invoice_id") REFERENCES "school_erp"."student_invoices"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_authors" ADD CONSTRAINT "library_authors_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_authors" ADD CONSTRAINT "library_authors_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_book_authors" ADD CONSTRAINT "library_book_authors_school_id_author_id_fkey" FOREIGN KEY ("school_id", "author_id") REFERENCES "library_authors"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_book_authors" ADD CONSTRAINT "library_book_authors_school_id_author_id_fkey" FOREIGN KEY ("school_id", "author_id") REFERENCES "school_erp"."library_authors"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_book_authors" ADD CONSTRAINT "library_book_authors_school_id_book_id_fkey" FOREIGN KEY ("school_id", "book_id") REFERENCES "library_books"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_book_authors" ADD CONSTRAINT "library_book_authors_school_id_book_id_fkey" FOREIGN KEY ("school_id", "book_id") REFERENCES "school_erp"."library_books"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_book_authors" ADD CONSTRAINT "library_book_authors_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_book_authors" ADD CONSTRAINT "library_book_authors_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_book_copies" ADD CONSTRAINT "library_book_copies_school_id_book_id_fkey" FOREIGN KEY ("school_id", "book_id") REFERENCES "library_books"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_book_copies" ADD CONSTRAINT "library_book_copies_school_id_book_id_fkey" FOREIGN KEY ("school_id", "book_id") REFERENCES "school_erp"."library_books"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_book_copies" ADD CONSTRAINT "library_book_copies_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_book_copies" ADD CONSTRAINT "library_book_copies_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_books" ADD CONSTRAINT "library_books_school_id_category_id_fkey" FOREIGN KEY ("school_id", "category_id") REFERENCES "library_categories"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_books" ADD CONSTRAINT "library_books_school_id_category_id_fkey" FOREIGN KEY ("school_id", "category_id") REFERENCES "school_erp"."library_categories"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_books" ADD CONSTRAINT "library_books_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_books" ADD CONSTRAINT "library_books_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_books" ADD CONSTRAINT "library_books_school_id_publisher_id_fkey" FOREIGN KEY ("school_id", "publisher_id") REFERENCES "library_publishers"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_books" ADD CONSTRAINT "library_books_school_id_publisher_id_fkey" FOREIGN KEY ("school_id", "publisher_id") REFERENCES "school_erp"."library_publishers"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_categories" ADD CONSTRAINT "library_categories_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_categories" ADD CONSTRAINT "library_categories_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_members" ADD CONSTRAINT "library_members_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_members" ADD CONSTRAINT "library_members_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_members" ADD CONSTRAINT "library_members_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "staff"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_members" ADD CONSTRAINT "library_members_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_members" ADD CONSTRAINT "library_members_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_members" ADD CONSTRAINT "library_members_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "library_publishers" ADD CONSTRAINT "library_publishers_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."library_publishers" ADD CONSTRAINT "library_publishers_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "parents_guardians" ADD CONSTRAINT "parents_guardians_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."parents_guardians" ADD CONSTRAINT "parents_guardians_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "parents_guardians" ADD CONSTRAINT "parents_guardians_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."parents_guardians" ADD CONSTRAINT "parents_guardians_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "users"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payment_allocations" ADD CONSTRAINT "payment_allocations_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payment_allocations" ADD CONSTRAINT "payment_allocations_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payment_allocations" ADD CONSTRAINT "payment_allocations_school_id_invoice_id_fkey" FOREIGN KEY ("school_id", "invoice_id") REFERENCES "student_invoices"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payment_allocations" ADD CONSTRAINT "payment_allocations_school_id_invoice_id_fkey" FOREIGN KEY ("school_id", "student_id", "invoice_id") REFERENCES "school_erp"."student_invoices"("school_id", "student_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payment_allocations" ADD CONSTRAINT "payment_allocations_school_id_payment_id_fkey" FOREIGN KEY ("school_id", "payment_id") REFERENCES "fee_payments"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payment_allocations" ADD CONSTRAINT "payment_allocations_school_id_payment_id_fkey" FOREIGN KEY ("school_id", "student_id", "payment_id") REFERENCES "school_erp"."fee_payments"("school_id", "student_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payroll_items" ADD CONSTRAINT "payroll_items_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payroll_items" ADD CONSTRAINT "payroll_items_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payroll_items" ADD CONSTRAINT "payroll_items_school_id_payroll_run_id_fkey" FOREIGN KEY ("school_id", "payroll_run_id") REFERENCES "payroll_runs"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payroll_items" ADD CONSTRAINT "payroll_items_school_id_payroll_run_id_fkey" FOREIGN KEY ("school_id", "payroll_run_id") REFERENCES "school_erp"."payroll_runs"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payroll_items" ADD CONSTRAINT "payroll_items_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payroll_items" ADD CONSTRAINT "payroll_items_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payroll_runs" ADD CONSTRAINT "payroll_runs_school_id_approved_by_user_id_fkey" FOREIGN KEY ("school_id", "approved_by_user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payroll_runs" ADD CONSTRAINT "payroll_runs_school_id_approved_by_user_id_fkey" FOREIGN KEY ("school_id", "approved_by_user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payroll_runs" ADD CONSTRAINT "payroll_runs_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payroll_runs" ADD CONSTRAINT "payroll_runs_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "payroll_runs" ADD CONSTRAINT "payroll_runs_school_id_generated_by_user_id_fkey" FOREIGN KEY ("school_id", "generated_by_user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."payroll_runs" ADD CONSTRAINT "payroll_runs_school_id_generated_by_user_id_fkey" FOREIGN KEY ("school_id", "generated_by_user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_permission_id_fkey" FOREIGN KEY ("permission_id") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."role_permissions" ADD CONSTRAINT "role_permissions_permission_id_fkey" FOREIGN KEY ("permission_id") REFERENCES "school_erp"."permissions"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."role_permissions" ADD CONSTRAINT "role_permissions_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_school_id_role_id_fkey" FOREIGN KEY ("school_id", "role_id") REFERENCES "roles"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."role_permissions" ADD CONSTRAINT "role_permissions_school_id_role_id_fkey" FOREIGN KEY ("school_id", "role_id") REFERENCES "school_erp"."roles"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "roles" ADD CONSTRAINT "roles_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."roles" ADD CONSTRAINT "roles_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "salary_payments" ADD CONSTRAINT "salary_payments_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."salary_payments" ADD CONSTRAINT "salary_payments_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "salary_payments" ADD CONSTRAINT "salary_payments_school_id_paid_by_user_id_fkey" FOREIGN KEY ("school_id", "paid_by_user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."salary_payments" ADD CONSTRAINT "salary_payments_school_id_paid_by_user_id_fkey" FOREIGN KEY ("school_id", "paid_by_user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "salary_payments" ADD CONSTRAINT "salary_payments_school_id_payroll_item_id_fkey" FOREIGN KEY ("school_id", "payroll_item_id") REFERENCES "payroll_items"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."salary_payments" ADD CONSTRAINT "salary_payments_school_id_payroll_item_id_fkey" FOREIGN KEY ("school_id", "payroll_item_id") REFERENCES "school_erp"."payroll_items"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "salary_structures" ADD CONSTRAINT "salary_structures_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."salary_structures" ADD CONSTRAINT "salary_structures_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "salary_structures" ADD CONSTRAINT "salary_structures_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."salary_structures" ADD CONSTRAINT "salary_structures_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "sections" ADD CONSTRAINT "sections_school_id_class_id_fkey" FOREIGN KEY ("school_id", "class_id") REFERENCES "classes"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."sections" ADD CONSTRAINT "sections_school_id_class_id_fkey" FOREIGN KEY ("school_id", "class_id") REFERENCES "school_erp"."classes"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "sections" ADD CONSTRAINT "sections_school_id_class_teacher_staff_id_fkey" FOREIGN KEY ("school_id", "class_teacher_staff_id") REFERENCES "staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."sections" ADD CONSTRAINT "sections_school_id_class_teacher_staff_id_fkey" FOREIGN KEY ("school_id", "class_teacher_staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "sections" ADD CONSTRAINT "sections_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."sections" ADD CONSTRAINT "sections_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "staff" ADD CONSTRAINT "staff_school_id_campus_id_fkey" FOREIGN KEY ("school_id", "campus_id") REFERENCES "campuses"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."staff" ADD CONSTRAINT "staff_school_id_campus_id_fkey" FOREIGN KEY ("school_id", "campus_id") REFERENCES "school_erp"."campuses"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "staff" ADD CONSTRAINT "staff_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."staff" ADD CONSTRAINT "staff_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "staff" ADD CONSTRAINT "staff_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."staff" ADD CONSTRAINT "staff_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "staff_attendance" ADD CONSTRAINT "staff_attendance_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."staff_attendance" ADD CONSTRAINT "staff_attendance_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "staff_attendance" ADD CONSTRAINT "staff_attendance_school_id_marked_by_user_id_fkey" FOREIGN KEY ("school_id", "marked_by_user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."staff_attendance" ADD CONSTRAINT "staff_attendance_school_id_marked_by_user_id_fkey" FOREIGN KEY ("school_id", "marked_by_user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "staff_attendance" ADD CONSTRAINT "staff_attendance_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "staff"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."staff_attendance" ADD CONSTRAINT "staff_attendance_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_attendance" ADD CONSTRAINT "student_attendance_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_attendance" ADD CONSTRAINT "student_attendance_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_attendance" ADD CONSTRAINT "student_attendance_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_attendance" ADD CONSTRAINT "student_attendance_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_attendance" ADD CONSTRAINT "student_attendance_school_id_marked_by_user_id_fkey" FOREIGN KEY ("school_id", "marked_by_user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_attendance" ADD CONSTRAINT "student_attendance_school_id_marked_by_user_id_fkey" FOREIGN KEY ("school_id", "marked_by_user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_attendance" ADD CONSTRAINT "student_attendance_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_attendance" ADD CONSTRAINT "student_attendance_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_class_id_fkey" FOREIGN KEY ("school_id", "class_id") REFERENCES "classes"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_class_id_fkey" FOREIGN KEY ("school_id", "class_id") REFERENCES "school_erp"."classes"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_section_id_fkey" FOREIGN KEY ("school_id", "section_id") REFERENCES "sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_section_id_fkey" FOREIGN KEY ("school_id", "class_id", "section_id") REFERENCES "school_erp"."sections"("school_id", "class_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_enrollments" ADD CONSTRAINT "student_enrollments_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_guardians" ADD CONSTRAINT "student_guardians_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_guardians" ADD CONSTRAINT "student_guardians_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_guardians" ADD CONSTRAINT "student_guardians_school_id_guardian_id_fkey" FOREIGN KEY ("school_id", "guardian_id") REFERENCES "parents_guardians"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_guardians" ADD CONSTRAINT "student_guardians_school_id_guardian_id_fkey" FOREIGN KEY ("school_id", "guardian_id") REFERENCES "school_erp"."parents_guardians"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_guardians" ADD CONSTRAINT "student_guardians_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_guardians" ADD CONSTRAINT "student_guardians_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_invoices" ADD CONSTRAINT "student_invoices_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_invoices" ADD CONSTRAINT "student_invoices_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_invoices" ADD CONSTRAINT "student_invoices_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_invoices" ADD CONSTRAINT "student_invoices_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "student_invoices" ADD CONSTRAINT "student_invoices_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."student_invoices" ADD CONSTRAINT "student_invoices_school_id_student_id_fkey" FOREIGN KEY ("school_id", "student_id") REFERENCES "school_erp"."students"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "students" ADD CONSTRAINT "students_school_id_campus_id_fkey" FOREIGN KEY ("school_id", "campus_id") REFERENCES "campuses"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."students" ADD CONSTRAINT "students_school_id_campus_id_fkey" FOREIGN KEY ("school_id", "campus_id") REFERENCES "school_erp"."campuses"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "students" ADD CONSTRAINT "students_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."students" ADD CONSTRAINT "students_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "students" ADD CONSTRAINT "students_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."students" ADD CONSTRAINT "students_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "subjects" ADD CONSTRAINT "subjects_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."subjects" ADD CONSTRAINT "subjects_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "teacher_profiles" ADD CONSTRAINT "teacher_profiles_class_teacher_section_fk" FOREIGN KEY ("school_id", "class_teacher_section_id") REFERENCES "sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."teacher_profiles" ADD CONSTRAINT "teacher_profiles_class_teacher_section_fk" FOREIGN KEY ("school_id", "class_teacher_section_id") REFERENCES "school_erp"."sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "teacher_profiles" ADD CONSTRAINT "teacher_profiles_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."teacher_profiles" ADD CONSTRAINT "teacher_profiles_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "teacher_profiles" ADD CONSTRAINT "teacher_profiles_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "staff"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."teacher_profiles" ADD CONSTRAINT "teacher_profiles_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_section_id_fkey" FOREIGN KEY ("school_id", "section_id") REFERENCES "sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_section_id_fkey" FOREIGN KEY ("school_id", "section_id") REFERENCES "school_erp"."sections"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_subject_id_fkey" FOREIGN KEY ("school_id", "subject_id") REFERENCES "subjects"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_subject_id_fkey" FOREIGN KEY ("school_id", "subject_id") REFERENCES "school_erp"."subjects"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_teacher_staff_id_fkey" FOREIGN KEY ("school_id", "teacher_staff_id") REFERENCES "staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."timetable_entries" ADD CONSTRAINT "timetable_entries_school_id_teacher_staff_id_fkey" FOREIGN KEY ("school_id", "teacher_staff_id") REFERENCES "school_erp"."staff"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."user_roles" ADD CONSTRAINT "user_roles_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_school_id_role_id_fkey" FOREIGN KEY ("school_id", "role_id") REFERENCES "roles"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."user_roles" ADD CONSTRAINT "user_roles_school_id_role_id_fkey" FOREIGN KEY ("school_id", "role_id") REFERENCES "school_erp"."roles"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "user_roles" ADD CONSTRAINT "user_roles_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "users"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."user_roles" ADD CONSTRAINT "user_roles_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users"("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_school_id_campus_id_fkey" FOREIGN KEY ("school_id", "campus_id") REFERENCES "campuses"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."users" ADD CONSTRAINT "users_school_id_campus_id_fkey" FOREIGN KEY ("school_id", "campus_id") REFERENCES "school_erp"."campuses"("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE "school_erp"."users" ADD CONSTRAINT "users_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Additional ERP modules
+CREATE TABLE "school_erp"."organizations" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "organization_code" VARCHAR(40) NOT NULL,
+  "name" VARCHAR(200) NOT NULL,
+  "status" VARCHAR(20) NOT NULL DEFAULT 'active',
+  "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "organizations_pkey" PRIMARY KEY ("id")
+);
+
+CREATE UNIQUE INDEX "organizations_organization_code_key" ON "school_erp"."organizations" ("organization_code");
+
+ALTER TABLE "school_erp"."schools" ADD COLUMN "organization_id" UUID, ADD CONSTRAINT "schools_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "school_erp"."organizations"("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE UNIQUE INDEX "schools_organization_id_id_key" ON "school_erp"."schools"("organization_id", "id");
+
+CREATE TABLE "school_erp"."organization_memberships" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "organization_id" UUID NOT NULL,
+  "school_id" UUID NOT NULL,
+  "user_id" UUID NOT NULL,
+  "access_role" VARCHAR(30) NOT NULL DEFAULT 'owner',
+  "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "organization_memberships_pkey" PRIMARY KEY ("id")
+);
+
+CREATE UNIQUE INDEX "organization_memberships_organization_id_user_id_key" ON "school_erp"."organization_memberships" ("organization_id", "user_id");
+
+CREATE INDEX "organization_memberships_school_id_user_id_idx" ON "school_erp"."organization_memberships" ("school_id", "user_id");
+
+ALTER TABLE "school_erp"."organization_memberships" ADD CONSTRAINT "organization_memberships_organization_id_fkey" FOREIGN KEY ("organization_id") REFERENCES "school_erp"."organizations" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."organization_memberships" ADD CONSTRAINT "organization_memberships_home_org_fkey" FOREIGN KEY ("organization_id","school_id") REFERENCES "school_erp"."schools"("organization_id","id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."organization_memberships" ADD CONSTRAINT "organization_memberships_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users" ("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+CREATE TABLE "school_erp"."holiday_calendar" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "academic_year_id" UUID NOT NULL,
+  "title" VARCHAR(180) NOT NULL,
+  "start_date" DATE NOT NULL,
+  "end_date" DATE NOT NULL,
+  "description" TEXT,
+  CONSTRAINT "holiday_calendar_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "holiday_dates_check" CHECK (end_date >= start_date)
+);
+
+CREATE INDEX "holiday_calendar_school_id_academic_year_id_start_date_idx" ON "school_erp"."holiday_calendar" ("school_id", "academic_year_id", "start_date");
+
+ALTER TABLE "school_erp"."holiday_calendar" ADD CONSTRAINT "holiday_calendar_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."holiday_calendar" ADD CONSTRAINT "holiday_calendar_school_id_academic_year_id_fkey" FOREIGN KEY ("school_id", "academic_year_id") REFERENCES "school_erp"."academic_years" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE TABLE "school_erp"."user_sessions" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "user_id" UUID NOT NULL,
+  "token_hash" TEXT NOT NULL,
+  "expires_at" TIMESTAMPTZ(6) NOT NULL,
+  "revoked_at" TIMESTAMPTZ(6),
+  "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "user_sessions_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "session_expiry_check" CHECK (expires_at > created_at)
+);
+
+CREATE UNIQUE INDEX "user_sessions_token_hash_key" ON "school_erp"."user_sessions" ("token_hash");
+
+CREATE INDEX "user_sessions_school_id_user_id_expires_at_idx" ON "school_erp"."user_sessions" ("school_id", "user_id", "expires_at");
+
+ALTER TABLE "school_erp"."user_sessions" ADD CONSTRAINT "user_sessions_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."user_sessions" ADD CONSTRAINT "user_sessions_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users" ("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+CREATE TABLE "school_erp"."audit_logs" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "user_id" UUID,
+  "action" VARCHAR(100) NOT NULL,
+  "entity_type" VARCHAR(80) NOT NULL,
+  "entity_id" UUID,
+  "details" JSONB,
+  "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "audit_logs_pkey" PRIMARY KEY ("id")
+);
+
+CREATE INDEX "audit_logs_school_id_created_at_idx" ON "school_erp"."audit_logs" ("school_id", "created_at");
+
+ALTER TABLE "school_erp"."audit_logs" ADD CONSTRAINT "audit_logs_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."audit_logs" ADD CONSTRAINT "audit_logs_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE TABLE "school_erp"."library_loans" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "copy_id" UUID NOT NULL,
+  "member_id" UUID NOT NULL,
+  "issued_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "due_at" TIMESTAMPTZ(6) NOT NULL,
+  "returned_at" TIMESTAMPTZ(6),
+  "status" VARCHAR(20) NOT NULL DEFAULT 'issued',
+  CONSTRAINT "library_loans_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "loan_dates_check" CHECK (due_at >= issued_at AND (returned_at IS NULL OR returned_at >= issued_at))
+);
+
+CREATE UNIQUE INDEX "library_loans_school_id_id_key" ON "school_erp"."library_loans" ("school_id", "id");
+
+CREATE INDEX "library_loans_school_id_member_id_status_idx" ON "school_erp"."library_loans" ("school_id", "member_id", "status");
+
+ALTER TABLE "school_erp"."library_loans" ADD CONSTRAINT "library_loans_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."library_loans" ADD CONSTRAINT "library_loans_school_id_copy_id_fkey" FOREIGN KEY ("school_id", "copy_id") REFERENCES "school_erp"."library_book_copies" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."library_loans" ADD CONSTRAINT "library_loans_school_id_member_id_fkey" FOREIGN KEY ("school_id", "member_id") REFERENCES "school_erp"."library_members" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE UNIQUE INDEX "library_one_open_loan_key" ON "school_erp"."library_loans" ("school_id","copy_id") WHERE "returned_at" IS NULL;
+
+CREATE TABLE "school_erp"."library_reservations" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "book_id" UUID NOT NULL,
+  "member_id" UUID NOT NULL,
+  "reserved_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "status" VARCHAR(20) NOT NULL DEFAULT 'pending',
+  CONSTRAINT "library_reservations_pkey" PRIMARY KEY ("id")
+);
+
+CREATE INDEX "library_reservations_school_id_book_id_status_idx" ON "school_erp"."library_reservations" ("school_id", "book_id", "status");
+
+ALTER TABLE "school_erp"."library_reservations" ADD CONSTRAINT "library_reservations_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."library_reservations" ADD CONSTRAINT "library_reservations_school_id_book_id_fkey" FOREIGN KEY ("school_id", "book_id") REFERENCES "school_erp"."library_books" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."library_reservations" ADD CONSTRAINT "library_reservations_school_id_member_id_fkey" FOREIGN KEY ("school_id", "member_id") REFERENCES "school_erp"."library_members" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE TABLE "school_erp"."library_fines" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "loan_id" UUID NOT NULL,
+  "amount" DECIMAL(12,2) NOT NULL,
+  "status" VARCHAR(20) NOT NULL DEFAULT 'unpaid',
+  "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "library_fines_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "library_fine_amount_check" CHECK (amount >= 0)
+);
+
+CREATE INDEX "library_fines_school_id_loan_id_idx" ON "school_erp"."library_fines" ("school_id", "loan_id");
+
+ALTER TABLE "school_erp"."library_fines" ADD CONSTRAINT "library_fines_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."library_fines" ADD CONSTRAINT "library_fines_school_id_loan_id_fkey" FOREIGN KEY ("school_id", "loan_id") REFERENCES "school_erp"."library_loans" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE TABLE "school_erp"."announcements" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "created_by_user_id" UUID,
+  "title" VARCHAR(200) NOT NULL,
+  "body" TEXT NOT NULL,
+  "published_at" TIMESTAMPTZ(6),
+  "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "announcements_pkey" PRIMARY KEY ("id")
+);
+
+CREATE INDEX "announcements_school_id_published_at_idx" ON "school_erp"."announcements" ("school_id", "published_at");
+
+ALTER TABLE "school_erp"."announcements" ADD CONSTRAINT "announcements_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."announcements" ADD CONSTRAINT "announcements_school_id_created_by_user_id_fkey" FOREIGN KEY ("school_id", "created_by_user_id") REFERENCES "school_erp"."users" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+CREATE TABLE "school_erp"."notifications" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "user_id" UUID NOT NULL,
+  "title" VARCHAR(200) NOT NULL,
+  "body" TEXT NOT NULL,
+  "read_at" TIMESTAMPTZ(6),
+  "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "notifications_pkey" PRIMARY KEY ("id")
+);
+
+CREATE INDEX "notifications_school_id_user_id_read_at_idx" ON "school_erp"."notifications" ("school_id", "user_id", "read_at");
+
+ALTER TABLE "school_erp"."notifications" ADD CONSTRAINT "notifications_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."notifications" ADD CONSTRAINT "notifications_school_id_user_id_fkey" FOREIGN KEY ("school_id", "user_id") REFERENCES "school_erp"."users" ("school_id", "id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+CREATE TABLE "school_erp"."leave_requests" (
+  "id" UUID NOT NULL DEFAULT gen_random_uuid(),
+  "school_id" UUID NOT NULL,
+  "staff_id" UUID NOT NULL,
+  "start_date" DATE NOT NULL,
+  "end_date" DATE NOT NULL,
+  "reason" TEXT,
+  "status" VARCHAR(20) NOT NULL DEFAULT 'pending',
+  "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "leave_requests_pkey" PRIMARY KEY ("id"),
+  CONSTRAINT "leave_dates_check" CHECK (end_date >= start_date)
+);
+
+CREATE INDEX "leave_requests_school_id_staff_id_status_idx" ON "school_erp"."leave_requests" ("school_id", "staff_id", "status");
+
+ALTER TABLE "school_erp"."leave_requests" ADD CONSTRAINT "leave_requests_school_id_fkey" FOREIGN KEY ("school_id") REFERENCES "school_erp"."schools" ("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+
+ALTER TABLE "school_erp"."leave_requests" ADD CONSTRAINT "leave_requests_school_id_staff_id_fkey" FOREIGN KEY ("school_id", "staff_id") REFERENCES "school_erp"."staff" ("school_id", "id") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- Business checks
+ALTER TABLE "school_erp"."academic_years" ADD CONSTRAINT "academic_years_business_check" CHECK (end_date > start_date);
+ALTER TABLE "school_erp"."classes" ADD CONSTRAINT "classes_business_check" CHECK (sort_order IS NULL OR sort_order >= 0);
+ALTER TABLE "school_erp"."exams" ADD CONSTRAINT "exams_business_check" CHECK (end_date IS NULL OR start_date IS NULL OR end_date >= start_date);
+ALTER TABLE "school_erp"."exam_subjects" ADD CONSTRAINT "exam_subjects_business_check" CHECK (max_marks > 0 AND pass_marks >= 0 AND pass_marks <= max_marks);
+ALTER TABLE "school_erp"."exam_results" ADD CONSTRAINT "exam_results_business_check" CHECK (marks_obtained IS NULL OR marks_obtained >= 0);
+ALTER TABLE "school_erp"."expenses" ADD CONSTRAINT "expenses_business_check" CHECK (amount >= 0);
+ALTER TABLE "school_erp"."fee_discounts" ADD CONSTRAINT "fee_discounts_business_check" CHECK (value >= 0);
+ALTER TABLE "school_erp"."fee_payments" ADD CONSTRAINT "fee_payments_business_check" CHECK (amount > 0);
+ALTER TABLE "school_erp"."fee_structure_items" ADD CONSTRAINT "fee_structure_items_business_check" CHECK (amount >= 0);
+ALTER TABLE "school_erp"."fee_structures" ADD CONSTRAINT "fee_structures_business_check" CHECK (due_day IS NULL OR due_day BETWEEN 1 AND 31);
+ALTER TABLE "school_erp"."homework" ADD CONSTRAINT "homework_business_check" CHECK (due_date IS NULL OR due_date >= assigned_date);
+ALTER TABLE "school_erp"."homework_submissions" ADD CONSTRAINT "homework_submissions_business_check" CHECK (marks IS NULL OR marks >= 0);
+ALTER TABLE "school_erp"."invoice_items" ADD CONSTRAINT "invoice_items_business_check" CHECK (quantity > 0 AND unit_amount >= 0 AND line_total >= 0);
+ALTER TABLE "school_erp"."library_book_copies" ADD CONSTRAINT "library_book_copies_business_check" CHECK (purchase_price IS NULL OR purchase_price >= 0);
+ALTER TABLE "school_erp"."library_books" ADD CONSTRAINT "library_books_business_check" CHECK (publication_year IS NULL OR publication_year > 0);
+ALTER TABLE "school_erp"."library_members" ADD CONSTRAINT "library_members_business_check" CHECK ((student_id IS NOT NULL AND staff_id IS NULL AND member_type = 'student') OR (student_id IS NULL AND staff_id IS NOT NULL AND member_type = 'staff'));
+ALTER TABLE "school_erp"."payment_allocations" ADD CONSTRAINT "payment_allocations_business_check" CHECK (amount > 0);
+ALTER TABLE "school_erp"."payroll_items" ADD CONSTRAINT "payroll_items_business_check" CHECK (present_days >= 0 AND basic >= 0 AND allowances >= 0 AND deductions >= 0 AND gross_pay >= 0 AND net_pay >= 0);
+ALTER TABLE "school_erp"."payroll_runs" ADD CONSTRAINT "payroll_runs_business_check" CHECK (working_days >= 0);
+ALTER TABLE "school_erp"."salary_payments" ADD CONSTRAINT "salary_payments_business_check" CHECK (amount > 0);
+ALTER TABLE "school_erp"."salary_structures" ADD CONSTRAINT "salary_structures_business_check" CHECK (basic >= 0 AND hra >= 0 AND da >= 0 AND other_allowances >= 0 AND pf_deduction >= 0 AND tax_deduction >= 0 AND other_deductions >= 0);
+ALTER TABLE "school_erp"."sections" ADD CONSTRAINT "sections_business_check" CHECK (capacity IS NULL OR capacity > 0);
+ALTER TABLE "school_erp"."staff" ADD CONSTRAINT "staff_business_check" CHECK (experience_years IS NULL OR experience_years >= 0);
+ALTER TABLE "school_erp"."student_invoices" ADD CONSTRAINT "student_invoices_business_check" CHECK (due_date >= issue_date AND (period_end IS NULL OR period_start IS NULL OR period_end >= period_start) AND subtotal >= 0 AND discount_amount >= 0 AND fine_amount >= 0 AND total_amount >= 0);
+ALTER TABLE "school_erp"."students" ADD CONSTRAINT "students_business_check" CHECK (previous_percentage IS NULL OR previous_percentage BETWEEN 0 AND 100);
+ALTER TABLE "school_erp"."timetable_entries" ADD CONSTRAINT "timetable_entries_business_check" CHECK (day_of_week BETWEEN 1 AND 7 AND period_number > 0 AND ends_at > starts_at);
+ALTER TABLE "school_erp"."password_reset_tokens" ADD CONSTRAINT "password_reset_tokens_business_check" CHECK (expires_at > created_at AND (used_at IS NULL OR used_at >= created_at));
+ALTER TABLE "school_erp"."users" ADD CONSTRAINT "users_business_check" CHECK (length(btrim(username)) > 0 AND length(password_hash) > 0);
+
+CREATE FUNCTION "school_erp"."touch_updated_at"() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  NEW.updated_at := CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$;
+CREATE TRIGGER "schools_touch_updated_at" BEFORE UPDATE ON "school_erp"."schools" FOR EACH ROW EXECUTE FUNCTION "school_erp"."touch_updated_at"();
+CREATE TRIGGER "staff_touch_updated_at" BEFORE UPDATE ON "school_erp"."staff" FOR EACH ROW EXECUTE FUNCTION "school_erp"."touch_updated_at"();
+CREATE TRIGGER "students_touch_updated_at" BEFORE UPDATE ON "school_erp"."students" FOR EACH ROW EXECUTE FUNCTION "school_erp"."touch_updated_at"();
+CREATE TRIGGER "users_touch_updated_at" BEFORE UPDATE ON "school_erp"."users" FOR EACH ROW EXECUTE FUNCTION "school_erp"."touch_updated_at"();
+
+
+COMMIT;
