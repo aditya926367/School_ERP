@@ -4,6 +4,7 @@ import {
   loginController,
   meController,
   refreshController,
+  logoutController,
 } from "../controllers/auth.controller";
 
 import { authenticate } from "../middleware/auth";
@@ -26,5 +27,6 @@ const loginLimiter = rateLimit({
 router.post("/login", loginLimiter, loginController);
 router.get("/me", authenticate, meController);
 router.post("/refresh", refreshController);
+router.post("/logout", logoutController);
 
 export default router;
