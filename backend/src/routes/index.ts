@@ -14,14 +14,6 @@ import { authorize } from "../middleware/authorize";
 
 const router = Router();
 
-router.use("/health", healthRoutes);
-router.use("/admin", adminRoutes);
-router.use("/student", studentRoutes);
-router.use("/parent", parentRoutes);
-router.use("/teacher", teacherRoutes);
-router.use("/library", libraryRoutes);
-router.use("/accountant", accountantRoutes);
-router.use("/auth", authRoutes);
 
 // Public routes
 router.use("/health", healthRoutes);
@@ -71,5 +63,5 @@ router.use(
 );
 
 
-
 export default router;
+
