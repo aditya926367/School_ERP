@@ -199,3 +199,21 @@ export async function refreshSession(refreshToken: string) {
     refreshTokenExpiresAt: session.expires_at,
   };
 }
+export async function logoutSession(refreshToken: string) {
+  // 1. Hash the refresh token
+  const tokenHash = hashRefreshToken(refreshToken);
+
+  // 2. Revoke the matching session
+  const result = await prisma.user_sessions.updateMany({
+    where: {
+      token_hash: tokenHash,
+      revoked_at: null,
+    },
+    data: {
+      revoked_at: new Date(),
+    },
+  });
+
+  // 3. Return whether a session was revoked
+  return result.count > 0;
+}
