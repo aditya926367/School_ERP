@@ -2,7 +2,7 @@ import prisma from "../lib/prisma";
 import type { Request, Response } from "express";
 import { z } from "zod";
 import { env } from "../config/env";
-import { login, refreshSession } from "../services/auth.service";
+import { login, refreshSession,logoutSession } from "../services/auth.service";
 
 const loginSchema = z.object({
   schoolCode: z.string().trim().min(1).max(40),
@@ -189,6 +189,46 @@ export async function refreshController(
     });
   } catch (error) {
     console.error("Refresh token error:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+}
+export async function logoutController(
+  req: Request,
+  res: Response
+): Promise<void> {
+  try {
+    // 1. Read refresh token from cookie
+    const refreshToken = req.cookies?.refreshToken;
+
+    // 2. Revoke the database session
+    if (
+      typeof refreshToken === "string" &&
+      /^[a-f0-9]{128}$/.test(refreshToken)
+    ) {
+      await logoutSession(refreshToken);
+    }
+
+    // 3. Clear refresh token cookie
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: env.nodeEnv === "production",
+      sameSite: "strict",
+      path: "/api/auth",
+    });
+
+    res.setHeader("Cache-Control", "no-store");
+
+    // 4. Return successful response
+    res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
 
     res.status(500).json({
       success: false,
