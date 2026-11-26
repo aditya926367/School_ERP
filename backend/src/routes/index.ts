@@ -8,6 +8,7 @@ import parentRoutes from "./parent.routes";
 import teacherRoutes from "./teacher.routes";
 import libraryRoutes from "./library.routes";
 import accountantRoutes from "./accountant.routes";
+import authRoutes from "./auth.routes";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/parent", parentRoutes);
 router.use("/teacher", teacherRoutes);
 router.use("/library", libraryRoutes);
 router.use("/accountant", accountantRoutes);
+router.use("/auth", authRoutes);
 
 export default router;

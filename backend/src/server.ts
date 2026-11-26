@@ -4,21 +4,27 @@ import express from "express";
 import prisma from "./lib/prisma"; 
 import apiRoutes from "./routes";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import { env } from "./config/env";
 
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = env.port;
 
 app.use(express.json());
 
+app.use(cookieParser());
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: env.clientUrl,
+    credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.use('/api', apiRoutes); //add api before all apis
+
+app.use("/api", apiRoutes);
 
 // Database connection check
 async function startServer() {
